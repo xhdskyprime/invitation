@@ -5,7 +5,8 @@ const defaultData = {
     eventDateISO: "2026-08-26T08:00:00",
     eventDateFormatted: "Rabu, 26 Agustus 2026",
     quote: '"Dan di antara tanda-tanda (kebesaran-Nya) ialah Dia menciptakan pasangan-pasangan untukmu dari meksasamu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang." (Ar-Rum: 21)',
-    bgMusicUrl: "kusumo_wijoyo.m4a"
+    bgMusicUrl: "kusumo_wijoyo.m4a",
+    heroImageUrl: "inv.wekita.id/wp-content/uploads/2026/06/24SB031-AW-1-e1725517868670-2.jpg"
   },
   groom: {
     callName: "Lutfi",
@@ -68,29 +69,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function loadStoredData() {
-  const saved = localStorage.getItem("wekita_invitation_data");
-  if (saved) {
-    try {
-      currentData = JSON.parse(saved);
-      return;
-    } catch(e) {
-      console.error(e);
-    }
-  }
-
   try {
-    const res = await fetch("data/config.json");
+    const res = await fetch("/api/config");
     if (res.ok) {
       currentData = await res.json();
     }
   } catch(e) {
+    console.error("Failed to load config from server, falling back to default", e);
     currentData = JSON.parse(JSON.stringify(defaultData));
   }
 }
 
-function saveDataAndSync() {
-  localStorage.setItem("wekita_invitation_data", JSON.stringify(currentData));
-  
+async function saveDataAndSync() {
   // Post message to iframe for instant live preview update
   const iframe = document.getElementById("previewIframe");
   if (iframe && iframe.contentWindow) {
@@ -98,6 +88,16 @@ function saveDataAndSync() {
       type: "UPDATE_INVITATION_DATA",
       payload: currentData
     }, "*");
+  }
+
+  try {
+    await fetch("/api/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(currentData)
+    });
+  } catch(err) {
+    console.error("Failed to sync config to server", err);
   }
 }
 
@@ -128,6 +128,7 @@ function populateFormFields() {
   document.getElementById("inputEventDateFormatted").value = general.eventDateFormatted || "";
   document.getElementById("inputEventDateISO").value = general.eventDateISO || "";
   document.getElementById("inputBgMusicUrl").value = general.bgMusicUrl || "";
+  document.getElementById("inputHeroImageUrl").value = general.heroImageUrl || "";
   document.getElementById("inputQuote").value = general.quote || "";
 
   // Groom
@@ -177,6 +178,7 @@ function setupInputListeners() {
   bindInput("inputEventDateFormatted", "general.eventDateFormatted");
   bindInput("inputEventDateISO", "general.eventDateISO");
   bindInput("inputBgMusicUrl", "general.bgMusicUrl");
+  bindInput("inputHeroImageUrl", "general.heroImageUrl");
   bindInput("inputQuote", "general.quote");
 
   // Groom
@@ -441,18 +443,18 @@ Terima kasih.`;
 }
 
 // Render Admin RSVP Table
-function renderRsvpTable() {
+async function renderRsvpTable() {
   const tbody = document.getElementById("adminRsvpTableBody");
   tbody.innerHTML = "";
 
   let wishes = [];
-  const saved = localStorage.getItem("wekita_invitation_wishes");
-  if (saved) {
-    try { wishes = JSON.parse(saved); } catch(e) {}
-  } else {
-    wishes = [
-      { id: 1, name: "Budi & Keluarga", status: "Hadir", count: 2, text: "Selamat untuk Lutfi & Firdha! Semoga sakinah mawaddah warahmah.", date: "10/08/2026 14:30" }
-    ];
+  try {
+    const res = await fetch("/api/wishes");
+    if (res.ok) {
+      wishes = await res.json();
+    }
+  } catch(e) {
+    console.error("Failed to load wishes from server", e);
   }
 
   if (wishes.length === 0) {
@@ -475,10 +477,14 @@ function renderRsvpTable() {
   });
 }
 
-document.getElementById("btnClearWishes").addEventListener("click", () => {
+document.getElementById("btnClearWishes").addEventListener("click", async () => {
   if (confirm("Hapus semua daftar ucapan tamu?")) {
-    localStorage.removeItem("wekita_invitation_wishes");
-    renderRsvpTable();
+    try {
+      await fetch("/api/wishes", { method: "DELETE" });
+      await renderRsvpTable();
+    } catch(e) {
+      console.error("Failed to clear wishes from server", e);
+    }
   }
 });
 

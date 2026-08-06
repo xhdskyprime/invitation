@@ -96,37 +96,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Storage listener
-  window.addEventListener("storage", (event) => {
-    if (event.key === "wekita_invitation_data") {
-      loadData().then(() => {
-        renderContent();
-        setupCountdown();
-        setupScrollReveal();
-      });
-    } else if (event.key === "wekita_invitation_wishes") {
-      renderWishes();
-    }
-  });
+  // Storage listener (Removed because database backend is used instead of localStorage)
 });
 
 async function loadData() {
-  const saved = localStorage.getItem("wekita_invitation_data");
-  if (saved) {
-    try {
-      currentData = JSON.parse(saved);
-      return;
-    } catch(e) {
-      console.error("Error loading saved data", e);
-    }
-  }
-
   try {
-    const res = await fetch("data/config.json");
+    const res = await fetch("/api/config");
     if (res.ok) {
       currentData = await res.json();
     }
   } catch(e) {
+    console.error("Error loading saved data from server", e);
     currentData = defaultData;
   }
 }
@@ -147,6 +127,13 @@ function renderContent() {
   safeSetText("coverEventDate", general.eventDateFormatted || defaultData.general.eventDateFormatted);
   safeSetText("heroCoupleNames", general.coupleNames || defaultData.general.coupleNames);
   safeSetText("heroEventDate", general.eventDateFormatted || defaultData.general.eventDateFormatted);
+
+  if (general.heroImageUrl) {
+    const heroBgElements = document.querySelectorAll('.cover-hero-bg, .hero-section');
+    heroBgElements.forEach(el => {
+      el.style.backgroundImage = `url('${general.heroImageUrl}')`;
+    });
+  }
   safeSetText("footerCoupleNames", general.coupleNames || defaultData.general.coupleNames);
   if (general.quote) {
     safeSetHtml("quoteText", general.quote.replace(/\n/g, '<br>'));
@@ -364,7 +351,7 @@ function setupRSVPForm() {
   const form = document.getElementById("rsvpForm");
   if (!form) return;
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("rsvpNameInput") ? document.getElementById("rsvpNameInput").value.trim() : "";
     const status = document.getElementById("rsvpStatusInput") ? document.getElementById("rsvpStatusInput").value : "Hadir";
@@ -373,51 +360,38 @@ function setupRSVPForm() {
 
     if (!name || !text) return;
 
-    const newWish = {
-      id: Date.now(),
-      name,
-      status,
-      count,
-      text,
-      date: new Date().toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })
-    };
-
-    let wishes = getSavedWishes();
-    wishes.unshift(newWish);
-    localStorage.setItem("wekita_invitation_wishes", JSON.stringify(wishes));
-
-    form.reset();
-    showToast("Ucapan & konfirmasi Anda berhasil terkirim!");
-    renderWishes();
+    try {
+      const res = await fetch("/api/wishes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, status, count, text })
+      });
+      if (res.ok) {
+        form.reset();
+        showToast("Ucapan & konfirmasi Anda berhasil terkirim!");
+        await renderWishes();
+      }
+    } catch(err) {
+      console.error("Failed to submit RSVP", err);
+      showToast("Gagal mengirim ucapan. Silakan coba lagi.");
+    }
   });
 }
 
-function getSavedWishes() {
-  const saved = localStorage.getItem("wekita_invitation_wishes");
-  if (saved) {
-    try {
-      return JSON.parse(saved);
-    } catch(e) {
-      return [];
-    }
-  }
-  return [
-    {
-      id: 1,
-      name: "Budi & Keluarga",
-      status: "Hadir",
-      count: 2,
-      text: "Selamat untuk Lutfi & Firdha! Semoga sakinah mawaddah warahmah.",
-      date: "10/08/2026 14:30"
-    }
-  ];
-}
-
-function renderWishes() {
+async function renderWishes() {
   const listEl = document.getElementById("ucapanList");
   if (!listEl) return;
   listEl.innerHTML = "";
-  const wishes = getSavedWishes();
+
+  let wishes = [];
+  try {
+    const res = await fetch("/api/wishes");
+    if (res.ok) {
+      wishes = await res.json();
+    }
+  } catch(e) {
+    console.error("Failed to load wishes from server", e);
+  }
 
   if (wishes.length === 0) {
     listEl.innerHTML = '<div style="text-align:center; color: var(--text-muted); font-size:12px; padding: 10px;">Belum ada ucapan.</div>';

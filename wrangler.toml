@@ -1,0 +1,11 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "invitationlegacy"
+main = "index.js"
+compatibility_date = "2024-04-03"
+
+[assets]
+directory = "."
+
+[[kv_namespaces]]
+binding = "INVITATION_DB"
+id = "place-id-here-later"

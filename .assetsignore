@@ -1,0 +1,12 @@
+node_modules
+.git
+.wrangler
+.assetsignore
+package.json
+package-lock.json
+wrangler.toml
+.gitattributes
+desktop.ini
+task.md
+implementation_plan.md
+walkthrough.md
