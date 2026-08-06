@@ -458,18 +458,15 @@ async function renderRsvpTable() {
   }
 
   if (wishes.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--admin-text-muted);">Belum ada ucapan / RSVP dari tamu.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--admin-text-muted);">Belum ada ucapan dari tamu.</td></tr>';
     return;
   }
 
   wishes.forEach((w, index) => {
-    const isHadir = w.status === "Hadir";
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${index + 1}</td>
       <td><strong>${escapeHtml(w.name)}</strong></td>
-      <td><span class="badge ${isHadir ? 'badge-success' : 'badge-danger'}">${escapeHtml(w.status)}</span></td>
-      <td>${w.count || 1} Orgs</td>
       <td>${escapeHtml(w.text)}</td>
       <td style="color: var(--admin-text-muted); font-size: 0.75rem;">${escapeHtml(w.date)}</td>
     `;

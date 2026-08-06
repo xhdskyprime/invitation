@@ -399,15 +399,11 @@ async function renderWishes() {
   }
 
   wishes.forEach(item => {
-    const isHadir = item.status === "Hadir";
     const div = document.createElement("div");
     div.className = "wish-card";
     div.innerHTML = `
       <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
         <strong style="color:var(--primary-navy); font-size:13px;">${escapeHtml(item.name)}</strong>
-        <span style="font-size:10px; font-weight:600; color:${isHadir ? '#10b981' : '#ef4444'};">
-          ${isHadir ? '✓ Hadir (' + item.count + ' orang)' : '✕ Tidak Hadir'}
-        </span>
       </div>
       <div style="font-size:12px; color:var(--text-body);">${escapeHtml(item.text)}</div>
       <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">${escapeHtml(item.date)}</div>
