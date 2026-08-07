@@ -1,3 +1,34 @@
+// Indonesian Banks & E-Wallets Master List
+const INDONESIA_BANKS = [
+  { code: "BCA", name: "Bank BCA", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" },
+  { code: "MANDIRI", name: "Bank Mandiri", logo: "https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" },
+  { code: "BNI", name: "Bank BNI", logo: "https://upload.wikimedia.org/wikipedia/commons/5/55/BNI_logo.svg" },
+  { code: "BRI", name: "Bank BRI", logo: "https://upload.wikimedia.org/wikipedia/commons/2/2e/BRI_2020.svg" },
+  { code: "BSI", name: "Bank Syariah Indonesia (BSI)", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a0/Bank_Syariah_Indonesia.svg" },
+  { code: "PERMATA", name: "Bank Permata", logo: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Permata_Bank.svg" },
+  { code: "CIMB", name: "Bank CIMB Niaga", logo: "https://upload.wikimedia.org/wikipedia/commons/3/38/CIMB_Niaga_logo.svg" },
+  { code: "DANAMON", name: "Bank Danamon", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b3/Bank_Danamon_logo.svg" },
+  { code: "JAGO", name: "Bank Jago", logo: "https://upload.wikimedia.org/wikipedia/commons/d/df/Logo_Bank_Jago.svg" },
+  { code: "SEABANK", name: "SeaBank", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/SeaBank.svg/512px-SeaBank.svg.png" },
+  { code: "GOPAY", name: "GoPay", logo: "https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" },
+  { code: "OVO", name: "OVO", logo: "https://upload.wikimedia.org/wikipedia/commons/eb/e8/OVO_Logo.svg" },
+  { code: "DANA", name: "DANA", logo: "https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_DANA.svg" },
+  { code: "SHOPEEPAY", name: "ShopeePay", logo: "https://upload.wikimedia.org/wikipedia/commons/f/fe/ShopeePay_logo.svg" },
+  { code: "LAINNYA", name: "Bank / E-Wallet Lain", logo: "" }
+];
+
+function getBankInfo(bankInput) {
+  if (!bankInput) return INDONESIA_BANKS[0];
+  const clean = bankInput.trim().toUpperCase();
+  const found = INDONESIA_BANKS.find(b => 
+    b.code === clean || 
+    b.name.toUpperCase().includes(clean) || 
+    clean.includes(b.code)
+  );
+  if (found) return found;
+  return { code: "CUSTOM", name: bankInput, logo: "" };
+}
+
 // Admin Dashboard Logic
 const defaultData = {
   general: {
@@ -352,21 +383,30 @@ if (btnAddGallery) {
   });
 }
 
-// Gifts List
+// Gifts List with Indonesian Bank Selection & Logo Badges
 function renderGiftsList() {
   const container = document.getElementById("giftsList");
   if (!container) return;
   container.innerHTML = "";
 
   (currentData.gifts || []).forEach((gift, index) => {
+    const bankInfo = getBankInfo(gift.bank);
     const div = document.createElement("div");
     div.className = "dynamic-item";
     div.innerHTML = `
       <button class="btn-remove-item" onclick="removeGift(${index})">Hapus</button>
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label">Nama Bank / E-Wallet</label>
-          <input type="text" class="form-input" value="${escapeHtml(gift.bank)}" oninput="updateGift(${index}, 'bank', this.value)">
+          <label class="form-label">Pilih Bank / E-Wallet</label>
+          <select class="form-select" onchange="updateGift(${index}, 'bank', this.value)">
+            ${INDONESIA_BANKS.map(b => `<option value="${b.code}" ${bankInfo.code === b.code || (gift.bank && gift.bank.toUpperCase() === b.code) ? 'selected' : ''}>${b.name}</option>`).join('')}
+          </select>
+          ${bankInfo.logo ? `
+            <div style="margin-top:10px; display:flex; align-items:center; gap:10px; background:#f8fafc; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0;">
+              <img src="${bankInfo.logo}" style="height:26px; max-width:90px; object-fit:contain;" alt="${bankInfo.name}">
+              <span style="font-size:0.8rem; font-weight:700; color:var(--admin-text);">${bankInfo.name}</span>
+            </div>
+          ` : ''}
         </div>
         <div class="form-group">
           <label class="form-label">Nomor Rekening / HP</label>
@@ -384,6 +424,9 @@ function renderGiftsList() {
 
 window.updateGift = function(index, field, value) {
   currentData.gifts[index][field] = value;
+  if (field === 'bank') {
+    renderGiftsList();
+  }
   saveDataAndSync();
 };
 

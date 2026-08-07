@@ -1,3 +1,34 @@
+// Indonesian Banks & E-Wallets Master List
+const INDONESIA_BANKS = [
+  { code: "BCA", name: "Bank BCA", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" },
+  { code: "MANDIRI", name: "Bank Mandiri", logo: "https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" },
+  { code: "BNI", name: "Bank BNI", logo: "https://upload.wikimedia.org/wikipedia/commons/5/55/BNI_logo.svg" },
+  { code: "BRI", name: "Bank BRI", logo: "https://upload.wikimedia.org/wikipedia/commons/2/2e/BRI_2020.svg" },
+  { code: "BSI", name: "Bank Syariah Indonesia (BSI)", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a0/Bank_Syariah_Indonesia.svg" },
+  { code: "PERMATA", name: "Bank Permata", logo: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Permata_Bank.svg" },
+  { code: "CIMB", name: "Bank CIMB Niaga", logo: "https://upload.wikimedia.org/wikipedia/commons/3/38/CIMB_Niaga_logo.svg" },
+  { code: "DANAMON", name: "Bank Danamon", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b3/Bank_Danamon_logo.svg" },
+  { code: "JAGO", name: "Bank Jago", logo: "https://upload.wikimedia.org/wikipedia/commons/d/df/Logo_Bank_Jago.svg" },
+  { code: "SEABANK", name: "SeaBank", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/SeaBank.svg/512px-SeaBank.svg.png" },
+  { code: "GOPAY", name: "GoPay", logo: "https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" },
+  { code: "OVO", name: "OVO", logo: "https://upload.wikimedia.org/wikipedia/commons/eb/e8/OVO_Logo.svg" },
+  { code: "DANA", name: "DANA", logo: "https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_DANA.svg" },
+  { code: "SHOPEEPAY", name: "ShopeePay", logo: "https://upload.wikimedia.org/wikipedia/commons/f/fe/ShopeePay_logo.svg" },
+  { code: "LAINNYA", name: "Bank / E-Wallet Lain", logo: "" }
+];
+
+function getBankInfo(bankInput) {
+  if (!bankInput) return INDONESIA_BANKS[0];
+  const clean = bankInput.trim().toUpperCase();
+  const found = INDONESIA_BANKS.find(b => 
+    b.code === clean || 
+    b.name.toUpperCase().includes(clean) || 
+    clean.includes(b.code)
+  );
+  if (found) return found;
+  return { code: "CUSTOM", name: bankInput, logo: "" };
+}
+
 // Default Fallback Data matching inv.wekita.id/spesial-01
 const defaultData = {
   general: {
@@ -95,8 +126,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (window.lucide) lucide.createIcons();
     }
   });
-
-  // Storage listener (Removed because database backend is used instead of localStorage)
 });
 
 async function loadData() {
@@ -207,16 +236,20 @@ function renderContent() {
     }
   }
 
-  // Gifts
+  // Gifts with Logo Badge
   const giftsEl = document.getElementById("giftContainer");
   if (giftsEl) {
     giftsEl.innerHTML = "";
     if (gifts && gifts.length > 0) {
       gifts.forEach(gift => {
+        const bankInfo = getBankInfo(gift.bank);
         const card = document.createElement("div");
         card.className = "gift-card";
         card.innerHTML = `
-          <div class="bank-name">${escapeHtml(gift.bank)}</div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-bottom:8px;">
+            ${bankInfo.logo ? `<img src="${bankInfo.logo}" alt="${escapeHtml(bankInfo.name)}" style="height:32px; max-width:130px; object-fit:contain; margin-bottom:4px;">` : ''}
+            <div class="bank-name">${escapeHtml(bankInfo.name || gift.bank)}</div>
+          </div>
           <div class="acc-num">${escapeHtml(gift.number)}</div>
           <div class="acc-owner">a.n ${escapeHtml(gift.name)}</div>
           <button class="btn-copy-acc" onclick="copyToClipboard('${escapeHtml(gift.number)}')">
@@ -291,7 +324,6 @@ function setupCoverOverlay() {
     e.preventDefault();
     overlay.classList.add("opened");
     
-    // Trigger scroll reveal for hero elements immediately on open
     setTimeout(() => {
       setupScrollReveal();
     }, 300);
