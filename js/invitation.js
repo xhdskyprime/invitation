@@ -29,7 +29,7 @@ function getBankInfo(bankInput) {
   return { code: "CUSTOM", name: bankInput, logo: "" };
 }
 
-// Default Fallback Data matching inv.wekita.id/spesial-01
+// Default Fallback Data matching assets/spesial-01
 const defaultData = {
   general: {
     coupleNames: "Lutfi & Firdha",
@@ -44,7 +44,8 @@ const defaultData = {
     parents: "Putra Pertama dari Bpk. Keluarga & Ibu Keluarga",
     igHandle: "@lutfi",
     igUrl: "https://instagram.com",
-    avatarUrl: "inv.wekita.id/wp-content/uploads/2026/06/sm-PRIA-e1725510474400-1-3.jpg"
+    avatarUrl: "assets/wp-content/uploads/2026/06/sm-PRIA-e1725510474400-1-3.jpg",
+    zoom: 1.0
   },
   bride: {
     callName: "Firdha",
@@ -52,7 +53,8 @@ const defaultData = {
     parents: "Putri Kedua dari Bpk. Keluarga & Ibu Keluarga",
     igHandle: "@firdha",
     igUrl: "https://instagram.com",
-    avatarUrl: "inv.wekita.id/wp-content/uploads/2026/06/sm-WANITA-e1725510489585-1-3.jpg"
+    avatarUrl: "assets/wp-content/uploads/2026/06/sm-WANITA-e1725510489585-1-3.jpg",
+    zoom: 1.0
   },
   events: {
     akadDate: "Rabu, 26 Agustus 2026",
@@ -70,10 +72,10 @@ const defaultData = {
     { date: "26 Agustus 2026", title: "Hari Pernikahan", desc: "Hari suci di mana kami mengikrarkan janji suci seumur hidup." }
   ],
   gallery: [
-    "inv.wekita.id/wp-content/uploads/2026/06/p-1-1-3.jpg",
-    "inv.wekita.id/wp-content/uploads/2026/06/p-2-1-3.jpg",
-    "inv.wekita.id/wp-content/uploads/2026/06/sm-1-5-e1725510309587-1-3.jpg",
-    "inv.wekita.id/wp-content/uploads/2026/06/sm-1-6-e1725510241295-1-3.jpg"
+    "assets/wp-content/uploads/2026/06/p-1-1-3.jpg",
+    "assets/wp-content/uploads/2026/06/p-2-1-3.jpg",
+    "assets/wp-content/uploads/2026/06/sm-1-5-e1725510309587-1-3.jpg",
+    "assets/wp-content/uploads/2026/06/sm-1-6-e1725510241295-1-3.jpg"
   ],
   gifts: [
     { bank: "BCA", number: "1234567890", name: "Lutfi" },
@@ -112,8 +114,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupScrollReveal();
 
   if (window.lucide) {
-    lucide.createIcons();
+    try {
+      lucide.createIcons();
+    } catch (e) {
+      console.error("Lucide DOMContentLoaded error:", e);
+    }
   }
+
+  window.addEventListener("load", () => {
+    if (window.lucide) {
+      try {
+        lucide.createIcons();
+      } catch (e) {
+        console.error("Lucide load error:", e);
+      }
+    }
+  });
 
   // Live message sync from Admin Dashboard
   window.addEventListener("message", (event) => {
@@ -175,7 +191,15 @@ function renderContent() {
   safeSetText("groomIgHandle", groom.igHandle || defaultData.groom.igHandle);
   safeSetAttr("groomIg", "href", groom.igUrl || "#");
   if (groom.avatarUrl) {
-    safeSetAttr("groomAvatar", "src", groom.avatarUrl);
+    const cleanGroomUrl = groom.avatarUrl.replace("inv.wekita.id", "assets");
+    safeSetAttr("groomAvatar", "src", cleanGroomUrl);
+  }
+  const groomAvatarEl = document.getElementById("groomAvatar");
+  if (groomAvatarEl) {
+    const x = groom.offsetX || 0;
+    const y = groom.offsetY || 0;
+    const zoom = groom.zoom || 1.0;
+    groomAvatarEl.style.transform = `translate(${x}%, ${y}%) scale(${zoom})`;
   }
 
   // Bride
@@ -185,7 +209,15 @@ function renderContent() {
   safeSetText("brideIgHandle", bride.igHandle || defaultData.bride.igHandle);
   safeSetAttr("brideIg", "href", bride.igUrl || "#");
   if (bride.avatarUrl) {
-    safeSetAttr("brideAvatar", "src", bride.avatarUrl);
+    const cleanBrideUrl = bride.avatarUrl.replace("inv.wekita.id", "assets");
+    safeSetAttr("brideAvatar", "src", cleanBrideUrl);
+  }
+  const brideAvatarEl = document.getElementById("brideAvatar");
+  if (brideAvatarEl) {
+    const x = bride.offsetX || 0;
+    const y = bride.offsetY || 0;
+    const zoom = bride.zoom || 1.0;
+    brideAvatarEl.style.transform = `translate(${x}%, ${y}%) scale(${zoom})`;
   }
 
   // Events
@@ -227,10 +259,23 @@ function renderContent() {
   if (galleryEl) {
     galleryEl.innerHTML = "";
     if (gallery && gallery.length > 0) {
-      gallery.forEach(imgUrl => {
+      gallery.forEach(img => {
+        const isObj = typeof img === 'object' && img !== null;
+        const url = isObj ? img.url : img;
+        const cleanImgUrl = url.replace("inv.wekita.id", "assets");
+        const zoom = isObj ? (img.zoom || 1.0) : 1.0;
+        const x = isObj ? (img.offsetX || 0) : 0;
+        const y = isObj ? (img.offsetY || 0) : 0;
+
         const div = document.createElement("div");
         div.className = "gallery-card";
-        div.innerHTML = `<img src="${escapeHtml(imgUrl)}" alt="Gallery Photo" onclick="window.open('${escapeHtml(imgUrl)}', '_blank')">`;
+        div.innerHTML = `
+          <div style="width: 100%; height: 100%; overflow: hidden; position: relative;">
+            <img src="${escapeHtml(cleanImgUrl)}" alt="Gallery Photo" 
+                 style="width: 100%; height: 100%; object-fit: cover; transform: translate(${x}%, ${y}%) scale(${zoom}); transform-origin: center center; position: absolute; cursor: pointer; transition: transform 0.2s;" 
+                 onclick="window.open('${escapeHtml(cleanImgUrl)}', '_blank')">
+          </div>
+        `;
         galleryEl.appendChild(div);
       });
     }
@@ -259,6 +304,12 @@ function renderContent() {
         giftsEl.appendChild(card);
       });
     }
+  }
+
+  if (window.lucide) {
+    try {
+      lucide.createIcons();
+    } catch (e) {}
   }
 }
 

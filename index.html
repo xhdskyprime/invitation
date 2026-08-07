@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Undangan Digital Wekita</title>
+  <title>Admin Dashboard - Undangan Digital</title>
+  <link rel="icon" type="image/png" href="logo%20lutpi%20bg.png">
   <link rel="stylesheet" href="css/admin.css">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -17,7 +18,7 @@
         <i data-lucide="heart-handshake"></i>
       </div>
       <div>
-        Admin Undangan Digital <span class="brand-badge">WEKITA TEMA 01</span>
+        Admin Undangan Digital <span class="brand-badge">TEMA 01</span>
       </div>
     </div>
 
@@ -179,12 +180,26 @@
               <input type="text" id="inputGroomIgUrl" class="form-input" placeholder="https://instagram.com/romeo">
             </div>
 
-            <div class="form-group full-width">
+            <div class="form-group">
               <label class="form-label">URL Foto Profil Pria</label>
-              <input type="text" id="inputGroomAvatarUrl" class="form-input" placeholder="inv.wekita.id/wp-content/.../sm-PRIA.jpg">
-              <div class="img-preview-box">
-                <img id="groomImgThumb" class="img-preview-thumb" src="" alt="Groom Avatar">
-                <div class="img-preview-info">Preview Foto Profil Pria</div>
+              <input type="text" id="inputGroomAvatarUrl" class="form-input" placeholder="assets/wp-content/uploads/2026/06/sm-PRIA.jpg">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Zoom Foto Profil Pria</label>
+              <input type="range" id="inputGroomZoom" min="1" max="3" step="0.05" value="1.0" class="form-input" style="height: 38px; padding: 0;">
+              <div class="help-text">Sesuaikan perbesaran foto profil pengantin pria.</div>
+            </div>
+
+            <div class="form-group full-width">
+              <div class="img-preview-box img-avatar-preview-box">
+                <div class="avatar-preview-circle" id="groomImgThumbContainer" style="cursor: grab; position: relative;">
+                  <img id="groomImgThumb" class="img-preview-thumb img-avatar-thumb" src="" alt="Groom Avatar" style="position: absolute; width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="img-preview-info">
+                  Preview Foto Profil Pria (Klik & Geser untuk Pasin Tengah)
+                  <div class="zoom-value-text" id="groomZoomVal">1.00x</div>
+                </div>
               </div>
             </div>
           </div>
@@ -219,12 +234,26 @@
               <input type="text" id="inputBrideIgUrl" class="form-input" placeholder="https://instagram.com/juliet">
             </div>
 
-            <div class="form-group full-width">
+            <div class="form-group">
               <label class="form-label">URL Foto Profil Wanita</label>
-              <input type="text" id="inputBrideAvatarUrl" class="form-input" placeholder="inv.wekita.id/wp-content/.../sm-WANITA.jpg">
-              <div class="img-preview-box">
-                <img id="brideImgThumb" class="img-preview-thumb" src="" alt="Bride Avatar">
-                <div class="img-preview-info">Preview Foto Profil Wanita</div>
+              <input type="text" id="inputBrideAvatarUrl" class="form-input" placeholder="assets/wp-content/uploads/2026/06/sm-WANITA.jpg">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Zoom Foto Profil Wanita</label>
+              <input type="range" id="inputBrideZoom" min="1" max="3" step="0.05" value="1.0" class="form-input" style="height: 38px; padding: 0;">
+              <div class="help-text">Sesuaikan perbesaran foto profil pengantin wanita.</div>
+            </div>
+
+            <div class="form-group full-width">
+              <div class="img-preview-box img-avatar-preview-box">
+                <div class="avatar-preview-circle" id="brideImgThumbContainer" style="cursor: grab; position: relative;">
+                  <img id="brideImgThumb" class="img-preview-thumb img-avatar-thumb" src="" alt="Bride Avatar" style="position: absolute; width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="img-preview-info">
+                  Preview Foto Profil Wanita (Klik & Geser untuk Pasin Tengah)
+                  <div class="zoom-value-text" id="brideZoomVal">1.00x</div>
+                </div>
               </div>
             </div>
           </div>

@@ -45,7 +45,8 @@ const defaultData = {
     parents: "Putra Pertama dari Bpk. Keluarga & Ibu Keluarga",
     igHandle: "@lutfi",
     igUrl: "https://instagram.com",
-    avatarUrl: "inv.wekita.id/wp-content/uploads/2026/06/sm-PRIA-e1725510474400-1-3.jpg"
+    avatarUrl: "assets/wp-content/uploads/2026/06/sm-PRIA-e1725510474400-1-3.jpg",
+    zoom: 1.0
   },
   bride: {
     callName: "Firdha",
@@ -53,7 +54,8 @@ const defaultData = {
     parents: "Putri Kedua dari Bpk. Keluarga & Ibu Keluarga",
     igHandle: "@firdha",
     igUrl: "https://instagram.com",
-    avatarUrl: "inv.wekita.id/wp-content/uploads/2026/06/sm-WANITA-e1725510489585-1-3.jpg"
+    avatarUrl: "assets/wp-content/uploads/2026/06/sm-WANITA-e1725510489585-1-3.jpg",
+    zoom: 1.0
   },
   events: {
     akadDate: "Rabu, 26 Agustus 2026",
@@ -71,10 +73,10 @@ const defaultData = {
     { date: "26 Agustus 2026", title: "Hari Pernikahan", desc: "Hari suci di mana kami mengikrarkan janji suci seumur hidup." }
   ],
   gallery: [
-    "inv.wekita.id/wp-content/uploads/2026/06/p-1-1-3.jpg",
-    "inv.wekita.id/wp-content/uploads/2026/06/p-2-1-3.jpg",
-    "inv.wekita.id/wp-content/uploads/2026/06/sm-1-5-e1725510309587-1-3.jpg",
-    "inv.wekita.id/wp-content/uploads/2026/06/sm-1-6-e1725510241295-1-3.jpg"
+    "assets/wp-content/uploads/2026/06/p-1-1-3.jpg",
+    "assets/wp-content/uploads/2026/06/p-2-1-3.jpg",
+    "assets/wp-content/uploads/2026/06/sm-1-5-e1725510309587-1-3.jpg",
+    "assets/wp-content/uploads/2026/06/sm-1-6-e1725510241295-1-3.jpg"
   ],
   gifts: [
     { bank: "BCA", number: "1234567890", name: "Lutfi" },
@@ -105,6 +107,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupWaGeneratorLogic();
   renderRsvpTable();
   updateStats();
+
+  // Setup pan/drag event listeners for avatars
+  setupAvatarPan("groomImgThumbContainer", "groomImgThumb", "inputGroomZoom", "groomZoomVal", "groom");
+  setupAvatarPan("brideImgThumbContainer", "brideImgThumb", "inputBrideZoom", "brideZoomVal", "bride");
 
   if (window.lucide) {
     lucide.createIcons();
@@ -197,7 +203,14 @@ function populateFormFields() {
   document.getElementById("inputGroomIgHandle").value = groom.igHandle || "";
   document.getElementById("inputGroomIgUrl").value = groom.igUrl || "";
   document.getElementById("inputGroomAvatarUrl").value = groom.avatarUrl || "";
+  document.getElementById("inputGroomZoom").value = groom.zoom || 1.0;
   updateImagePreview("groomImgThumb", groom.avatarUrl);
+  const groomThumb = document.getElementById("groomImgThumb");
+  const groomZoomText = document.getElementById("groomZoomVal");
+  if (groomThumb) {
+    groomThumb.style.transform = `translate(${groom.offsetX || 0}%, ${groom.offsetY || 0}%) scale(${groom.zoom || 1.0})`;
+  }
+  if (groomZoomText) groomZoomText.textContent = `${(groom.zoom || 1.0).toFixed(2)}x`;
 
   // Bride
   document.getElementById("inputBrideCallName").value = bride.callName || "";
@@ -206,7 +219,14 @@ function populateFormFields() {
   document.getElementById("inputBrideIgHandle").value = bride.igHandle || "";
   document.getElementById("inputBrideIgUrl").value = bride.igUrl || "";
   document.getElementById("inputBrideAvatarUrl").value = bride.avatarUrl || "";
+  document.getElementById("inputBrideZoom").value = bride.zoom || 1.0;
   updateImagePreview("brideImgThumb", bride.avatarUrl);
+  const brideThumb = document.getElementById("brideImgThumb");
+  const brideZoomText = document.getElementById("brideZoomVal");
+  if (brideThumb) {
+    brideThumb.style.transform = `translate(${bride.offsetX || 0}%, ${bride.offsetY || 0}%) scale(${bride.zoom || 1.0})`;
+  }
+  if (brideZoomText) brideZoomText.textContent = `${(bride.zoom || 1.0).toFixed(2)}x`;
 
   // Events
   document.getElementById("inputAkadDate").value = events.akadDate || "";
@@ -223,8 +243,9 @@ function populateFormFields() {
 function updateImagePreview(id, url) {
   const el = document.getElementById(id);
   if (!el) return;
-  if (url && (url.startsWith('http') || url.startsWith('inv.') || url.endsWith('.jpg') || url.endsWith('.png'))) {
-    el.src = url;
+  const cleanUrl = url ? url.replace("inv.wekita.id", "assets") : "";
+  if (cleanUrl && (cleanUrl.startsWith('http') || cleanUrl.startsWith('assets') || cleanUrl.startsWith('inv.') || cleanUrl.endsWith('.jpg') || cleanUrl.endsWith('.png'))) {
+    el.src = cleanUrl;
     el.style.display = 'block';
   } else {
     el.src = '';
@@ -240,7 +261,21 @@ function setupInputListeners() {
     el.addEventListener("input", () => {
       const keys = path.split(".");
       if (keys.length === 2) {
-        currentData[keys[0]][keys[1]] = el.value;
+        let val = el.value;
+        if (keys[1] === "zoom") {
+          val = parseFloat(val) || 1.0;
+          // Apply live zoom scale to thumb and label in real time
+          const prefix = keys[0];
+          const thumbId = prefix === "groom" ? "groomImgThumb" : "brideImgThumb";
+          const labelId = prefix === "groom" ? "groomZoomVal" : "brideZoomVal";
+          const thumbEl = document.getElementById(thumbId);
+          const labelEl = document.getElementById(labelId);
+          const x = currentData[prefix].offsetX || 0;
+          const y = currentData[prefix].offsetY || 0;
+          if (thumbEl) thumbEl.style.transform = `translate(${x}%, ${y}%) scale(${val})`;
+          if (labelEl) labelEl.textContent = `${val.toFixed(2)}x`;
+        }
+        currentData[keys[0]][keys[1]] = val;
       }
       if (previewId) {
         updateImagePreview(previewId, el.value);
@@ -264,6 +299,7 @@ function setupInputListeners() {
   bindInput("inputGroomIgHandle", "groom.igHandle");
   bindInput("inputGroomIgUrl", "groom.igUrl");
   bindInput("inputGroomAvatarUrl", "groom.avatarUrl", "groomImgThumb");
+  bindInput("inputGroomZoom", "groom.zoom");
 
   // Bride
   bindInput("inputBrideCallName", "bride.callName");
@@ -272,6 +308,7 @@ function setupInputListeners() {
   bindInput("inputBrideIgHandle", "bride.igHandle");
   bindInput("inputBrideIgUrl", "bride.igUrl");
   bindInput("inputBrideAvatarUrl", "bride.avatarUrl", "brideImgThumb");
+  bindInput("inputBrideZoom", "bride.zoom");
 
   // Events
   bindInput("inputAkadDate", "events.akadDate");
@@ -343,27 +380,91 @@ if (btnAddStory) {
 }
 
 // Gallery List
+// Gallery List
 function renderGalleryList() {
   const container = document.getElementById("galleryList");
   if (!container) return;
   container.innerHTML = "";
 
-  (currentData.gallery || []).forEach((url, index) => {
+  (currentData.gallery || []).forEach((img, index) => {
+    const isObj = typeof img === 'object' && img !== null;
+    const url = isObj ? img.url : img;
+    const zoom = isObj ? (img.zoom || 1.0) : 1.0;
+    const x = isObj ? (img.offsetX || 0) : 0;
+    const y = isObj ? (img.offsetY || 0) : 0;
+
     const div = document.createElement("div");
     div.className = "dynamic-item";
     div.innerHTML = `
       <button class="btn-remove-item" onclick="removeGallery(${index})">Hapus</button>
-      <div class="form-group">
-        <label class="form-label">URL / Path Foto Galeri #${index + 1}</label>
-        <input type="text" class="form-input" value="${escapeHtml(url)}" oninput="updateGallery(${index}, this.value)">
+      <div class="form-grid" style="margin-top: 10px;">
+        <div class="form-group" style="grid-column: span 2; margin-bottom: 0;">
+          <label class="form-label">URL / Path Foto Galeri #${index + 1}</label>
+          <input type="text" class="form-input" value="${escapeHtml(url)}" oninput="updateGalleryPath(${index}, this.value)">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Zoom Foto Galeri #${index + 1}</label>
+          <input type="range" min="1" max="3" step="0.05" value="${zoom}" class="form-input" style="height: 38px; padding: 0;" oninput="updateGalleryZoom(${index}, this.value)">
+          <div class="help-text">Sesuaikan pembesaran foto galeri ini.</div>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Preview (Klik & Geser untuk Pasin Tengah)</label>
+          <div class="img-preview-box" style="margin-top: 5px; border-radius: 8px; padding: 8px 12px;">
+            <div id="galleryPreviewContainer-${index}" class="gallery-preview-container" style="width: 70px; height: 70px; border-radius: 8px; overflow: hidden; border: 1px solid var(--admin-border); background: #f1f5f9; cursor: grab; position: relative;">
+              <img id="galleryPreviewThumb-${index}" class="img-preview-thumb-gallery" src="${escapeHtml(url.replace('inv.wekita.id', 'assets'))}" alt="Gallery Preview" 
+                   style="width: 100%; height: 100%; object-fit: cover; transform: translate(${x}%, ${y}%) scale(${zoom}); transform-origin: center center; position: absolute;">
+            </div>
+            <div class="img-preview-info">
+              Drag di dalam kotak preview<br>
+              <span id="galleryZoomVal-${index}" style="font-weight:700; color:var(--admin-primary);">${zoom.toFixed(2)}x</span>
+            </div>
+          </div>
+        </div>
       </div>
     `;
     container.appendChild(div);
+    
+    // Setup dragging/panning
+    setTimeout(() => {
+      makeGalleryPanable(index);
+    }, 0);
   });
 }
 
-window.updateGallery = function(index, value) {
-  currentData.gallery[index] = value;
+window.updateGalleryPath = function(index, value) {
+  let img = currentData.gallery[index];
+  if (typeof img !== 'object' || img === null) {
+    img = { url: value, zoom: 1.0, offsetX: 0, offsetY: 0 };
+  } else {
+    img.url = value;
+  }
+  currentData.gallery[index] = img;
+  
+  const thumb = document.getElementById(`galleryPreviewThumb-${index}`);
+  if (thumb) {
+    thumb.src = value.replace("inv.wekita.id", "assets");
+  }
+  saveDataAndSync();
+};
+
+window.updateGalleryZoom = function(index, value) {
+  let img = currentData.gallery[index];
+  const zoomVal = parseFloat(value) || 1.0;
+  if (typeof img !== 'object' || img === null) {
+    img = { url: "assets/wp-content/uploads/2026/06/p-1-1-3.jpg", zoom: zoomVal, offsetX: 0, offsetY: 0 };
+  } else {
+    img.zoom = zoomVal;
+  }
+  currentData.gallery[index] = img;
+
+  const thumb = document.getElementById(`galleryPreviewThumb-${index}`);
+  const label = document.getElementById(`galleryZoomVal-${index}`);
+  if (thumb) {
+    thumb.style.transform = `translate(${img.offsetX || 0}%, ${img.offsetY || 0}%) scale(${zoomVal})`;
+  }
+  if (label) {
+    label.textContent = `${zoomVal.toFixed(2)}x`;
+  }
   saveDataAndSync();
 };
 
@@ -377,7 +478,12 @@ const btnAddGallery = document.getElementById("btnAddGallery");
 if (btnAddGallery) {
   btnAddGallery.addEventListener("click", () => {
     if (!currentData.gallery) currentData.gallery = [];
-    currentData.gallery.push("inv.wekita.id/wp-content/uploads/2026/06/p-1-1-3.jpg");
+    currentData.gallery.push({
+      url: "assets/wp-content/uploads/2026/06/p-1-1-3.jpg",
+      zoom: 1.0,
+      offsetX: 0,
+      offsetY: 0
+    });
     renderGalleryList();
     saveDataAndSync();
   });
@@ -454,7 +560,7 @@ function setupHeaderActions() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentData, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", "wekita_invitation_config.json");
+      downloadAnchor.setAttribute("download", "invitation_config.json");
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
@@ -808,4 +914,160 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+// Interactive Image Pan/Drag Helper
+function setupAvatarPan(containerId, imgId, zoomId, textId, pathPrefix) {
+  const container = document.getElementById(containerId);
+  const img = document.getElementById(imgId);
+  if (!container || !img) return;
+
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+
+  const startDrag = (clientX, clientY) => {
+    isDragging = true;
+    startX = clientX;
+    startY = clientY;
+    container.style.cursor = "grabbing";
+  };
+
+  const moveDrag = (clientX, clientY) => {
+    if (!isDragging) return;
+    const dx = clientX - startX;
+    const dy = clientY - startY;
+
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+
+    const pctX = (dx / containerWidth) * 100;
+    const pctY = (dy / containerHeight) * 100;
+
+    const dataObj = currentData[pathPrefix];
+    let x = (dataObj.offsetX || 0) + pctX;
+    let y = (dataObj.offsetY || 0) + pctY;
+    let zoom = dataObj.zoom || 1.0;
+
+    img.style.transform = `translate(${x}%, ${y}%) scale(${zoom})`;
+
+    startX = clientX;
+    startY = clientY;
+
+    dataObj.offsetX = x;
+    dataObj.offsetY = y;
+  };
+
+  const endDrag = () => {
+    if (isDragging) {
+      isDragging = false;
+      container.style.cursor = "grab";
+      saveDataAndSync();
+    }
+  };
+
+  container.addEventListener("mousedown", (e) => {
+    startDrag(e.clientX, e.clientY);
+    e.preventDefault();
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    moveDrag(e.clientX, e.clientY);
+  });
+
+  window.addEventListener("mouseup", endDrag);
+
+  // Touch support for mobiles
+  container.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 1) return;
+    startDrag(e.touches[0].clientX, e.touches[0].clientY);
+    e.preventDefault();
+  });
+
+  window.addEventListener("touchmove", (e) => {
+    if (e.touches.length !== 1) return;
+    moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+  });
+
+  window.addEventListener("touchend", endDrag);
+}
+
+function makeGalleryPanable(index) {
+  const container = document.getElementById(`galleryPreviewContainer-${index}`);
+  const img = document.getElementById(`galleryPreviewThumb-${index}`);
+  if (!container || !img) return;
+
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+
+  const startDrag = (clientX, clientY) => {
+    isDragging = true;
+    startX = clientX;
+    startY = clientY;
+    container.style.cursor = "grabbing";
+  };
+
+  const moveDrag = (clientX, clientY) => {
+    if (!isDragging) return;
+    const dx = clientX - startX;
+    const dy = clientY - startY;
+
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+
+    const pctX = (dx / containerWidth) * 100;
+    const pctY = (dy / containerHeight) * 100;
+
+    let galleryItem = currentData.gallery[index];
+    if (typeof galleryItem !== 'object' || galleryItem === null) {
+      galleryItem = { url: img.src, zoom: 1.0, offsetX: 0, offsetY: 0 };
+    }
+
+    let x = (galleryItem.offsetX || 0) + pctX;
+    let y = (galleryItem.offsetY || 0) + pctY;
+    let zoom = galleryItem.zoom || 1.0;
+
+    img.style.transform = `translate(${x}%, ${y}%) scale(${zoom})`;
+
+    startX = clientX;
+    startY = clientY;
+
+    galleryItem.offsetX = x;
+    galleryItem.offsetY = y;
+    currentData.gallery[index] = galleryItem;
+  };
+
+  const endDrag = () => {
+    if (isDragging) {
+      isDragging = false;
+      container.style.cursor = "grab";
+      saveDataAndSync();
+    }
+  };
+
+  container.addEventListener("mousedown", (e) => {
+    startDrag(e.clientX, e.clientY);
+    e.preventDefault();
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    moveDrag(e.clientX, e.clientY);
+  });
+
+  window.addEventListener("mouseup", endDrag);
+
+  // Touch Support
+  container.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 1) return;
+    startDrag(e.touches[0].clientX, e.touches[0].clientY);
+    e.preventDefault();
+  });
+
+  window.addEventListener("touchmove", (e) => {
+    if (e.touches.length !== 1) return;
+    moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+  });
+
+  window.addEventListener("touchend", endDrag);
 }
