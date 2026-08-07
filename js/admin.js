@@ -6,7 +6,7 @@ const defaultData = {
     eventDateFormatted: "Rabu, 26 Agustus 2026",
     quote: '"Dan di antara tanda-tanda (kebesaran-Nya) ialah Dia menciptakan pasangan-pasangan untukmu dari meksasamu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang." (Ar-Rum: 21)',
     bgMusicUrl: "kusumo_wijoyo.m4a",
-    heroImageUrl: "inv.wekita.id/wp-content/uploads/2026/06/24SB031-AW-1-e1725517868670-2.jpg"
+    heroImageUrl: "https://i.ibb.co.com/HLzkB2z4/149-E3-E4-F-6-AD7-4-F41-8335-27-F48688-EBEF.jpg"
   },
   groom: {
     callName: "Lutfi",
@@ -48,7 +48,18 @@ const defaultData = {
   gifts: [
     { bank: "BCA", number: "1234567890", name: "Lutfi" },
     { bank: "MANDIRI", number: "9876543210", name: "Firdha" }
-  ]
+  ],
+  guestList: [
+    { id: 1, name: "Bapak Ahmad & Keluarga", phone: "081234567890" },
+    { id: 2, name: "Ibu Susi & Suami", phone: "089876543210" },
+    { id: 3, name: "Budi Santoso", phone: "" }
+  ],
+  waTemplates: {
+    active: "formal",
+    formal: `Kepada Yth.\nBapak/Ibu/Saudara/i {NAMA_TAMU}\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda untuk menghadiri acara pernikahan kami:\n\n{NAMA_MEMPELAI}\n\nInfo selengkapnya mengenai acara dapat diakses melalui link undangan digital berikut:\n{LINK_UNDANGAN}\n\nMerupakan suatu kebahagiaan bagi kami apabila Anda berkenan hadir dan memberikan doa restu.\n\nTerima kasih.`,
+    islami: `Assalamu'alaikum Wr. Wb.\n\nKepada Yth. {NAMA_TAMU}\n\nDengan memohon rahmat dan ridho Allah SWT, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk menghadiri syukuran pernikahan kami:\n\n{NAMA_MEMPELAI}\n\nUntuk info tanggal, waktu, dan lokasi acara selengkapnya dapat dilihat melalui tautan undangan berikut:\n{LINK_UNDANGAN}\n\nJazakumullah Khairan Katsiran atas doa dan kehadirannya.\n\nWassalamu'alaikum Wr. Wb.`,
+    santai: `Halo {NAMA_TAMU}!\n\nKabar bahagia untuk kita semua! Kami mengundang kamu untuk hadir dan merayakan momen pernikahan kami:\n\n{NAMA_MEMPELAI}\n\nKlik link di bawah ini untuk info lengkapnya ya:\n{LINK_UNDANGAN}\n\nSampai jumpa di hari bahagia kami! 😊`
+  }
 };
 
 let currentData = JSON.parse(JSON.stringify(defaultData));
@@ -60,8 +71,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupInputListeners();
   renderDynamicLists();
   setupHeaderActions();
-  setupLinkGenerator();
+  setupWaGeneratorLogic();
   renderRsvpTable();
+  updateStats();
 
   if (window.lucide) {
     lucide.createIcons();
@@ -72,7 +84,8 @@ async function loadStoredData() {
   try {
     const res = await fetch("/api/config");
     if (res.ok) {
-      currentData = await res.json();
+      const data = await res.json();
+      currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), data);
     }
   } catch(e) {
     console.error("Failed to load config from server, falling back to default", e);
@@ -90,6 +103,8 @@ async function saveDataAndSync() {
     }, "*");
   }
 
+  updateStats();
+
   try {
     await fetch("/api/config", {
       method: "POST",
@@ -99,6 +114,15 @@ async function saveDataAndSync() {
   } catch(err) {
     console.error("Failed to sync config to server", err);
   }
+}
+
+function updateStats() {
+  const guestCountEl = document.getElementById("statGuestCount");
+  const guestBadgeEl = document.getElementById("guestCountBadge");
+  const totalGuests = (currentData.guestList || []).length;
+
+  if (guestCountEl) guestCountEl.textContent = totalGuests;
+  if (guestBadgeEl) guestBadgeEl.textContent = totalGuests;
 }
 
 // Sidebar Navigation
@@ -114,7 +138,10 @@ function setupTabNavigation() {
       tabContents.forEach(tab => tab.classList.remove("active"));
 
       item.classList.add("active");
-      document.getElementById(tabId).classList.add("active");
+      const targetTab = document.getElementById(tabId);
+      if (targetTab) targetTab.classList.add("active");
+
+      if (window.lucide) lucide.createIcons();
     });
   });
 }
@@ -130,6 +157,7 @@ function populateFormFields() {
   document.getElementById("inputBgMusicUrl").value = general.bgMusicUrl || "";
   document.getElementById("inputHeroImageUrl").value = general.heroImageUrl || "";
   document.getElementById("inputQuote").value = general.quote || "";
+  updateImagePreview("heroImgThumb", general.heroImageUrl);
 
   // Groom
   document.getElementById("inputGroomCallName").value = groom.callName || "";
@@ -138,6 +166,7 @@ function populateFormFields() {
   document.getElementById("inputGroomIgHandle").value = groom.igHandle || "";
   document.getElementById("inputGroomIgUrl").value = groom.igUrl || "";
   document.getElementById("inputGroomAvatarUrl").value = groom.avatarUrl || "";
+  updateImagePreview("groomImgThumb", groom.avatarUrl);
 
   // Bride
   document.getElementById("inputBrideCallName").value = bride.callName || "";
@@ -146,6 +175,7 @@ function populateFormFields() {
   document.getElementById("inputBrideIgHandle").value = bride.igHandle || "";
   document.getElementById("inputBrideIgUrl").value = bride.igUrl || "";
   document.getElementById("inputBrideAvatarUrl").value = bride.avatarUrl || "";
+  updateImagePreview("brideImgThumb", bride.avatarUrl);
 
   // Events
   document.getElementById("inputAkadDate").value = events.akadDate || "";
@@ -159,15 +189,30 @@ function populateFormFields() {
   document.getElementById("inputResepsiMapUrl").value = events.resepsiMapUrl || "";
 }
 
+function updateImagePreview(id, url) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (url && (url.startsWith('http') || url.startsWith('inv.') || url.endsWith('.jpg') || url.endsWith('.png'))) {
+    el.src = url;
+    el.style.display = 'block';
+  } else {
+    el.src = '';
+    el.style.display = 'none';
+  }
+}
+
 // Bind Inputs
 function setupInputListeners() {
-  const bindInput = (id, path) => {
+  const bindInput = (id, path, previewId) => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener("input", () => {
       const keys = path.split(".");
       if (keys.length === 2) {
         currentData[keys[0]][keys[1]] = el.value;
+      }
+      if (previewId) {
+        updateImagePreview(previewId, el.value);
       }
       saveDataAndSync();
     });
@@ -178,7 +223,7 @@ function setupInputListeners() {
   bindInput("inputEventDateFormatted", "general.eventDateFormatted");
   bindInput("inputEventDateISO", "general.eventDateISO");
   bindInput("inputBgMusicUrl", "general.bgMusicUrl");
-  bindInput("inputHeroImageUrl", "general.heroImageUrl");
+  bindInput("inputHeroImageUrl", "general.heroImageUrl", "heroImgThumb");
   bindInput("inputQuote", "general.quote");
 
   // Groom
@@ -187,7 +232,7 @@ function setupInputListeners() {
   bindInput("inputGroomParents", "groom.parents");
   bindInput("inputGroomIgHandle", "groom.igHandle");
   bindInput("inputGroomIgUrl", "groom.igUrl");
-  bindInput("inputGroomAvatarUrl", "groom.avatarUrl");
+  bindInput("inputGroomAvatarUrl", "groom.avatarUrl", "groomImgThumb");
 
   // Bride
   bindInput("inputBrideCallName", "bride.callName");
@@ -195,7 +240,7 @@ function setupInputListeners() {
   bindInput("inputBrideParents", "bride.parents");
   bindInput("inputBrideIgHandle", "bride.igHandle");
   bindInput("inputBrideIgUrl", "bride.igUrl");
-  bindInput("inputBrideAvatarUrl", "bride.avatarUrl");
+  bindInput("inputBrideAvatarUrl", "bride.avatarUrl", "brideImgThumb");
 
   // Events
   bindInput("inputAkadDate", "events.akadDate");
@@ -218,9 +263,10 @@ function renderDynamicLists() {
 
 function renderStoriesList() {
   const container = document.getElementById("storiesList");
+  if (!container) return;
   container.innerHTML = "";
 
-  currentData.stories.forEach((story, index) => {
+  (currentData.stories || []).forEach((story, index) => {
     const div = document.createElement("div");
     div.className = "dynamic-item";
     div.innerHTML = `
@@ -255,18 +301,23 @@ window.removeStory = function(index) {
   saveDataAndSync();
 };
 
-document.getElementById("btnAddStory").addEventListener("click", () => {
-  currentData.stories.push({ date: "Tanggal Momen", title: "Judul Momen", desc: "Deskripsi singkat..." });
-  renderStoriesList();
-  saveDataAndSync();
-});
+const btnAddStory = document.getElementById("btnAddStory");
+if (btnAddStory) {
+  btnAddStory.addEventListener("click", () => {
+    if (!currentData.stories) currentData.stories = [];
+    currentData.stories.push({ date: "Tanggal Momen", title: "Judul Momen", desc: "Deskripsi singkat..." });
+    renderStoriesList();
+    saveDataAndSync();
+  });
+}
 
 // Gallery List
 function renderGalleryList() {
   const container = document.getElementById("galleryList");
+  if (!container) return;
   container.innerHTML = "";
 
-  currentData.gallery.forEach((url, index) => {
+  (currentData.gallery || []).forEach((url, index) => {
     const div = document.createElement("div");
     div.className = "dynamic-item";
     div.innerHTML = `
@@ -291,18 +342,23 @@ window.removeGallery = function(index) {
   saveDataAndSync();
 };
 
-document.getElementById("btnAddGallery").addEventListener("click", () => {
-  currentData.gallery.push("inv.wekita.id/wp-content/uploads/2026/06/p-1-1-3.jpg");
-  renderGalleryList();
-  saveDataAndSync();
-});
+const btnAddGallery = document.getElementById("btnAddGallery");
+if (btnAddGallery) {
+  btnAddGallery.addEventListener("click", () => {
+    if (!currentData.gallery) currentData.gallery = [];
+    currentData.gallery.push("inv.wekita.id/wp-content/uploads/2026/06/p-1-1-3.jpg");
+    renderGalleryList();
+    saveDataAndSync();
+  });
+}
 
 // Gifts List
 function renderGiftsList() {
   const container = document.getElementById("giftsList");
+  if (!container) return;
   container.innerHTML = "";
 
-  currentData.gifts.forEach((gift, index) => {
+  (currentData.gifts || []).forEach((gift, index) => {
     const div = document.createElement("div");
     div.className = "dynamic-item";
     div.innerHTML = `
@@ -337,114 +393,311 @@ window.removeGift = function(index) {
   saveDataAndSync();
 };
 
-document.getElementById("btnAddGift").addEventListener("click", () => {
-  currentData.gifts.push({ bank: "BCA", number: "1234567890", name: "Nama Pemilik" });
-  renderGiftsList();
-  saveDataAndSync();
-});
+const btnAddGift = document.getElementById("btnAddGift");
+if (btnAddGift) {
+  btnAddGift.addEventListener("click", () => {
+    if (!currentData.gifts) currentData.gifts = [];
+    currentData.gifts.push({ bank: "BCA", number: "1234567890", name: "Nama Pemilik" });
+    renderGiftsList();
+    saveDataAndSync();
+  });
+}
 
 // Header Actions (Export, Import, Reset)
 function setupHeaderActions() {
-  // Export JSON
-  document.getElementById("btnExportJson").addEventListener("click", () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentData, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", "wekita_invitation_config.json");
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-  });
+  const btnExport = document.getElementById("btnExportJson");
+  if (btnExport) {
+    btnExport.addEventListener("click", () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "wekita_invitation_config.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast("Konfigurasi berhasil diexport!");
+    });
+  }
 
-  // Import JSON
-  document.getElementById("btnImportJson").addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const btnImport = document.getElementById("btnImportJson");
+  if (btnImport) {
+    btnImport.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const imported = JSON.parse(event.target.result);
-        currentData = imported;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), imported);
+          saveDataAndSync();
+          populateFormFields();
+          renderDynamicLists();
+          renderGuestTable();
+          showToast("Konfigurasi JSON berhasil diimport!");
+        } catch (err) {
+          alert("Gagal membaca file JSON. Pastikan format valid!");
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  const btnReset = document.getElementById("btnResetDefault");
+  if (btnReset) {
+    btnReset.addEventListener("click", () => {
+      if (confirm("Apakah Anda yakin ingin mengembalikan semua data ke pengaturan awal?")) {
+        currentData = JSON.parse(JSON.stringify(defaultData));
         saveDataAndSync();
         populateFormFields();
         renderDynamicLists();
-        alert("Konfigurasi JSON berhasil diimport!");
-      } catch (err) {
-        alert("Gagal membaca file JSON. Pastikan format valid!");
+        renderGuestTable();
+        showToast("Data berhasil di-reset ke default!");
       }
-    };
-    reader.readAsText(file);
-  });
-
-  // Reset Default
-  document.getElementById("btnResetDefault").addEventListener("click", () => {
-    if (confirm("Apakah Anda yakin ingin mengembalikan semua data ke pengaturan awal?")) {
-      currentData = JSON.parse(JSON.stringify(defaultData));
-      saveDataAndSync();
-      populateFormFields();
-      renderDynamicLists();
-      alert("Data berhasil di-reset!");
-    }
-  });
-}
-
-// Guest Link Generator
-function setupLinkGenerator() {
-  const inputName = document.getElementById("inputGuestName");
-  const inputTemplate = document.getElementById("inputWaTemplate");
-  const btnGen = document.getElementById("btnGenerateLink");
-  const outputBox = document.getElementById("linkGenOutput");
-  const outputUrl = document.getElementById("outputUrl");
-  const outputWaText = document.getElementById("outputWaText");
-  const btnCopy = document.getElementById("btnCopyWaText");
-  const btnOpenWa = document.getElementById("btnOpenWaDirect");
-
-  inputTemplate.value = `Kepada Yth.
-Bapak/Ibu/Saudara/i {NAMA_TAMU}
-
-Tanpa mengurangi rasa hormat, perkenankan kami mengundang Anda untuk menghadiri acara pernikahan kami:
-
-{NAMA_MAMPELAI}
-
-Info selengkapnya mengenai acara dapat diakses melalui link undangan digital berikut:
-{LINK_UNDANGAN}
-
-Merupakan suatu kebahagiaan bagi kami apabila Anda berkenan hadir dan memberikan doa restu.
-
-Terima kasih.`;
-
-  btnGen.addEventListener("click", () => {
-    const guestName = inputName.value.trim() || "Tamu Undangan";
-    const encodedGuest = encodeURIComponent(guestName);
-    
-    // Construct full URL
-    const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf("/")) + "/invitation.html";
-    const finalUrl = `${baseUrl}?to=${encodedGuest}`;
-
-    let waText = inputTemplate.value;
-    waText = waText.replace(/{NAMA_TAMU}/g, guestName);
-    waText = waText.replace(/{NAMA_MAMPELAI}/g, currentData.general.coupleNames || "Lutfi & Firdha");
-    waText = waText.replace(/{LINK_UNDANGAN}/g, finalUrl);
-
-    outputUrl.textContent = finalUrl;
-    outputWaText.textContent = waText;
-    outputBox.style.display = "block";
-
-    btnOpenWa.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`;
-  });
-
-  btnCopy.addEventListener("click", () => {
-    const textToCopy = outputWaText.textContent;
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      alert("Teks pesan WhatsApp berhasil disalin!");
     });
-  });
+  }
 }
+
+// --- WHATSAPP BROADCAST & GUEST MANAGER LOGIC ---
+function setupWaGeneratorLogic() {
+  if (!currentData.waTemplates) {
+    currentData.waTemplates = JSON.parse(JSON.stringify(defaultData.waTemplates));
+  }
+  if (!currentData.guestList) {
+    currentData.guestList = JSON.parse(JSON.stringify(defaultData.guestList));
+  }
+
+  const inputTpl = document.getElementById("inputWaTemplate");
+  if (inputTpl) {
+    const activeTpl = currentData.waTemplates.active || "formal";
+    inputTpl.value = currentData.waTemplates[activeTpl] || defaultData.waTemplates.formal;
+
+    inputTpl.addEventListener("input", () => {
+      const activeKey = currentData.waTemplates.active || "formal";
+      currentData.waTemplates[activeKey] = inputTpl.value;
+      saveDataAndSync();
+      renderGuestTable();
+    });
+  }
+
+  // Single Guest Add
+  const btnSingle = document.getElementById("btnAddSingleGuest");
+  if (btnSingle) {
+    btnSingle.addEventListener("click", () => {
+      const nameInput = document.getElementById("inputGuestName");
+      const phoneInput = document.getElementById("inputGuestPhone");
+      const name = nameInput ? nameInput.value.trim() : "";
+      const phone = phoneInput ? phoneInput.value.trim() : "";
+
+      if (!name) {
+        alert("Silakan masukkan nama tamu!");
+        return;
+      }
+
+      currentData.guestList.push({
+        id: Date.now(),
+        name: name,
+        phone: phone
+      });
+
+      if (nameInput) nameInput.value = "";
+      if (phoneInput) phoneInput.value = "";
+
+      saveDataAndSync();
+      renderGuestTable();
+      showToast(`Tamu "${name}" berhasil ditambahkan!`);
+    });
+  }
+
+  // Batch Multi Guest Add
+  const btnBatch = document.getElementById("btnAddBatchGuests");
+  if (btnBatch) {
+    btnBatch.addEventListener("click", () => {
+      const batchInput = document.getElementById("inputBatchGuests");
+      if (!batchInput) return;
+      const rawText = batchInput.value.trim();
+      if (!rawText) {
+        alert("Silakan masukkan daftar nama tamu!");
+        return;
+      }
+
+      const lines = rawText.split("\n");
+      let countAdded = 0;
+
+      lines.forEach((line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+
+        let name = trimmed;
+        let phone = "";
+
+        if (trimmed.includes("|")) {
+          const parts = trimmed.split("|");
+          name = parts[0].trim();
+          phone = parts[1].trim();
+        }
+
+        if (name) {
+          currentData.guestList.push({
+            id: Date.now() + Math.random(),
+            name: name,
+            phone: phone
+          });
+          countAdded++;
+        }
+      });
+
+      batchInput.value = "";
+      saveDataAndSync();
+      renderGuestTable();
+      showToast(`${countAdded} tamu berhasil diimpor!`);
+    });
+  }
+
+  // Clear all guests
+  const btnClearAll = document.getElementById("btnClearAllGuests");
+  if (btnClearAll) {
+    btnClearAll.addEventListener("click", () => {
+      if (confirm("Hapus semua daftar tamu?")) {
+        currentData.guestList = [];
+        saveDataAndSync();
+        renderGuestTable();
+        showToast("Daftar tamu dikosongkan.");
+      }
+    });
+  }
+
+  renderGuestTable();
+}
+
+window.switchWaTemplate = function(type) {
+  if (!currentData.waTemplates) currentData.waTemplates = JSON.parse(JSON.stringify(defaultData.waTemplates));
+  currentData.waTemplates.active = type;
+
+  document.querySelectorAll(".template-pill").forEach(p => p.classList.remove("active"));
+  const activePill = document.getElementById(`btnTpl${type.charAt(0).toUpperCase() + type.slice(1)}`);
+  if (activePill) activePill.classList.add("active");
+
+  const inputTpl = document.getElementById("inputWaTemplate");
+  if (inputTpl) {
+    inputTpl.value = currentData.waTemplates[type] || defaultData.waTemplates[type];
+  }
+
+  saveDataAndSync();
+  renderGuestTable();
+};
+
+window.insertTag = function(tag) {
+  const inputTpl = document.getElementById("inputWaTemplate");
+  if (!inputTpl) return;
+
+  const startPos = inputTpl.selectionStart;
+  const endPos = inputTpl.selectionEnd;
+  const oldText = inputTpl.value;
+
+  inputTpl.value = oldText.substring(0, startPos) + tag + oldText.substring(endPos, oldText.length);
+  inputTpl.focus();
+  inputTpl.selectionStart = startPos + tag.length;
+  inputTpl.selectionEnd = startPos + tag.length;
+
+  const activeKey = (currentData.waTemplates && currentData.waTemplates.active) || "formal";
+  currentData.waTemplates[activeKey] = inputTpl.value;
+  saveDataAndSync();
+  renderGuestTable();
+};
+
+function formatWaPhone(phone) {
+  if (!phone) return "";
+  let cleaned = phone.replace(/[^0-9]/g, "");
+  if (cleaned.startsWith("0")) {
+    cleaned = "62" + cleaned.slice(1);
+  }
+  return cleaned;
+}
+
+function getInvitationBaseUrl() {
+  const currentUrl = window.location.href;
+  const basePath = currentUrl.substring(0, currentUrl.lastIndexOf("/"));
+  return `${basePath}/invitation.html`;
+}
+
+function renderGuestTable() {
+  const tbody = document.getElementById("guestTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const guests = currentData.guestList || [];
+
+  if (guests.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--admin-text-muted); padding: 20px;">Belum ada tamu undangan. Silakan tambah tamu di atas.</td></tr>`;
+    updateStats();
+    return;
+  }
+
+  const baseUrl = getInvitationBaseUrl();
+  const activeTplKey = (currentData.waTemplates && currentData.waTemplates.active) || "formal";
+  const rawTplText = (currentData.waTemplates && currentData.waTemplates[activeTplKey]) || defaultData.waTemplates.formal;
+
+  guests.forEach((guest, index) => {
+    const encodedName = encodeURIComponent(guest.name);
+    const guestLink = `${baseUrl}?to=${encodedName}`;
+    const formattedPhone = formatWaPhone(guest.phone);
+
+    // Compile Message
+    let compiledMsg = rawTplText;
+    compiledMsg = compiledMsg.replace(/{NAMA_TAMU}/g, guest.name);
+    compiledMsg = compiledMsg.replace(/{NAMA_MEMPELAI}/g, currentData.general.coupleNames || "Lutfi & Firdha");
+    compiledMsg = compiledMsg.replace(/{TANGGAL}/g, currentData.general.eventDateFormatted || "26 Agustus 2026");
+    compiledMsg = compiledMsg.replace(/{LOKASI}/g, (currentData.events && currentData.events.akadLocation) || "Lokasi Acara");
+    compiledMsg = compiledMsg.replace(/{LINK_UNDANGAN}/g, guestLink);
+
+    // WhatsApp Deep Link
+    const waUrl = formattedPhone 
+      ? `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(compiledMsg)}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(compiledMsg)}`;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td><strong>${escapeHtml(guest.name)}</strong></td>
+      <td>${guest.phone ? escapeHtml(guest.phone) : '<span style="color:var(--admin-text-muted); font-size:0.75rem;">(Tanpa HP)</span>'}</td>
+      <td><a href="${guestLink}" target="_blank" style="color:var(--admin-accent); font-size:0.78rem; text-decoration:none;">${escapeHtml(guestLink.substring(0, 45))}...</a></td>
+      <td style="text-align: right;">
+        <a href="${waUrl}" target="_blank" class="btn-action-sm btn-wa-send" title="Kirim Pesan WhatsApp">
+          <i data-lucide="send" style="width:13px;"></i> Kirim WA
+        </a>
+        <button class="btn-action-sm btn-copy-link" onclick="copyGuestLink('${escapeHtml(guestLink)}')" title="Salin Link">
+          <i data-lucide="copy" style="width:13px;"></i> Salin Link
+        </button>
+        <button class="btn-action-sm btn-delete-guest" onclick="deleteGuest(${index})" title="Hapus">
+          <i data-lucide="trash-2" style="width:13px;"></i>
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  updateStats();
+  if (window.lucide) lucide.createIcons();
+}
+
+window.copyGuestLink = function(link) {
+  navigator.clipboard.writeText(link).then(() => {
+    showToast("Link undangan berhasil disalin!");
+  });
+};
+
+window.deleteGuest = function(index) {
+  currentData.guestList.splice(index, 1);
+  saveDataAndSync();
+  renderGuestTable();
+  showToast("Tamu dihapus dari daftar.");
+};
 
 // Render Admin RSVP Table
 async function renderRsvpTable() {
   const tbody = document.getElementById("adminRsvpTableBody");
+  if (!tbody) return;
   tbody.innerHTML = "";
 
   let wishes = [];
@@ -456,6 +709,9 @@ async function renderRsvpTable() {
   } catch(e) {
     console.error("Failed to load wishes from server", e);
   }
+
+  const wishesCountEl = document.getElementById("statWishesCount");
+  if (wishesCountEl) wishesCountEl.textContent = wishes.length;
 
   if (wishes.length === 0) {
     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--admin-text-muted);">Belum ada ucapan dari tamu.</td></tr>';
@@ -474,16 +730,32 @@ async function renderRsvpTable() {
   });
 }
 
-document.getElementById("btnClearWishes").addEventListener("click", async () => {
-  if (confirm("Hapus semua daftar ucapan tamu?")) {
-    try {
-      await fetch("/api/wishes", { method: "DELETE" });
-      await renderRsvpTable();
-    } catch(e) {
-      console.error("Failed to clear wishes from server", e);
+const btnClearWishes = document.getElementById("btnClearWishes");
+if (btnClearWishes) {
+  btnClearWishes.addEventListener("click", async () => {
+    if (confirm("Hapus semua daftar ucapan tamu?")) {
+      try {
+        await fetch("/api/wishes", { method: "DELETE" });
+        await renderRsvpTable();
+        showToast("Semua ucapan tamu dihapus.");
+      } catch(e) {
+        console.error("Failed to clear wishes from server", e);
+      }
     }
-  }
-});
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById("adminToast");
+  const toastText = document.getElementById("toastText");
+  if (!toast || !toastText) return;
+
+  toastText.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
 
 function escapeHtml(str) {
   if (!str) return '';
