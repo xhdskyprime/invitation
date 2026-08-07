@@ -390,6 +390,18 @@ html::-webkit-scrollbar,
   margin-top: 4px;
 }
 
+/* Wedding Rings Separator */
+.wedding-rings-ornament {
+  text-align: center;
+  margin: 30px auto 15px;
+}
+
+.gold-rings-svg {
+  width: 50px;
+  height: 32px;
+  display: inline-block;
+}
+
 /* Bismillah & Quote */
 .bismillah-img {
   max-width: 200px;
@@ -552,6 +564,44 @@ html::-webkit-scrollbar,
   display: inline-block;
   vertical-align: middle;
   stroke: #EA4335 !important; /* Google Maps Red Pin */
+}
+
+/* Event Info Row styling */
+.event-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0;
+  text-align: left;
+}
+
+.event-info-row.align-start {
+  align-items: flex-start;
+}
+
+.event-info-row svg {
+  flex-shrink: 0;
+  stroke: var(--accent-gold);
+}
+
+.event-info-row .event-date-display,
+.event-info-row .event-time-display,
+.event-info-row .event-location-display {
+  margin: 0 !important;
+}
+
+/* Gift & Wishes section icons styling */
+.gift-icon-wrapper,
+.wishes-icon-wrapper {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.gift-icon-wrapper svg,
+.wishes-icon-wrapper svg {
+  stroke: var(--accent-gold);
+  filter: drop-shadow(0 2px 4px rgba(218, 171, 127, 0.15));
 }
 
 /* Countdown Section */
@@ -879,18 +929,19 @@ html::-webkit-scrollbar,
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 44px;
-  height: 44px;
-  background: var(--primary-navy);
+  width: 50px;
+  height: 50px;
+  /* Gold concentric radial vinyl pattern background */
+  background: radial-gradient(circle, #091E3E 15%, #DAAB7F 16%, #091E3E 35%, #DAAB7F 36%, #113468 70%, #DAAB7F 100%);
   color: #fff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
   cursor: pointer;
   z-index: 990;
-  border: 2px solid #fff;
+  border: 2px solid var(--accent-gold);
 }
 
 .music-floater.spinning {
