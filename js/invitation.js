@@ -286,7 +286,7 @@ function renderContent() {
         div.className = "gallery-card";
         div.innerHTML = `
           <div style="width: 100%; height: 100%; overflow: hidden; position: relative;">
-            <img src="${escapeHtml(cleanImgUrl)}" alt="Gallery Photo" 
+            <img src="${escapeHtml(cleanImgUrl)}" alt="Gallery Photo" loading="lazy"
                  style="width: 100%; height: 100%; object-fit: cover; transform: translate(${x}%, ${y}%) scale(${zoom}); transform-origin: center center; position: absolute; cursor: pointer; transition: transform 0.2s;" 
                  onclick="window.open('${escapeHtml(cleanImgUrl)}', '_blank')">
           </div>

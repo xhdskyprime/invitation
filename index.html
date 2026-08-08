@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>inv Firdha & Lutfi</title>
   <link rel="icon" type="image/png" href="logo%20lutpi%20bg.png">
+  <!-- Preconnect Google Fonts for massive speedup -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Italiana&family=Montserrat:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Roboto+Slab:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/invitation.css">
-  <!-- Lucide Icons -->
-  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- Lucide Icons (Deferred so it doesn't block parsing) -->
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js" defer></script>
   <!-- DotLottie Player -->
   <script src="https://cdn.jsdelivr.net/npm/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 </head>
@@ -74,7 +78,7 @@
 
     <!-- Bismillah & Mempelai Section -->
     <section class="section">
-      <img src="assets/wp-content/uploads/2026/06/bismillah-4-1-2-1.svg" class="bismillah-img reveal-zoom" alt="Bismillah">
+      <img src="assets/wp-content/uploads/2026/06/bismillah-4-1-2-1.svg" class="bismillah-img reveal-zoom" alt="Bismillah" loading="lazy">
 
       <div class="quote-box reveal" id="quoteText">
         "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir."
@@ -92,7 +96,7 @@
       <!-- Groom Profile Card -->
       <div class="mempelai-card-wrapper reveal-left">
         <div class="avatar-container">
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="groomAvatar" class="avatar-img" alt="Pengantin Pria">
+          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="groomAvatar" class="avatar-img" alt="Pengantin Pria" loading="lazy">
         </div>
         <div class="mempelai-script-name" id="groomCallName">Lutfi</div>
         <div class="mempelai-fullname" id="groomFullName">Lutfi, S.T.</div>
@@ -106,7 +110,7 @@
       <!-- Bride Profile Card -->
       <div class="mempelai-card-wrapper reveal-right">
         <div class="avatar-container">
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="brideAvatar" class="avatar-img" alt="Pengantin Wanita">
+          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="brideAvatar" class="avatar-img" alt="Pengantin Wanita" loading="lazy">
         </div>
         <div class="mempelai-script-name" id="brideCallName">Firdha</div>
         <div class="mempelai-fullname" id="brideFullName">Firdha, S.Ked.</div>
@@ -121,7 +125,7 @@
     <!-- Countdown Section -->
     <section class="section">
       <div class="countdown-logo-wrapper reveal-zoom">
-        <img src="logo%20lutpi.png" class="countdown-logo" alt="Logo Lutfi">
+        <img src="logo%20lutpi.png" class="countdown-logo" alt="Logo Lutfi" loading="lazy">
       </div>
       <div class="countdown-container reveal-zoom">
         <div class="section-subtitle">COUNTDOWN</div>
@@ -358,8 +362,8 @@
         Merupakan suatu kehormatan & kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.
       </p>
       <div class="footer-couple reveal-zoom" id="footerCoupleNames">Lutfi & Firdha</div>
-      <img src="logo%20lutpi.png" style="max-width: 70px; margin: 20px auto 10px; display: block;" alt="Logo FL" class="reveal">
-      <img src="assets/wp-content/uploads/2026/06/bunga-akhir-tema-01-new-1-1-2.webp" style="max-width: 140px; margin-top: 10px;" alt="Bunga Bottom" class="reveal">
+      <img src="logo%20lutpi.png" style="max-width: 70px; margin: 20px auto 10px; display: block;" alt="Logo FL" class="reveal" loading="lazy">
+      <img src="assets/wp-content/uploads/2026/06/bunga-akhir-tema-01-new-1-1-2.webp" style="max-width: 140px; margin-top: 10px;" alt="Bunga Bottom" class="reveal" loading="lazy">
       <div class="footer-copyright reveal" style="font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 30px; letter-spacing: 0.5px;">
         &copy; Copyright lutfi_legacy 2026
       </div>
