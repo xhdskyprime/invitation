@@ -894,7 +894,14 @@ async function renderRsvpTable() {
     tr.innerHTML = `
       <td>${index + 1}</td>
       <td><strong>${escapeHtml(w.name)}</strong></td>
-      <td>${escapeHtml(w.text)}</td>
+      <td>
+        <div>${escapeHtml(w.text)}</div>
+        ${w.audio ? `
+          <div style="margin-top: 6px;">
+            <audio src="${w.audio}" controls style="max-width: 260px; height: 32px;"></audio>
+          </div>
+        ` : ''}
+      </td>
       <td style="color: var(--admin-text-muted); font-size: 0.75rem;">${escapeHtml(w.date)}</td>
     `;
     tbody.appendChild(tr);

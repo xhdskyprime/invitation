@@ -95,6 +95,7 @@ export default {
             status: body.status || 'Hadir',
             count: parseInt(body.count) || 1,
             text: body.text,
+            audio: body.audio || null,
             date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
           };
 

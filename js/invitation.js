@@ -110,6 +110,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupAudioPlayer();
   setupCountdown();
   setupRSVPForm();
+  setupVoiceRecorder();
   renderWishes();
   setupScrollReveal();
 
@@ -160,7 +161,21 @@ function parseGuestName() {
   const urlParams = new URLSearchParams(window.location.search);
   const guest = urlParams.get("to");
   if (guest) {
-    safeSetText("guestNameDisplay", decodeURIComponent(guest));
+    const guestName = decodeURIComponent(guest);
+    safeSetText("guestNameDisplay", guestName);
+    
+    // Auto-fill and hide name input in RSVP Form
+    const nameInput = document.getElementById("rsvpNameInput");
+    const nameGroup = document.getElementById("rsvpNameGroup");
+    const welcomeBox = document.getElementById("rsvpGuestWelcome");
+    const welcomeText = document.getElementById("rsvpGuestNameText");
+    
+    if (nameInput && nameGroup && welcomeBox && welcomeText) {
+      nameInput.value = guestName;
+      nameGroup.style.display = "none";
+      welcomeText.textContent = guestName;
+      welcomeBox.style.display = "block";
+    }
   }
 }
 
@@ -447,10 +462,18 @@ function setupRSVPForm() {
       const res = await fetch("/api/wishes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, status, count, text })
+        body: JSON.stringify({ name, status, count, text, audio: base64Audio })
       });
       if (res.ok) {
         form.reset();
+        base64Audio = null;
+        const recordBtn = document.getElementById("btnRecordVoice");
+        const previewContainer = document.getElementById("voicePreviewContainer");
+        const audioPlayer = document.getElementById("voiceAudioPlayer");
+        if (recordBtn) recordBtn.style.display = "inline-flex";
+        if (previewContainer) previewContainer.style.display = "none";
+        if (audioPlayer) audioPlayer.src = "";
+
         showToast("Ucapan & konfirmasi Anda berhasil terkirim!");
         await renderWishes();
       }
@@ -489,6 +512,11 @@ async function renderWishes() {
         <strong style="color:var(--primary-navy); font-size:13px;">${escapeHtml(item.name)}</strong>
       </div>
       <div style="font-size:12px; color:var(--text-body);">${escapeHtml(item.text)}</div>
+      ${item.audio ? `
+        <div style="margin-top: 8px;">
+          <audio src="${item.audio}" controls style="max-width: 100%; height: 32px;"></audio>
+        </div>
+      ` : ''}
       <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">${escapeHtml(item.date)}</div>
     `;
     listEl.appendChild(div);
@@ -521,4 +549,96 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+// Voice Recorder Controller
+let mediaRecorder = null;
+let audioChunks = [];
+let base64Audio = null;
+let recordingInterval = null;
+let recordingSeconds = 0;
+
+function setupVoiceRecorder() {
+  const recordBtn = document.getElementById("btnRecordVoice");
+  const stopBtn = document.getElementById("btnStopRecord");
+  const deleteBtn = document.getElementById("btnDeleteVoice");
+  const statusContainer = document.getElementById("voiceRecordingStatus");
+  const previewContainer = document.getElementById("voicePreviewContainer");
+  const audioPlayer = document.getElementById("voiceAudioPlayer");
+  const timerDisplay = document.getElementById("recordingTimer");
+
+  if (!recordBtn || !stopBtn || !deleteBtn) return;
+
+  recordBtn.addEventListener("click", async () => {
+    audioChunks = [];
+    recordingSeconds = 0;
+    timerDisplay.textContent = "00:00";
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          audioChunks.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = () => {
+          base64Audio = reader.result;
+          audioPlayer.src = base64Audio;
+          previewContainer.style.display = "flex";
+          statusContainer.style.display = "none";
+          recordBtn.style.display = "none";
+        };
+        
+        // Stop all tracks to release microphone
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+
+      // UI update
+      recordBtn.style.display = "none";
+      statusContainer.style.display = "flex";
+      previewContainer.style.display = "none";
+
+      // Timer
+      recordingInterval = setInterval(() => {
+        recordingSeconds++;
+        const mins = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
+        const secs = String(recordingSeconds % 60).padStart(2, '0');
+        timerDisplay.textContent = `${mins}:${secs}`;
+        
+        // Auto-stop after 30 seconds
+        if (recordingSeconds >= 30) {
+          stopBtn.click();
+        }
+      }, 1000);
+
+    } catch (err) {
+      console.error("Error accessing microphone", err);
+      alert("Tidak dapat mengakses mikrofon. Pastikan Anda mengizinkan akses mikrofon di browser Anda.");
+    }
+  });
+
+  stopBtn.addEventListener("click", () => {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop();
+    }
+    if (recordingInterval) {
+      clearInterval(recordingInterval);
+    }
+  });
+
+  deleteBtn.addEventListener("click", () => {
+    base64Audio = null;
+    audioPlayer.src = "";
+    previewContainer.style.display = "none";
+    recordBtn.style.display = "inline-flex";
+  });
 }
