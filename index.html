@@ -280,24 +280,50 @@
           Hai, <strong id="rsvpGuestNameText" style="color: var(--primary-navy);"></strong>! Silakan berikan ucapan & doa restu Anda:
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Ucapan & Doa Restu</label>
-          <textarea id="rsvpTextInput" class="form-control" rows="3" placeholder="Tuliskan ucapan untuk kedua mempelai..." required></textarea>
+        <!-- Choice Toggle Tabs -->
+        <div class="wish-type-toggle" style="display:flex; justify-content:center; gap:8px; margin-bottom:16px;">
+          <button type="button" id="btnToggleText" class="btn-toggle-type active" style="flex:1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight:600; cursor:pointer; border:1px solid rgba(17,52,104,0.15); background:#f5f7fa; color:var(--text-body); transition:all 0.2s;">
+            Tulis Ucapan
+          </button>
+          <button type="button" id="btnToggleVoice" class="btn-toggle-type" style="flex:1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight:600; cursor:pointer; border:1px solid rgba(17,52,104,0.15); background:#f5f7fa; color:var(--text-body); transition:all 0.2s;">
+            Kirim Voice Note
+          </button>
         </div>
 
-        <div class="form-group" style="text-align: left;">
-          <label class="form-label">Kirim Ucapan Suara (Voice Note) - Opsional</label>
+        <!-- Text Input Group -->
+        <div class="form-group text-input-group" id="textWishGroup">
+          <label class="form-label">Ucapan & Doa Restu</label>
+          <textarea id="rsvpTextInput" class="form-control" rows="3" placeholder="Tuliskan ucapan untuk kedua mempelai..."></textarea>
+        </div>
+
+        <!-- Voice Input Group -->
+        <div class="form-group voice-input-group" id="voiceWishGroup" style="display:none; text-align:left;">
+          <label class="form-label">Rekam Suara Anda</label>
           <div class="voice-recorder-container">
-            <button type="button" id="btnRecordVoice" class="btn-voice-action">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic" style="vertical-align:middle; margin-right:4px;"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-              <span>Rekam Suara</span>
+            <button type="button" id="btnRecordVoice" class="btn-voice-action" style="width: 100%; justify-content: center; height: 44px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic" style="vertical-align:middle; margin-right:6px;"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+              Mulai Rekam Suara
             </button>
-            <div id="voiceRecordingStatus" class="recording-status" style="display: none;">
-              <span class="recording-dot"></span>
-              <span id="recordingTimer">00:00</span>
-              <button type="button" id="btnStopRecord" class="btn-voice-stop">Selesai</button>
+            
+            <div id="voiceRecordingStatus" class="recording-status" style="display: none; justify-content: space-between; align-items: center; width: 100%; padding: 12px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="recording-dot"></span>
+                <span id="recordingTimer" style="font-family:monospace; font-size:14px; font-weight:700; color:#e11d48;">00:00</span>
+              </div>
+              
+              <!-- Jumping waves like WhatsApp -->
+              <div class="sound-wave">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+
+              <button type="button" id="btnStopRecord" class="btn-voice-stop" style="background:#e11d48; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">Selesai</button>
             </div>
-            <div id="voicePreviewContainer" class="voice-preview-container" style="display: none;">
+            
+            <div id="voicePreviewContainer" class="voice-preview-container" style="display: none; align-items:center; gap:10px; width:100%;">
               <audio id="voiceAudioPlayer" controls style="max-width: calc(100% - 44px); height: 36px;"></audio>
               <button type="button" id="btnDeleteVoice" class="btn-voice-delete" title="Hapus Rekaman">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>

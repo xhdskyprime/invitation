@@ -1120,3 +1120,38 @@ html::-webkit-scrollbar,
   color: #e11d48;
   border-color: #fecdd3;
 }
+
+/* WhatsApp style jumping soundwave */
+.sound-wave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+}
+
+.sound-wave span {
+  width: 3px;
+  height: 100%;
+  background-color: #ef4444;
+  border-radius: 3px;
+  animation: jumpSoundWave 0.8s ease infinite alternate;
+}
+
+.sound-wave span:nth-child(1) { animation-duration: 0.7s; }
+.sound-wave span:nth-child(2) { animation-duration: 0.9s; animation-delay: 0.15s; }
+.sound-wave span:nth-child(3) { animation-duration: 0.6s; animation-delay: 0.3s; }
+.sound-wave span:nth-child(4) { animation-duration: 0.8s; animation-delay: 0.45s; }
+.sound-wave span:nth-child(5) { animation-duration: 0.7s; animation-delay: 0.6s; }
+
+@keyframes jumpSoundWave {
+  0% { height: 4px; }
+  100% { height: 20px; }
+}
+
+/* Active tab state */
+.btn-toggle-type.active {
+  background: var(--primary-navy) !important;
+  color: #fff !important;
+  border-color: var(--primary-navy) !important;
+  box-shadow: 0 4px 10px rgba(17, 52, 104, 0.2);
+}

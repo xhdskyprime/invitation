@@ -445,24 +445,69 @@ function setupCountdown() {
 }
 
 // RSVP Form
+let activeWishType = "text";
+
 function setupRSVPForm() {
   const form = document.getElementById("rsvpForm");
   if (!form) return;
+
+  const btnToggleText = document.getElementById("btnToggleText");
+  const btnToggleVoice = document.getElementById("btnToggleVoice");
+  const textWishGroup = document.getElementById("textWishGroup");
+  const voiceWishGroup = document.getElementById("voiceWishGroup");
+
+  if (btnToggleText && btnToggleVoice && textWishGroup && voiceWishGroup) {
+    btnToggleText.addEventListener("click", () => {
+      activeWishType = "text";
+      btnToggleText.classList.add("active");
+      btnToggleVoice.classList.remove("active");
+      textWishGroup.style.display = "block";
+      voiceWishGroup.style.display = "none";
+    });
+
+    btnToggleVoice.addEventListener("click", () => {
+      activeWishType = "voice";
+      btnToggleVoice.classList.add("active");
+      btnToggleText.classList.remove("active");
+      textWishGroup.style.display = "none";
+      voiceWishGroup.style.display = "block";
+    });
+  }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("rsvpNameInput") ? document.getElementById("rsvpNameInput").value.trim() : "";
     const status = document.getElementById("rsvpStatusInput") ? document.getElementById("rsvpStatusInput").value : "Hadir";
     const count = document.getElementById("rsvpCountInput") ? document.getElementById("rsvpCountInput").value : "1";
-    const text = document.getElementById("rsvpTextInput") ? document.getElementById("rsvpTextInput").value.trim() : "";
+    
+    let text = "";
+    let finalAudio = null;
 
-    if (!name || !text) return;
+    if (activeWishType === "text") {
+      text = document.getElementById("rsvpTextInput") ? document.getElementById("rsvpTextInput").value.trim() : "";
+      if (!text) {
+        alert("Silakan tulis ucapan & doa restu Anda!");
+        return;
+      }
+    } else {
+      text = "Kirim doa restu via Ucapan Suara (Voice Note)";
+      finalAudio = base64Audio;
+      if (!finalAudio) {
+        alert("Silakan rekam suara Anda terlebih dahulu!");
+        return;
+      }
+    }
+
+    if (!name) {
+      alert("Silakan masukkan nama Anda!");
+      return;
+    }
 
     try {
       const res = await fetch("/api/wishes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, status, count, text, audio: base64Audio })
+        body: JSON.stringify({ name, status, count, text, audio: finalAudio })
       });
       if (res.ok) {
         form.reset();
