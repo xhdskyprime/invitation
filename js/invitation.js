@@ -648,7 +648,9 @@ function setupVoiceRecorder() {
       };
 
       mediaRecorder.onstop = () => {
-        const mimeTypeUsed = mediaRecorder.mimeType || 'audio/webm';
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const fallbackMime = isIOS ? 'audio/mp4' : 'audio/webm';
+        const mimeTypeUsed = mediaRecorder.mimeType || fallbackMime;
         const audioBlob = new Blob(audioChunks, { type: mimeTypeUsed });
         const reader = new FileReader();
         reader.readAsDataURL(audioBlob);
