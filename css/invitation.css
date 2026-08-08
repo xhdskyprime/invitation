@@ -861,32 +861,51 @@ html::-webkit-scrollbar,
 }
 
 .acc-num {
-  font-family: monospace;
-  font-size: 18px;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 20px;
   font-weight: 700;
-  color: var(--text-dark);
-  background: #f0f4f9;
-  padding: 6px 12px;
+  color: var(--primary-navy);
+  background: #f5f7fa;
+  border: 1px dashed rgba(17, 52, 104, 0.2);
+  padding: 8px 18px;
   border-radius: 8px;
   display: inline-block;
-  margin: 10px 0;
-  letter-spacing: 1px;
+  margin: 10px 0 6px;
+  letter-spacing: 1.5px;
 }
 
 .acc-owner {
   font-size: 13px;
   color: var(--text-muted);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.acc-owner span {
+  font-weight: 700;
+  color: var(--primary-navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .btn-copy-acc {
   background: var(--primary-navy);
   color: #fff;
-  border: none;
-  padding: 8px 18px;
+  border: 1px solid var(--primary-navy);
+  padding: 8px 22px;
   border-radius: 20px;
   font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-copy-acc:hover {
+  background: transparent;
+  color: var(--primary-navy);
 }
 
 /* RSVP Form */

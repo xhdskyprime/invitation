@@ -296,9 +296,9 @@ function renderContent() {
             <div class="bank-name">${escapeHtml(bankInfo.name || gift.bank)}</div>
           </div>
           <div class="acc-num">${escapeHtml(gift.number)}</div>
-          <div class="acc-owner">a.n ${escapeHtml(gift.name)}</div>
+          <div class="acc-owner">Atas Nama: <span>${escapeHtml(gift.name)}</span></div>
           <button class="btn-copy-acc" onclick="copyToClipboard('${escapeHtml(gift.number)}')">
-            Salin No. Rekening
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Salin No. Rekening
           </button>
         `;
         giftsEl.appendChild(card);
