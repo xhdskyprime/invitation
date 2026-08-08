@@ -98,15 +98,13 @@ const defaultData = {
 let currentData = JSON.parse(JSON.stringify(defaultData));
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await loadStoredData();
   setupTabNavigation();
-  populateFormFields();
   setupInputListeners();
-  renderDynamicLists();
   setupHeaderActions();
   setupWaGeneratorLogic();
-  renderRsvpTable();
-  updateStats();
+  setupPasswordOverlay(); // Setup password prompt listeners
+  
+  await loadStoredData(); // Fetch config from server (which checks auth)
 
   // Setup pan/drag event listeners for avatars
   setupAvatarPan("groomImgThumbContainer", "groomImgThumb", "inputGroomZoom", "groomZoomVal", "groom");
@@ -119,10 +117,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadStoredData() {
   try {
-    const res = await fetch("/api/config");
+    const password = localStorage.getItem("admin_password") || "";
+    const res = await fetch("/api/config", {
+      headers: {
+        "X-Admin-Password": password
+      }
+    });
+    if (res.status === 401) {
+      showPasswordOverlay();
+      return;
+    }
     if (res.ok) {
       const data = await res.json();
       currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), data);
+      hidePasswordOverlay();
+      populateFormFields();
+      renderDynamicLists();
+      renderRsvpTable();
+      updateStats();
     }
   } catch(e) {
     console.error("Failed to load config from server, falling back to default", e);
@@ -143,11 +155,19 @@ async function saveDataAndSync() {
   updateStats();
 
   try {
-    await fetch("/api/config", {
+    const password = localStorage.getItem("admin_password") || "";
+    const res = await fetch("/api/config", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "X-Admin-Password": password
+      },
       body: JSON.stringify(currentData)
     });
+    if (res.status === 401) {
+      alert("Sesi berakhir atau password salah. Silakan muat ulang halaman.");
+      showPasswordOverlay();
+    }
   } catch(err) {
     console.error("Failed to sync config to server", err);
   }
@@ -767,7 +787,7 @@ function formatWaPhone(phone) {
 function getInvitationBaseUrl() {
   const currentUrl = window.location.href;
   const basePath = currentUrl.substring(0, currentUrl.lastIndexOf("/"));
-  return `${basePath}/invitation.html`;
+  return `${basePath}/index.html`;
 }
 
 function renderGuestTable() {
@@ -884,7 +904,18 @@ if (btnClearWishes) {
   btnClearWishes.addEventListener("click", async () => {
     if (confirm("Hapus semua daftar ucapan tamu?")) {
       try {
-        await fetch("/api/wishes", { method: "DELETE" });
+        const password = localStorage.getItem("admin_password") || "";
+        const res = await fetch("/api/wishes", { 
+          method: "DELETE",
+          headers: {
+            "X-Admin-Password": password
+          }
+        });
+        if (res.status === 401) {
+          alert("Sesi berakhir atau password salah. Silakan muat ulang halaman.");
+          showPasswordOverlay();
+          return;
+        }
         await renderRsvpTable();
         showToast("Semua ucapan tamu dihapus.");
       } catch(e) {
@@ -1070,4 +1101,64 @@ function makeGalleryPanable(index) {
   });
 
   window.addEventListener("touchend", endDrag);
+}
+
+// Password Lock Overlay Controller
+function setupPasswordOverlay() {
+  const overlay = document.getElementById("passwordOverlay");
+  const input = document.getElementById("adminPasswordInput");
+  const submitBtn = document.getElementById("btnSubmitPassword");
+  const errorMsg = document.getElementById("passwordErrorMsg");
+
+  if (!overlay || !input || !submitBtn) return;
+
+  const trySubmit = async () => {
+    const password = input.value.trim();
+    if (!password) return;
+
+    try {
+      const res = await fetch("/api/config", {
+        headers: { "X-Admin-Password": password }
+      });
+      if (res.ok) {
+        localStorage.setItem("admin_password", password);
+        errorMsg.style.display = "none";
+        overlay.style.display = "none";
+        
+        // Load data and refresh view
+        const data = await res.json();
+        currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), data);
+        populateFormFields();
+        renderDynamicLists();
+        renderRsvpTable();
+        updateStats();
+        
+        // Refresh iframe preview to apply config
+        const iframe = document.getElementById("previewIframe");
+        if (iframe) iframe.src = iframe.src;
+      } else {
+        errorMsg.style.display = "block";
+        input.value = "";
+        input.focus();
+      }
+    } catch(e) {
+      console.error(e);
+      alert("Gagal menghubungi server. Silakan coba lagi.");
+    }
+  };
+
+  submitBtn.addEventListener("click", trySubmit);
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") trySubmit();
+  });
+}
+
+function showPasswordOverlay() {
+  const overlay = document.getElementById("passwordOverlay");
+  if (overlay) overlay.style.display = "flex";
+}
+
+function hidePasswordOverlay() {
+  const overlay = document.getElementById("passwordOverlay");
+  if (overlay) overlay.style.display = "none";
 }

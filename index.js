@@ -1,6 +1,23 @@
 import defaultConfig from './data/config.json';
 import defaultWishes from './data/wishes.json';
 
+function checkAuth(request, env) {
+  const providedPassword = request.headers.get('X-Admin-Password');
+  const correctPassword = env.ADMIN_PASSWORD || 'lutfifirdha2026';
+  return providedPassword === correctPassword;
+}
+
+function unauthorizedResponse() {
+  return new Response(JSON.stringify({ error: 'Unauthorized: Invalid password' }), {
+    status: 401,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Password'
+    }
+  });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -8,17 +25,20 @@ export default {
     // API Routes
     if (url.pathname === '/api/config') {
       if (request.method === 'GET') {
+        if (!checkAuth(request, env)) return unauthorizedResponse();
         const stored = await env.INVITATION_DB.get('config');
         const config = stored ? JSON.parse(stored) : defaultConfig;
         return new Response(JSON.stringify(config, null, 2), {
           headers: { 
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Password'
           }
         });
       }
 
       if (request.method === 'POST') {
+        if (!checkAuth(request, env)) return unauthorizedResponse();
         try {
           const body = await request.json();
           await env.INVITATION_DB.put('config', JSON.stringify(body, null, 2));
@@ -87,6 +107,7 @@ export default {
       }
 
       if (request.method === 'DELETE') {
+        if (!checkAuth(request, env)) return unauthorizedResponse();
         await env.INVITATION_DB.put('wishes', JSON.stringify([], null, 2));
         return new Response(JSON.stringify({ success: true }), {
           headers: { 
@@ -103,7 +124,7 @@ export default {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type'
+          'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Password'
         }
       });
     }
