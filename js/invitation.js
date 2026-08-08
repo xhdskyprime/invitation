@@ -603,6 +603,22 @@ let base64Audio = null;
 let recordingInterval = null;
 let recordingSeconds = 0;
 
+function getSupportedMimeType() {
+  const types = [
+    'audio/webm;codecs=opus',
+    'audio/mp4',
+    'audio/webm',
+    'audio/aac',
+    'audio/ogg'
+  ];
+  for (const type of types) {
+    if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(type)) {
+      return type;
+    }
+  }
+  return ''; // Browser default
+}
+
 function setupVoiceRecorder() {
   const recordBtn = document.getElementById("btnRecordVoice");
   const stopBtn = document.getElementById("btnStopRecord");
@@ -621,7 +637,9 @@ function setupVoiceRecorder() {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder = new MediaRecorder(stream);
+      const mimeType = getSupportedMimeType();
+      const options = mimeType ? { mimeType } : {};
+      mediaRecorder = new MediaRecorder(stream, options);
       
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) {
@@ -630,7 +648,8 @@ function setupVoiceRecorder() {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const mimeTypeUsed = mediaRecorder.mimeType || 'audio/webm';
+        const audioBlob = new Blob(audioChunks, { type: mimeTypeUsed });
         const reader = new FileReader();
         reader.readAsDataURL(audioBlob);
         reader.onloadend = () => {
