@@ -118,15 +118,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function loadStoredData() {
   try {
     const password = localStorage.getItem("admin_password") || "";
-    const res = await fetch("/api/config", {
-      headers: {
-        "X-Admin-Password": password
-      }
+    // Verify password against verify endpoint
+    const authRes = await fetch("/api/admin/verify", {
+      headers: { "X-Admin-Password": password }
     });
-    if (res.status === 401) {
+    if (authRes.status === 401) {
       showPasswordOverlay();
       return;
     }
+    
+    // Config read is public
+    const res = await fetch("/api/config");
     if (res.ok) {
       const data = await res.json();
       currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), data);
@@ -1117,21 +1119,24 @@ function setupPasswordOverlay() {
     if (!password) return;
 
     try {
-      const res = await fetch("/api/config", {
+      const authRes = await fetch("/api/admin/verify", {
         headers: { "X-Admin-Password": password }
       });
-      if (res.ok) {
+      if (authRes.ok) {
         localStorage.setItem("admin_password", password);
         errorMsg.style.display = "none";
         overlay.style.display = "none";
         
-        // Load data and refresh view
-        const data = await res.json();
-        currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), data);
-        populateFormFields();
-        renderDynamicLists();
-        renderRsvpTable();
-        updateStats();
+        // Fetch config
+        const res = await fetch("/api/config");
+        if (res.ok) {
+          const data = await res.json();
+          currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), data);
+          populateFormFields();
+          renderDynamicLists();
+          renderRsvpTable();
+          updateStats();
+        }
         
         // Refresh iframe preview to apply config
         const iframe = document.getElementById("previewIframe");

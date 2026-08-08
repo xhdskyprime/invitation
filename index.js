@@ -23,9 +23,18 @@ export default {
     const url = new URL(request.url);
 
     // API Routes
+    if (url.pathname === '/api/admin/verify') {
+      if (!checkAuth(request, env)) return unauthorizedResponse();
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+    }
+
     if (url.pathname === '/api/config') {
       if (request.method === 'GET') {
-        if (!checkAuth(request, env)) return unauthorizedResponse();
         const stored = await env.INVITATION_DB.get('config');
         const config = stored ? JSON.parse(stored) : defaultConfig;
         return new Response(JSON.stringify(config, null, 2), {
