@@ -591,13 +591,21 @@ html::-webkit-scrollbar,
   margin: 0 !important;
 }
 
-/* Gift & Wishes section icons styling */
+/* Section header icons styling */
+.mempelai-icon-wrapper,
+.agenda-icon-wrapper,
+.story-icon-wrapper,
+.gallery-icon-wrapper,
 .gift-icon-wrapper,
 .wishes-icon-wrapper {
   text-align: center;
   margin-bottom: 12px;
 }
 
+.mempelai-icon-wrapper svg,
+.agenda-icon-wrapper svg,
+.story-icon-wrapper svg,
+.gallery-icon-wrapper svg,
 .gift-icon-wrapper svg,
 .wishes-icon-wrapper svg {
   stroke: var(--accent-gold);
