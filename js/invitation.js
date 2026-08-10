@@ -101,8 +101,8 @@ function safeSetAttr(id, attr, value) {
   if (el) el.setAttribute(attr, value || "#");
 }
 
-// Start fetching config data in parallel with HTML/CSS parsing
-const configPromise = fetch("/api/config")
+// Use the pre-existing promise from the inline head script, or initiate fetch as fallback
+const configPromise = window.configPromise || fetch("/api/config")
   .then(res => res.ok ? res.json() : defaultData)
   .catch(e => {
     console.error("Error loading config from server", e);
@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupCoverOverlay();
   
   try {
-    currentData = await configPromise;
+    currentData = window.initialConfigData || (await configPromise) || defaultData;
   } catch (e) {
     currentData = defaultData;
   }

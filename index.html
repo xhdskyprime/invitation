@@ -5,14 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>inv Firdha & Lutfi</title>
   <link rel="icon" type="image/png" href="logo%20lutpi%20bg.png">
-  <!-- Preload Cover Background and Logo for instant LCP paint -->
+  
+  <!-- Preload Critical CSS, LCP Assets and Main Script -->
+  <link rel="preload" href="css/invitation.css" as="style">
   <link rel="preload" href="assets/wp-content/uploads/2026/06/BAHAN-TEMA-1-1-2.webp" as="image">
   <link rel="preload" href="logo%20lutpi.png" as="image">
-  <!-- Preconnect Google Fonts for massive speedup -->
+  <link rel="preload" href="js/invitation.js" as="script">
+  
+  <!-- Preconnect Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Italiana&family=Montserrat:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Roboto+Slab:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Non-Blocking Google Fonts Loading -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Italiana&family=Montserrat:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Roboto+Slab:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Italiana&family=Montserrat:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Roboto+Slab:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  
   <link rel="stylesheet" href="css/invitation.css">
+
+  <!-- Speculative parallel fetch and early inline style injection to reduce LCP -->
+  <script>
+    window.configPromise = fetch("/api/config")
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && data.general) {
+          window.initialConfigData = data;
+          if (data.general.heroImageUrl) {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'image';
+            link.href = data.general.heroImageUrl;
+            document.head.appendChild(link);
+            
+            const style = document.createElement('style');
+            style.innerHTML = '.cover-hero-bg, .hero-section { background-image: url("' + data.general.heroImageUrl + '"); }';
+            document.head.appendChild(style);
+          }
+        }
+        return data;
+      })
+      .catch(e => console.error("Parallel fetch config error:", e));
+  </script>
+
   <!-- Lucide Icons (Deferred so it doesn't block parsing) -->
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js" defer></script>
   <!-- DotLottie Player -->
@@ -42,7 +75,7 @@
     <!-- Bottom Content Section of Cover -->
     <div class="cover-content">
       <div class="cover-logo-wrapper">
-        <img src="logo%20lutpi.png" class="cover-logo" alt="Logo Lutfi">
+        <img src="logo%20lutpi.png" class="cover-logo" alt="Logo Lutfi" width="140" height="110">
       </div>
       <div class="cover-subtitle">The Wedding of</div>
       <h1 class="cover-couple-title" id="coverCoupleNames">Lutfi & Firdha</h1>
@@ -56,7 +89,7 @@
     </div>
 
     <!-- Bottom Right Flower Ornament -->
-    <img src="assets/wp-content/uploads/2026/06/TEMA-01-BUNGA-01-bawah-e1721804781634-1-2.webp" class="cover-flower-bottom" alt="Flower Bottom">
+    <img src="assets/wp-content/uploads/2026/06/TEMA-01-BUNGA-01-bawah-e1721804781634-1-2.webp" class="cover-flower-bottom" alt="Flower Bottom" width="240" height="220">
   </div>
 
   <!-- Main Invitation Wrapper -->
@@ -67,7 +100,7 @@
 
       <div class="hero-content reveal">
         <div class="hero-logo-wrapper">
-          <img src="logo%20lutpi.png" class="hero-logo" alt="Logo Lutfi">
+          <img src="logo%20lutpi.png" class="hero-logo" alt="Logo Lutfi" width="100" height="80">
         </div>
         <div class="sub-title">The Wedding of</div>
         <h1 class="couple-names-main" id="heroCoupleNames">Lutfi & Firdha</h1>
@@ -77,7 +110,7 @@
 
     <!-- Bismillah & Mempelai Section -->
     <section class="section">
-      <img src="assets/wp-content/uploads/2026/06/bismillah-4-1-2-1.svg" class="bismillah-img reveal-zoom" alt="Bismillah" loading="lazy">
+      <img src="assets/wp-content/uploads/2026/06/bismillah-4-1-2-1.svg" class="bismillah-img reveal-zoom" alt="Bismillah" loading="lazy" width="200" height="40">
 
       <div class="quote-box reveal" id="quoteText">
         "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir."
@@ -95,7 +128,7 @@
       <!-- Groom Profile Card -->
       <div class="mempelai-card-wrapper reveal-left">
         <div class="avatar-container">
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="groomAvatar" class="avatar-img" alt="Pengantin Pria" loading="lazy">
+          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="groomAvatar" class="avatar-img" alt="Pengantin Pria" loading="lazy" width="150" height="150">
         </div>
         <div class="mempelai-script-name" id="groomCallName">Lutfi</div>
         <div class="mempelai-fullname" id="groomFullName">Lutfi, S.T.</div>
@@ -109,7 +142,7 @@
       <!-- Bride Profile Card -->
       <div class="mempelai-card-wrapper reveal-right">
         <div class="avatar-container">
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="brideAvatar" class="avatar-img" alt="Pengantin Wanita" loading="lazy">
+          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="brideAvatar" class="avatar-img" alt="Pengantin Wanita" loading="lazy" width="150" height="150">
         </div>
         <div class="mempelai-script-name" id="brideCallName">Firdha</div>
         <div class="mempelai-fullname" id="brideFullName">Firdha, S.Ked.</div>
@@ -124,7 +157,7 @@
     <!-- Countdown Section -->
     <section class="section">
       <div class="countdown-logo-wrapper reveal-zoom">
-        <img src="logo%20lutpi.png" class="countdown-logo" alt="Logo Lutfi" loading="lazy">
+        <img src="logo%20lutpi.png" class="countdown-logo" alt="Logo Lutfi" loading="lazy" width="90" height="70">
       </div>
       <div class="countdown-container reveal-zoom">
         <div class="section-subtitle">COUNTDOWN</div>
@@ -361,7 +394,7 @@
         Merupakan suatu kehormatan & kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.
       </p>
       <div class="footer-couple reveal-zoom" id="footerCoupleNames">Lutfi & Firdha</div>
-      <img src="logo%20lutpi.png" style="max-width: 130px; margin: 24px auto 12px; display: block;" alt="Logo FL" class="reveal" loading="lazy">
+      <img src="logo%20lutpi.png" style="max-width: 130px; margin: 24px auto 12px; display: block;" alt="Logo FL" class="reveal" loading="lazy" width="130" height="100">
       <div class="footer-copyright" style="font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 24px; letter-spacing: 0.5px;">
         &copy; Copyright lutfi_legacy 2026
       </div>
@@ -369,6 +402,6 @@
 
   </div>
 
-  <script src="js/invitation.js"></script>
+  <script src="js/invitation.js" defer></script>
 </body>
 </html>
