@@ -101,10 +101,23 @@ function safeSetAttr(id, attr, value) {
   if (el) el.setAttribute(attr, value || "#");
 }
 
+// Start fetching config data in parallel with HTML/CSS parsing
+const configPromise = fetch("/api/config")
+  .then(res => res.ok ? res.json() : defaultData)
+  .catch(e => {
+    console.error("Error loading config from server", e);
+    return defaultData;
+  });
+
 document.addEventListener("DOMContentLoaded", async () => {
   setupCoverOverlay();
   
-  await loadData();
+  try {
+    currentData = await configPromise;
+  } catch (e) {
+    currentData = defaultData;
+  }
+  
   parseGuestName();
   renderContent();
   setupAudioPlayer();
@@ -144,18 +157,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 });
-
-async function loadData() {
-  try {
-    const res = await fetch("/api/config");
-    if (res.ok) {
-      currentData = await res.json();
-    }
-  } catch(e) {
-    console.error("Error loading saved data from server", e);
-    currentData = defaultData;
-  }
-}
 
 function parseGuestName() {
   const urlParams = new URLSearchParams(window.location.search);
