@@ -352,6 +352,7 @@ function setupScrollReveal() {
 
 // Audio Control
 let isPlaying = false;
+let wasMusicPlayingBeforeRecording = false;
 function setupAudioPlayer() {
   const bgMusic = document.getElementById("bgMusic");
   const audioToggle = document.getElementById("audioToggle");
@@ -519,6 +520,16 @@ function setupRSVPForm() {
         if (previewContainer) previewContainer.style.display = "none";
         if (audioPlayer) audioPlayer.src = "";
 
+        // Resume bgMusic if it was playing before
+        const bgMusic = document.getElementById("bgMusic");
+        const audioToggle = document.getElementById("audioToggle");
+        if (wasMusicPlayingBeforeRecording && bgMusic) {
+          bgMusic.play().then(() => {
+            if (audioToggle) audioToggle.classList.add("spinning");
+            isPlaying = true;
+          }).catch(err => console.log("Resume audio error:", err));
+        }
+
         showToast("Ucapan & konfirmasi Anda berhasil terkirim!");
         await renderWishes();
       }
@@ -635,6 +646,18 @@ function setupVoiceRecorder() {
     recordingSeconds = 0;
     timerDisplay.textContent = "00:00";
 
+    // Pause bgMusic while recording to avoid recording bleed
+    const bgMusic = document.getElementById("bgMusic");
+    const audioToggle = document.getElementById("audioToggle");
+    if (bgMusic && !bgMusic.paused) {
+      wasMusicPlayingBeforeRecording = true;
+      bgMusic.pause();
+      if (audioToggle) audioToggle.classList.remove("spinning");
+      isPlaying = false;
+    } else {
+      wasMusicPlayingBeforeRecording = false;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mimeType = getSupportedMimeType();
@@ -706,5 +729,15 @@ function setupVoiceRecorder() {
     audioPlayer.src = "";
     previewContainer.style.display = "none";
     recordBtn.style.display = "inline-flex";
+
+    // Resume bgMusic if it was playing before
+    const bgMusic = document.getElementById("bgMusic");
+    const audioToggle = document.getElementById("audioToggle");
+    if (wasMusicPlayingBeforeRecording && bgMusic) {
+      bgMusic.play().then(() => {
+        if (audioToggle) audioToggle.classList.add("spinning");
+        isPlaying = true;
+      }).catch(err => console.log("Resume audio error:", err));
+    }
   });
 }
