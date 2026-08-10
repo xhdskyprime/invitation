@@ -1154,3 +1154,38 @@ html::-webkit-scrollbar,
   border-color: var(--primary-navy) !important;
   box-shadow: 0 4px 10px rgba(17, 52, 104, 0.2);
 }
+
+/* Desktop Background Leaf Watermarks */
+@media (min-width: 1024px) {
+  body::before {
+    content: '';
+    position: fixed;
+    top: 8%;
+    right: calc(50% + 250px);
+    width: 320px;
+    height: 320px;
+    background-image: url('../assets/wp-content/uploads/2026/06/TEMA-01-BUNGA-02-CO-e1721803686726-1-2.webp');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.18;
+    transform: rotate(35deg);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: 12%;
+    left: calc(50% + 250px);
+    width: 280px;
+    height: 280px;
+    background-image: url('../assets/wp-content/uploads/2026/06/TEMA-01-BUNGA-05-e1721804339713-1-2.webp');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+    transform: rotate(-15deg);
+    pointer-events: none;
+    z-index: 0;
+  }
+}
