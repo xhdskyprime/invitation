@@ -389,6 +389,12 @@ function setupCoverOverlay() {
 
   btnOpen.addEventListener("click", (e) => {
     e.preventDefault();
+    
+    const wrapper = document.querySelector(".invitation-wrapper");
+    if (wrapper) {
+      wrapper.style.display = "block";
+    }
+
     overlay.classList.add("opened");
     
     setTimeout(() => {

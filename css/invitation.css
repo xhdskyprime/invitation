@@ -51,6 +51,7 @@ html::-webkit-scrollbar,
 
 /* Invitation Container Frame */
 .invitation-wrapper {
+  display: none;
   width: 100%;
   max-width: 480px;
   background-color: var(--bg-cream);
