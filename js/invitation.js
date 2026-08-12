@@ -102,6 +102,34 @@ function safeSetAttr(id, attr, value) {
   if (el) el.setAttribute(attr, value || "#");
 }
 
+function getStoryIcon(idx, title) {
+  const t = (title || "").toLowerCase();
+  if (t.includes("awal") || t.includes("pertemuan") || t.includes("kenal")) return "sparkles";
+  if (t.includes("rumah") || t.includes("cinta") || t.includes("asmaraloka")) return "heart";
+  if (t.includes("tahun") || t.includes("proses") || t.includes("perjalanan")) return "hourglass";
+  if (t.includes("janji") || t.includes("suci") || t.includes("lamaran") || t.includes("nikah")) return "heart-handshake";
+  
+  const defaultIcons = ["heart", "sparkles", "home", "hourglass", "heart-handshake", "gift", "star"];
+  return defaultIcons[idx % defaultIcons.length];
+}
+
+function formatStoryDesc(descText) {
+  if (!descText) return '';
+  const paragraphs = String(descText).trim().split(/\n\s*\n/);
+  
+  return paragraphs.map(p => {
+    let clean = escapeHtml(p.trim());
+    clean = clean.replace(/&quot;([^&]+)&quot;/g, '<span class="story-highlight-quote">“$1”</span>');
+    clean = clean.replace(/"([^"]+)"/g, '<span class="story-highlight-quote">“$1”</span>');
+    clean = clean.replace(/\n/g, '<br>');
+    
+    if (clean.includes('story-highlight-quote')) {
+      return clean;
+    }
+    return `<p>${clean}</p>`;
+  }).join('');
+}
+
 // Use the pre-existing promise from the inline head script, or initiate fetch as fallback
 const configPromise = window.configPromise || fetch("/api/config")
   .then(res => res.ok ? res.json() : defaultData)
@@ -257,14 +285,30 @@ function renderContent() {
   if (timelineEl) {
     timelineEl.innerHTML = "";
     if (stories && stories.length > 0) {
-      stories.forEach(story => {
+      stories.forEach((story, idx) => {
         const item = document.createElement("div");
-        item.className = "timeline-item";
+        item.className = `timeline-item ${idx % 2 === 0 ? 'reveal-left' : 'reveal-right'}`;
+        
+        const iconName = getStoryIcon(idx, story.title);
+        
+        const dateHtml = (story.date && story.date.trim() !== "") ? 
+          `<div class="timeline-date-badge"><i data-lucide="calendar"></i> ${escapeHtml(story.date)}</div>` : 
+          `<div class="timeline-chapter-badge"><i data-lucide="bookmark"></i> Momen #${idx + 1}</div>`;
+
+        const descHtml = formatStoryDesc(story.desc);
+
         item.innerHTML = `
-          <div class="timeline-dot"></div>
-          <div class="timeline-date">${escapeHtml(story.date)}</div>
-          <div class="timeline-title">${escapeHtml(story.title)}</div>
-          <div class="timeline-desc">${escapeHtml(story.desc)}</div>
+          <div class="timeline-node" title="Momen ${idx + 1}">
+            <i data-lucide="${iconName}"></i>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-card-header">
+              ${dateHtml}
+              <h3 class="timeline-title">${escapeHtml(story.title)}</h3>
+            </div>
+            <div class="timeline-divider"></div>
+            <div class="timeline-desc">${descHtml}</div>
+          </div>
         `;
         timelineEl.appendChild(item);
       });

@@ -784,9 +784,22 @@ html::-webkit-scrollbar,
 /* Timeline Story */
 .timeline {
   position: relative;
-  padding-left: 24px;
-  margin: 20px 10px;
-  border-left: 2px solid var(--primary-navy);
+  padding-left: 32px;
+  margin: 25px 8px 10px;
+  border-left: none;
+}
+
+/* Elegant Glowing Vertical Timeline Axis */
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  bottom: 24px;
+  left: 15px;
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent-gold) 0%, var(--primary-navy-light) 50%, var(--accent-gold) 100%);
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(218, 171, 127, 0.4);
 }
 
 .timeline-item {
@@ -794,34 +807,146 @@ html::-webkit-scrollbar,
   margin-bottom: 28px;
 }
 
-.timeline-dot {
-  position: absolute;
-  left: -31px;
-  top: 2px;
-  width: 12px;
-  height: 12px;
-  background: var(--primary-navy);
-  border-radius: 50%;
-  border: 2px solid #fff;
+.timeline-item:last-child {
+  margin-bottom: 0;
 }
 
-.timeline-date {
-  font-family: var(--font-heading);
-  font-size: 12px;
+/* Illuminated Heart / Icon Node */
+.timeline-node {
+  position: absolute;
+  left: -32px;
+  top: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #FFFBF8;
+  border: 2px solid var(--accent-gold);
   color: var(--primary-navy);
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(17, 52, 104, 0.14);
+  z-index: 3;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.timeline-node svg,
+.timeline-node i {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.2px;
+  color: var(--primary-navy);
+}
+
+.timeline-item:hover .timeline-node {
+  transform: scale(1.18);
+  border-color: var(--primary-navy);
+  box-shadow: 0 0 16px rgba(218, 171, 127, 0.65);
+}
+
+/* Story Card */
+.timeline-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 251, 248, 0.92) 100%);
+  border: 1px solid rgba(218, 171, 127, 0.45);
+  border-radius: 18px;
+  padding: 20px 18px;
+  box-shadow: 0 6px 20px rgba(17, 52, 104, 0.07);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.timeline-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.5px;
+  background: linear-gradient(90deg, var(--accent-gold) 0%, var(--primary-navy) 100%);
+  border-radius: 18px 18px 0 0;
+}
+
+.timeline-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(17, 52, 104, 0.12);
+  border-color: var(--accent-gold);
+}
+
+.timeline-card-header {
+  margin-bottom: 8px;
+}
+
+.timeline-date-badge,
+.timeline-chapter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-sub);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--primary-navy);
+  background: rgba(218, 171, 127, 0.16);
+  padding: 4px 11px;
+  border-radius: 20px;
+  border: 1px solid rgba(218, 171, 127, 0.35);
+  margin-bottom: 8px;
+}
+
+.timeline-date-badge svg,
+.timeline-chapter-badge svg {
+  width: 12px;
+  height: 12px;
+  color: var(--primary-navy);
 }
 
 .timeline-title {
-  font-size: 15px;
+  font-family: var(--font-heading);
+  font-size: 17.5px;
   font-weight: 700;
-  color: var(--text-dark);
-  margin: 2px 0 4px;
+  color: var(--primary-navy);
+  margin: 4px 0 0;
+  line-height: 1.35;
+}
+
+.timeline-divider {
+  width: 36px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-gold), transparent);
+  margin: 10px 0 12px;
+  border-radius: 2px;
 }
 
 .timeline-desc {
-  font-size: 13px;
-  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--text-body);
+  line-height: 1.75;
+}
+
+.timeline-desc p {
+  margin-bottom: 10px;
+}
+
+.timeline-desc p:last-child {
+  margin-bottom: 0;
+}
+
+.story-highlight-quote {
+  display: block;
+  font-family: var(--font-heading);
+  font-style: italic;
+  color: var(--primary-navy);
+  background: rgba(17, 52, 104, 0.05);
+  border-left: 3px solid var(--accent-gold);
+  padding: 10px 14px;
+  margin: 10px 0;
+  border-radius: 0 10px 10px 0;
+  font-size: 13.5px;
+  line-height: 1.6;
 }
 
 /* Gallery Grid */
