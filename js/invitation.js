@@ -357,18 +357,14 @@ function renderContent() {
   }
 
   // Events
-  const akadDateStr = events.akadDate || defaultData.events.akadDate;
-  safeSetText("akadDate", akadDateStr);
-  parseAndSetCalendarBlock("akad", akadDateStr);
+  safeSetText("akadDate", events.akadDate || defaultData.events.akadDate);
   safeSetText("akadTime", events.akadTime || defaultData.events.akadTime);
   if (events.akadLocation) {
     safeSetHtml("akadLocation", events.akadLocation.replace(/\n/g, '<br>'));
   }
   safeSetAttr("akadMapUrl", "href", events.akadMapUrl || "#");
 
-  const resepsiDateStr = events.resepsiDate || defaultData.events.resepsiDate;
-  safeSetText("resepsiDate", resepsiDateStr);
-  parseAndSetCalendarBlock("resepsi", resepsiDateStr);
+  safeSetText("resepsiDate", events.resepsiDate || defaultData.events.resepsiDate);
   safeSetText("resepsiTime", events.resepsiTime || defaultData.events.resepsiTime);
   if (events.resepsiLocation) {
     safeSetHtml("resepsiLocation", events.resepsiLocation.replace(/\n/g, '<br>'));
