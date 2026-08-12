@@ -76,10 +76,10 @@
     <div class="cover-content">
       <!-- 2 Large Background Bird Animations behind cover text -->
       <div class="cover-bird-bg cover-bird-1">
-        <dotlottie-player src="https://lottie.host/512ffa37-9f45-422b-ba04-9b5c630b5941/uyJccR4Tah.lottie" background="transparent" speed="1" style="width: 250px; height: 250px;" loop autoplay></dotlottie-player>
+        <dotlottie-player src="https://lottie.host/4bb6c74f-e885-47d1-b03a-b2e5e099223d/LtNIYa7G0Y.lottie" background="transparent" speed="1" style="width: 260px; height: 260px;" loop autoplay></dotlottie-player>
       </div>
       <div class="cover-bird-bg cover-bird-2">
-        <dotlottie-player src="https://lottie.host/512ffa37-9f45-422b-ba04-9b5c630b5941/uyJccR4Tah.lottie" background="transparent" speed="1" style="width: 230px; height: 230px;" loop autoplay></dotlottie-player>
+        <dotlottie-player src="https://lottie.host/4bb6c74f-e885-47d1-b03a-b2e5e099223d/LtNIYa7G0Y.lottie" background="transparent" speed="1" style="width: 240px; height: 240px;" loop autoplay></dotlottie-player>
       </div>
 
       <div class="cover-text-wrapper">
@@ -332,11 +332,28 @@
         <h2 class="section-title">Ucapan & Doa Restu</h2>
       </div>
 
-      <form class="rsvp-card reveal-zoom" id="rsvpForm">
+      <!-- Form Ucapan & Doa Restu (WhatsApp Chat Input Style) -->
+      <form class="wa-chat-form reveal-zoom" id="rsvpForm">
+        <!-- WhatsApp Header Bar -->
+        <div class="wa-form-header">
+          <div class="wa-header-info">
+            <div class="wa-online-dot"></div>
+            <span>Kirim Pesan & Voice Note</span>
+          </div>
+          <div class="wa-type-pills">
+            <button type="button" id="btnToggleText" class="wa-pill-btn active">
+              <i data-lucide="message-square"></i> Teks
+            </button>
+            <button type="button" id="btnToggleVoice" class="wa-pill-btn">
+              <i data-lucide="mic"></i> Voice Note
+            </button>
+          </div>
+        </div>
+
         <!-- Guest Name Input Group -->
-        <div class="form-group" id="rsvpNameGroup">
-          <label class="form-label"><i data-lucide="user"></i> Nama Anda</label>
-          <input type="text" id="rsvpNameInput" class="form-control" placeholder="Tuliskan nama Anda..." required>
+        <div class="wa-input-group" id="rsvpNameGroup">
+          <label class="wa-label"><i data-lucide="user"></i> Nama Anda</label>
+          <input type="text" id="rsvpNameInput" class="wa-input-field" placeholder="Tuliskan nama Anda..." required>
         </div>
         
         <div id="rsvpGuestWelcome" style="display: none;" class="rsvp-welcome-box">
@@ -344,29 +361,25 @@
           <span>Hai, <strong id="rsvpGuestNameText"></strong>! Silakan berikan ucapan & doa restu Anda:</span>
         </div>
 
-        <!-- Choice Toggle Tabs (Tulis Ucapan vs Voice Note) -->
-        <div class="wish-type-toggle">
-          <button type="button" id="btnToggleText" class="btn-toggle-type active">
-            <i data-lucide="edit-3"></i> Tulis Ucapan
-          </button>
-          <button type="button" id="btnToggleVoice" class="btn-toggle-type">
-            <i data-lucide="mic"></i> Kirim Voice Note
-          </button>
+        <!-- Text Input Bar (WhatsApp Chat Bar Style) -->
+        <div class="text-input-group" id="textWishGroup">
+          <div class="wa-chat-bar-container">
+            <div class="wa-chat-input-pill">
+              <i data-lucide="smile" class="wa-chat-icon"></i>
+              <textarea id="rsvpTextInput" class="wa-chat-textarea" rows="2" placeholder="Ketik ucapan & doa restu..."></textarea>
+            </div>
+            <button type="submit" class="wa-send-circle-btn" title="Kirim Pesan (WhatsApp Style)">
+              <i data-lucide="send"></i>
+            </button>
+          </div>
         </div>
 
-        <!-- Text Input Group -->
-        <div class="form-group text-input-group" id="textWishGroup">
-          <label class="form-label"><i data-lucide="message-square"></i> Ucapan & Doa Restu</label>
-          <textarea id="rsvpTextInput" class="form-control" rows="3" placeholder="Tuliskan ucapan & doa restu Anda untuk kedua mempelai..."></textarea>
-        </div>
-
-        <!-- Voice Input Group -->
-        <div class="form-group voice-input-group" id="voiceWishGroup" style="display:none;">
-          <label class="form-label"><i data-lucide="mic"></i> Rekam Suara Anda</label>
+        <!-- Voice Input Group (WhatsApp Voice Note Recorder Style) -->
+        <div class="voice-input-group" id="voiceWishGroup" style="display:none;">
           <div class="voice-recorder-container">
             <button type="button" id="btnRecordVoice" class="btn-voice-action">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-              <span>Mulai Rekam Suara</span>
+              <i data-lucide="mic"></i>
+              <span>Mulai Rekam Suara (Voice Note)</span>
             </button>
             
             <div id="voiceRecordingStatus" class="recording-status" style="display: none;">
@@ -393,11 +406,11 @@
               </button>
             </div>
           </div>
-        </div>
 
-        <button type="submit" class="btn-submit-rsvp">
-          <i data-lucide="send"></i> Kirim Ucapan & Doa Restu
-        </button>
+          <button type="submit" class="wa-send-voice-btn" style="margin-top: 14px;">
+            <i data-lucide="send"></i> Kirim Voice Note
+          </button>
+        </div>
       </form>
 
       <!-- Wishes List Section -->
