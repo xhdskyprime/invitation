@@ -977,6 +977,27 @@ html::-webkit-scrollbar,
 /* ========================================================
    SYMMETRICAL & ELEGANT GALLERY GRID
    ======================================================== */
+.gallery-hint-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sub);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary-navy);
+  background: rgba(218, 171, 127, 0.16);
+  border: 1px solid rgba(218, 171, 127, 0.35);
+  padding: 5px 16px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(17, 52, 104, 0.05);
+}
+
+.gallery-hint-text svg {
+  width: 14px;
+  height: 14px;
+  color: var(--primary-navy);
+}
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
