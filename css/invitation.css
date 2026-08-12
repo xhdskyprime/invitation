@@ -152,6 +152,7 @@ html::-webkit-scrollbar,
   height: 48vh;
   min-height: 280px;
   background-color: var(--bg-cream);
+  background-image: url('https://i.ibb.co.com/HLzkB2z4/149-E3-E4-F-6-AD7-4-F41-8335-27-F48688-EBEF.jpg');
   background-position: top center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -309,6 +310,7 @@ html::-webkit-scrollbar,
   text-align: center;
   padding: 60px 24px 40px;
   background-color: var(--bg-cream);
+  background-image: url('https://i.ibb.co.com/HLzkB2z4/149-E3-E4-F-6-AD7-4-F41-8335-27-F48688-EBEF.jpg');
   background-position: top center;
   background-size: cover;
 }
@@ -366,6 +368,40 @@ html::-webkit-scrollbar,
   padding: 40px 24px;
   position: relative;
   z-index: 5;
+  overflow: hidden;
+}
+
+/* Subtle Transparent Leaf Watermarks on Cream Background */
+.section:nth-of-type(odd)::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -25px;
+  width: 145px;
+  height: 145px;
+  background-image: url('../assets/wp-content/uploads/2026/06/TEMA-01-BUNGA-02-CO-e1721803686726-1-2.webp');
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.14;
+  transform: rotate(15deg);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.section:nth-of-type(even)::after {
+  content: '';
+  position: absolute;
+  bottom: 15px;
+  right: -25px;
+  width: 145px;
+  height: 145px;
+  background-image: url('../assets/wp-content/uploads/2026/06/TEMA-01-BUNGA-05-e1721804339713-1-2.webp');
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.14;
+  transform: rotate(-20deg);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .section-title-wrapper {
