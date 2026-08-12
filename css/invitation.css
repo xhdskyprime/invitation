@@ -464,12 +464,7 @@ html::-webkit-scrollbar,
 }
 
 .section-subtitle {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--primary-navy);
+  display: none !important;
 }
 
 .section-title {
