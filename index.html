@@ -323,47 +323,65 @@
       </div>
 
       <form class="rsvp-card reveal-zoom" id="rsvpForm">
+        <!-- Guest Name Input Group -->
         <div class="form-group" id="rsvpNameGroup">
-          <label class="form-label">Nama Anda</label>
-          <input type="text" id="rsvpNameInput" class="form-control" placeholder="Masukkan nama..." required>
+          <label class="form-label"><i data-lucide="user"></i> Nama Anda</label>
+          <input type="text" id="rsvpNameInput" class="form-control" placeholder="Tuliskan nama Anda..." required>
         </div>
         
-        <div id="rsvpGuestWelcome" style="display: none; margin-bottom: 16px; font-size: 13px; color: var(--text-body); background: rgba(17, 52, 104, 0.05); padding: 12px; border-radius: 8px; border-left: 3px solid var(--accent-gold); text-align: left;">
-          Hai, <strong id="rsvpGuestNameText" style="color: var(--primary-navy);"></strong>! Silakan berikan ucapan & doa restu Anda:
+        <div id="rsvpGuestWelcome" style="display: none;" class="rsvp-welcome-box">
+          <i data-lucide="sparkles"></i>
+          <span>Hai, <strong id="rsvpGuestNameText"></strong>! Silakan berikan konfirmasi & doa restu Anda:</span>
         </div>
 
-        <!-- Choice Toggle Tabs -->
-        <div class="wish-type-toggle" style="display:flex; justify-content:center; gap:8px; margin-bottom:16px;">
-          <button type="button" id="btnToggleText" class="btn-toggle-type active" style="flex:1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight:600; cursor:pointer; border:1px solid rgba(17,52,104,0.15); background:#f5f7fa; color:var(--text-body); transition:all 0.2s;">
-            Tulis Ucapan
+        <!-- Attendance Confirmation Radio Pills -->
+        <div class="form-group">
+          <label class="form-label"><i data-lucide="check-circle-2"></i> Konfirmasi Kehadiran</label>
+          <input type="hidden" id="rsvpStatusInput" value="Hadir">
+          <div class="rsvp-status-selector">
+            <button type="button" class="btn-status-pill active" data-status="Hadir">
+              <i data-lucide="check-circle"></i> Hadir
+            </button>
+            <button type="button" class="btn-status-pill" data-status="Tidak Hadir">
+              <i data-lucide="x-circle"></i> Tidak Hadir
+            </button>
+            <button type="button" class="btn-status-pill" data-status="Masih Ragu">
+              <i data-lucide="help-circle"></i> Masih Ragu
+            </button>
+          </div>
+        </div>
+
+        <!-- Choice Toggle Tabs (Tulis Ucapan vs Voice Note) -->
+        <div class="wish-type-toggle">
+          <button type="button" id="btnToggleText" class="btn-toggle-type active">
+            <i data-lucide="edit-3"></i> Tulis Ucapan
           </button>
-          <button type="button" id="btnToggleVoice" class="btn-toggle-type" style="flex:1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight:600; cursor:pointer; border:1px solid rgba(17,52,104,0.15); background:#f5f7fa; color:var(--text-body); transition:all 0.2s;">
-            Kirim Voice Note
+          <button type="button" id="btnToggleVoice" class="btn-toggle-type">
+            <i data-lucide="mic"></i> Kirim Voice Note
           </button>
         </div>
 
         <!-- Text Input Group -->
         <div class="form-group text-input-group" id="textWishGroup">
-          <label class="form-label">Ucapan & Doa Restu</label>
-          <textarea id="rsvpTextInput" class="form-control" rows="3" placeholder="Tuliskan ucapan untuk kedua mempelai..."></textarea>
+          <label class="form-label"><i data-lucide="message-square"></i> Ucapan & Doa Restu</label>
+          <textarea id="rsvpTextInput" class="form-control" rows="3" placeholder="Tuliskan ucapan & doa restu Anda untuk kedua mempelai..."></textarea>
         </div>
 
         <!-- Voice Input Group -->
-        <div class="form-group voice-input-group" id="voiceWishGroup" style="display:none; text-align:left;">
-          <label class="form-label">Rekam Suara Anda</label>
+        <div class="form-group voice-input-group" id="voiceWishGroup" style="display:none;">
+          <label class="form-label"><i data-lucide="mic"></i> Rekam Suara Anda</label>
           <div class="voice-recorder-container">
-            <button type="button" id="btnRecordVoice" class="btn-voice-action" style="width: 100%; justify-content: center; height: 44px;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic" style="vertical-align:middle; margin-right:6px;"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-              Mulai Rekam Suara
+            <button type="button" id="btnRecordVoice" class="btn-voice-action">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+              <span>Mulai Rekam Suara</span>
             </button>
             
-            <div id="voiceRecordingStatus" class="recording-status" style="display: none; justify-content: space-between; align-items: center; width: 100%; padding: 12px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px;">
-              <div style="display:flex; align-items:center; gap:8px;">
+            <div id="voiceRecordingStatus" class="recording-status" style="display: none;">
+              <div class="recording-status-left">
                 <span class="recording-dot"></span>
-                <span id="recordingTimer" style="font-family:monospace; font-size:14px; font-weight:700; color:#e11d48;">00:00</span>
+                <span id="recordingTimer">00:00</span>
               </div>
               
-              <!-- Jumping waves like WhatsApp -->
               <div class="sound-wave">
                 <span></span>
                 <span></span>
@@ -372,24 +390,32 @@
                 <span></span>
               </div>
 
-              <button type="button" id="btnStopRecord" class="btn-voice-stop" style="background:#e11d48; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">Selesai</button>
+              <button type="button" id="btnStopRecord" class="btn-voice-stop">Selesai</button>
             </div>
             
-            <div id="voicePreviewContainer" class="voice-preview-container" style="display: none; align-items:center; gap:10px; width:100%;">
-              <audio id="voiceAudioPlayer" controls style="max-width: calc(100% - 44px); height: 36px;"></audio>
+            <div id="voicePreviewContainer" class="voice-preview-container" style="display: none;">
+              <audio id="voiceAudioPlayer" controls style="flex:1; height: 38px;"></audio>
               <button type="button" id="btnDeleteVoice" class="btn-voice-delete" title="Hapus Rekaman">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                <i data-lucide="trash-2"></i>
               </button>
             </div>
           </div>
         </div>
 
         <button type="submit" class="btn-submit-rsvp">
-          <i data-lucide="send"></i> Kirim Ucapan
+          <i data-lucide="send"></i> Kirim Konfirmasi & Doa Restu
         </button>
       </form>
 
-      <div style="margin-top: 24px;" id="ucapanList" class="reveal">
+      <!-- Wishes List Section -->
+      <div id="wishesHeaderWrapper" class="wishes-header-wrapper reveal" style="margin-top: 36px; display: none;">
+        <div class="wishes-counter-pill">
+          <i data-lucide="message-circle-heart"></i>
+          <span id="wishesCountText">0 Doa & Ucapan Restu</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px;" id="ucapanList" class="reveal">
         <!-- Rendered by JS -->
       </div>
     </section>

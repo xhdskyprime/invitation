@@ -1346,57 +1346,367 @@ html::-webkit-scrollbar,
   color: var(--primary-navy);
 }
 
-/* RSVP Form */
+/* ========================================================
+   LUXURY RSVP & WISHES SECTION UI
+   ======================================================== */
 .rsvp-card {
-  background: #ffffff;
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  box-shadow: var(--shadow-card);
-  border: 1px solid rgba(17, 52, 104, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 251, 248, 0.92) 100%);
+  border-radius: 20px;
+  padding: 26px 20px;
+  box-shadow: 0 8px 30px rgba(17, 52, 104, 0.09);
+  border: 1px solid rgba(218, 171, 127, 0.45);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+}
+
+.rsvp-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-gold) 0%, var(--primary-navy) 100%);
+}
+
+.rsvp-welcome-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--text-body);
+  background: rgba(218, 171, 127, 0.12);
+  padding: 12px 14px;
+  border-radius: 12px;
+  border-left: 3.5px solid var(--accent-gold);
+  line-height: 1.5;
+  text-align: left;
+}
+
+.rsvp-welcome-box svg {
+  width: 16px;
+  height: 16px;
+  color: var(--primary-navy);
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 18px;
+  text-align: left;
 }
 
 .form-label {
-  display: block;
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sub);
+  font-size: 12.5px;
   font-weight: 600;
-  color: var(--text-dark);
-  margin-bottom: 6px;
+  color: var(--primary-navy);
+  margin-bottom: 8px;
+}
+
+.form-label svg {
+  width: 14px;
+  height: 14px;
+  color: var(--accent-gold);
 }
 
 .form-control {
   width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 13px;
-  background: #fafafa;
+  padding: 12px 16px;
+  border: 1px solid rgba(218, 171, 127, 0.5);
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  background: #FFFBF8;
+  color: var(--text-body);
+  transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
 }
 
-.btn-submit-rsvp {
-  width: 100%;
-  background: linear-gradient(180deg, #34578B 0%, #113468 100%);
-  color: #fff;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 14px;
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-navy);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(17, 52, 104, 0.12);
+}
+
+/* Attendance Radio Status Pills */
+.rsvp-status-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-status-pill {
+  flex: 1;
+  min-width: 90px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px 8px;
+  border-radius: 12px;
+  font-family: var(--font-sub);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: #f4f6f9;
+  border: 1px solid rgba(17, 52, 104, 0.12);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-status-pill svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-status-pill:hover {
+  border-color: var(--accent-gold);
+  color: var(--primary-navy);
+}
+
+.btn-status-pill.active {
+  background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-navy-light) 100%);
+  color: #ffffff !important;
+  border-color: var(--primary-navy);
+  box-shadow: 0 4px 12px rgba(17, 52, 104, 0.25);
+}
+
+.btn-status-pill.active svg {
+  color: var(--accent-gold) !important;
+}
+
+/* Wish Type Toggle Tabs */
+.wish-type-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.btn-toggle-type {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  font-family: var(--font-sub);
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
+  border: 1px solid rgba(17, 52, 104, 0.15);
+  background: #f4f6f9;
+  color: var(--text-muted);
+  transition: all 0.25s ease;
 }
 
-/* Ucapan Item */
+.btn-toggle-type svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-toggle-type.active {
+  background: var(--primary-navy) !important;
+  color: #ffffff !important;
+  border-color: var(--primary-navy) !important;
+  box-shadow: 0 4px 12px rgba(17, 52, 104, 0.2);
+}
+
+.btn-toggle-type.active svg {
+  color: var(--accent-gold) !important;
+}
+
+/* Submit Button */
+.btn-submit-rsvp {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #34578B 0%, #113468 100%);
+  color: #ffffff;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-family: var(--font-sub);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(17, 52, 104, 0.25);
+  transition: all 0.3s ease;
+}
+
+.btn-submit-rsvp svg {
+  width: 16px;
+  height: 16px;
+  color: #ffffff;
+}
+
+.btn-submit-rsvp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(17, 52, 104, 0.35);
+}
+
+/* Wishes Header & Cards */
+.wishes-header-wrapper {
+  text-align: center;
+}
+
+.wishes-counter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-sub);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-navy);
+  background: rgba(218, 171, 127, 0.16);
+  border: 1px solid rgba(218, 171, 127, 0.4);
+  padding: 6px 18px;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(17, 52, 104, 0.06);
+}
+
+.wishes-counter-pill svg {
+  width: 15px;
+  height: 15px;
+  color: var(--primary-navy);
+}
+
+/* Individual Wish Cards */
 .wish-card {
-  background: #fff;
-  border-radius: 10px;
-  padding: 14px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  border-left: 3px solid var(--primary-navy);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 251, 248, 0.9) 100%);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 4px 16px rgba(17, 52, 104, 0.06);
+  border: 1px solid rgba(218, 171, 127, 0.35);
+  margin-bottom: 14px;
+  text-align: left;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.wish-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(17, 52, 104, 0.1);
+}
+
+.wish-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 10px;
+}
+
+.wish-card-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wish-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-navy-light) 100%);
+  color: #ffffff;
+  font-family: var(--font-sub);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--accent-gold);
+  box-shadow: 0 2px 8px rgba(17, 52, 104, 0.15);
+  flex-shrink: 0;
+}
+
+.wish-user-name {
+  font-family: var(--font-heading);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--primary-navy);
+  line-height: 1.2;
+}
+
+.wish-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-sub);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 14px;
+}
+
+.wish-status-badge svg {
+  width: 11px;
+  height: 11px;
+}
+
+.wish-status-badge.hadir {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.wish-status-badge.tidak-hadir {
+  background: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecdd3;
+}
+
+.wish-status-badge.ragu {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.wish-body {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--text-body);
+  line-height: 1.7;
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+
+.wish-audio-wrapper {
+  background: rgba(17, 52, 104, 0.04);
+  border: 1px solid rgba(218, 171, 127, 0.4);
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wish-audio-wrapper audio {
+  width: 100%;
+  height: 34px;
+}
+
+.wish-date {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wish-date svg {
+  width: 12px;
+  height: 12px;
+  color: var(--text-muted);
 }
 
 /* Floating Music Icon */

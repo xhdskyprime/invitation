@@ -591,6 +591,19 @@ function setupRSVPForm() {
   const form = document.getElementById("rsvpForm");
   if (!form) return;
 
+  // Status Pill Selector Listener
+  const statusPills = document.querySelectorAll(".btn-status-pill");
+  const statusInput = document.getElementById("rsvpStatusInput");
+  statusPills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      statusPills.forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      if (statusInput) {
+        statusInput.value = pill.getAttribute("data-status") || "Hadir";
+      }
+    });
+  });
+
   const btnToggleText = document.getElementById("btnToggleText");
   const btnToggleVoice = document.getElementById("btnToggleVoice");
   const textWishGroup = document.getElementById("textWishGroup");
@@ -652,6 +665,12 @@ function setupRSVPForm() {
       if (res.ok) {
         form.reset();
         base64Audio = null;
+
+        // Reset status pills to Hadir default
+        statusPills.forEach(p => p.classList.remove("active"));
+        if (statusPills[0]) statusPills[0].classList.add("active");
+        if (statusInput) statusInput.value = "Hadir";
+
         const recordBtn = document.getElementById("btnRecordVoice");
         const previewContainer = document.getElementById("voicePreviewContainer");
         const audioPlayer = document.getElementById("voiceAudioPlayer");
@@ -681,6 +700,9 @@ function setupRSVPForm() {
 
 async function renderWishes() {
   const listEl = document.getElementById("ucapanList");
+  const headerWrapper = document.getElementById("wishesHeaderWrapper");
+  const countText = document.getElementById("wishesCountText");
+
   if (!listEl) return;
   listEl.innerHTML = "";
 
@@ -694,28 +716,69 @@ async function renderWishes() {
     console.error("Failed to load wishes from server", e);
   }
 
+  if (headerWrapper && countText) {
+    if (wishes.length > 0) {
+      headerWrapper.style.display = "block";
+      countText.textContent = `${wishes.length} Doa & Ucapan Restu`;
+    } else {
+      headerWrapper.style.display = "none";
+    }
+  }
+
   if (wishes.length === 0) {
-    listEl.innerHTML = '<div style="text-align:center; color: var(--text-muted); font-size:12px; padding: 10px;">Belum ada ucapan.</div>';
+    listEl.innerHTML = `
+      <div style="text-align:center; color: var(--text-muted); font-size:13px; padding: 24px 10px; background: rgba(255,255,255,0.7); border-radius: 16px; border: 1px dashed rgba(218,171,127,0.5);">
+        <i data-lucide="message-square-dashed" style="width:24px; height:24px; margin-bottom:6px; color:var(--accent-gold);"></i>
+        <div>Belum ada ucapan. Jadilah yang pertama memberikan doa restu!</div>
+      </div>`;
+    if (window.lucide) {
+      try { lucide.createIcons(); } catch(e) {}
+    }
     return;
   }
 
   wishes.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "wish-card";
-    div.innerHTML = `
-      <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-        <strong style="color:var(--primary-navy); font-size:13px;">${escapeHtml(item.name)}</strong>
+    const initial = (item.name || "T").trim().charAt(0).toUpperCase();
+    const status = item.status || "Hadir";
+    
+    let statusBadgeClass = "hadir";
+    let statusIcon = "check-circle";
+    if (status.includes("Tidak")) {
+      statusBadgeClass = "tidak-hadir";
+      statusIcon = "x-circle";
+    } else if (status.includes("Ragu")) {
+      statusBadgeClass = "ragu";
+      statusIcon = "help-circle";
+    }
+
+    const card = document.createElement("div");
+    card.className = "wish-card";
+    card.innerHTML = `
+      <div class="wish-card-header">
+        <div class="wish-card-user">
+          <div class="wish-avatar">${initial}</div>
+          <div class="wish-user-name">${escapeHtml(item.name)}</div>
+        </div>
+        <div class="wish-status-badge ${statusBadgeClass}">
+          <i data-lucide="${statusIcon}"></i> ${escapeHtml(status)}
+        </div>
       </div>
-      <div style="font-size:12px; color:var(--text-body);">${escapeHtml(item.text)}</div>
+      <div class="wish-body">${escapeHtml(item.text)}</div>
       ${item.audio ? `
-        <div style="margin-top: 8px;">
-          <audio src="${item.audio}" controls style="max-width: 100%; height: 32px;"></audio>
+        <div class="wish-audio-wrapper">
+          <audio src="${item.audio}" controls></audio>
         </div>
       ` : ''}
-      <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">${escapeHtml(item.date)}</div>
+      <div class="wish-date">
+        <i data-lucide="clock"></i> ${escapeHtml(item.date || '')}
+      </div>
     `;
-    listEl.appendChild(div);
+    listEl.appendChild(card);
   });
+
+  if (window.lucide) {
+    try { lucide.createIcons(); } catch(e) {}
+  }
 }
 
 function copyToClipboard(text) {
