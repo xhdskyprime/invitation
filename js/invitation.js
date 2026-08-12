@@ -591,19 +591,6 @@ function setupRSVPForm() {
   const form = document.getElementById("rsvpForm");
   if (!form) return;
 
-  // Status Pill Selector Listener
-  const statusPills = document.querySelectorAll(".btn-status-pill");
-  const statusInput = document.getElementById("rsvpStatusInput");
-  statusPills.forEach(pill => {
-    pill.addEventListener("click", () => {
-      statusPills.forEach(p => p.classList.remove("active"));
-      pill.classList.add("active");
-      if (statusInput) {
-        statusInput.value = pill.getAttribute("data-status") || "Hadir";
-      }
-    });
-  });
-
   const btnToggleText = document.getElementById("btnToggleText");
   const btnToggleVoice = document.getElementById("btnToggleVoice");
   const textWishGroup = document.getElementById("textWishGroup");
@@ -630,8 +617,6 @@ function setupRSVPForm() {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("rsvpNameInput") ? document.getElementById("rsvpNameInput").value.trim() : "";
-    const status = document.getElementById("rsvpStatusInput") ? document.getElementById("rsvpStatusInput").value : "Hadir";
-    const count = document.getElementById("rsvpCountInput") ? document.getElementById("rsvpCountInput").value : "1";
     
     let text = "";
     let finalAudio = null;
@@ -660,16 +645,11 @@ function setupRSVPForm() {
       const res = await fetch("/api/wishes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, status, count, text, audio: finalAudio })
+        body: JSON.stringify({ name, status: "Hadir", count: "1", text, audio: finalAudio })
       });
       if (res.ok) {
         form.reset();
         base64Audio = null;
-
-        // Reset status pills to Hadir default
-        statusPills.forEach(p => p.classList.remove("active"));
-        if (statusPills[0]) statusPills[0].classList.add("active");
-        if (statusInput) statusInput.value = "Hadir";
 
         const recordBtn = document.getElementById("btnRecordVoice");
         const previewContainer = document.getElementById("voicePreviewContainer");
@@ -688,11 +668,11 @@ function setupRSVPForm() {
           }).catch(err => console.log("Resume audio error:", err));
         }
 
-        showToast("Ucapan & konfirmasi Anda berhasil terkirim!");
+        showToast("Ucapan & doa restu Anda berhasil terkirim!");
         await renderWishes();
       }
     } catch(err) {
-      console.error("Failed to submit RSVP", err);
+      console.error("Failed to submit wish", err);
       showToast("Gagal mengirim ucapan. Silakan coba lagi.");
     }
   });
@@ -739,17 +719,6 @@ async function renderWishes() {
 
   wishes.forEach(item => {
     const initial = (item.name || "T").trim().charAt(0).toUpperCase();
-    const status = item.status || "Hadir";
-    
-    let statusBadgeClass = "hadir";
-    let statusIcon = "check-circle";
-    if (status.includes("Tidak")) {
-      statusBadgeClass = "tidak-hadir";
-      statusIcon = "x-circle";
-    } else if (status.includes("Ragu")) {
-      statusBadgeClass = "ragu";
-      statusIcon = "help-circle";
-    }
 
     const card = document.createElement("div");
     card.className = "wish-card";
@@ -758,9 +727,6 @@ async function renderWishes() {
         <div class="wish-card-user">
           <div class="wish-avatar">${initial}</div>
           <div class="wish-user-name">${escapeHtml(item.name)}</div>
-        </div>
-        <div class="wish-status-badge ${statusBadgeClass}">
-          <i data-lucide="${statusIcon}"></i> ${escapeHtml(status)}
         </div>
       </div>
       <div class="wish-body">${escapeHtml(item.text)}</div>
