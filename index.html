@@ -206,63 +206,79 @@
 
       <!-- Akad Card -->
       <div class="event-card reveal-left">
-        <div class="event-type-badge">AKAD NIKAH</div>
-        <div class="event-info-container">
-          <div class="event-info-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-            <div class="event-date-display" id="akadDate">Rabu, 26 Agustus 2026</div>
+        <div class="event-card-top-bar"></div>
+        <div class="event-header-badge">
+          <i data-lucide="gem"></i> AKAD NIKAH
+        </div>
+
+        <!-- Editorial Calendar Block -->
+        <div class="event-calendar-block">
+          <div class="event-day-name" id="akadDayName">RABU</div>
+          <div class="event-date-number" id="akadDateNum">26</div>
+          <div class="event-month-year" id="akadMonthYear">AGUSTUS 2026</div>
+        </div>
+
+        <div class="event-divider-line"></div>
+
+        <!-- Time & Venue Details -->
+        <div class="event-detail-group">
+          <div class="event-detail-chip">
+            <i data-lucide="clock"></i>
+            <span id="akadTime">Pukul 08.00 - 10.00 WIB</span>
           </div>
-          
-          <div class="event-info-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <div class="event-time-display" id="akadTime">Pukul 08.00 - 10.00 WIB</div>
-          </div>
-          
-          <div class="event-info-row align-start">
-            <div style="flex-shrink: 0; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">
-              <dotlottie-player src="https://lottie.host/054c3bec-4153-408e-ae31-36767aefc1bf/UagdBkZftP.lottie" background="transparent" speed="1" style="width: 24px; height: 24px;" loop autoplay></dotlottie-player>
+
+          <div class="event-venue-card">
+            <div class="venue-icon-wrapper">
+              <dotlottie-player src="https://lottie.host/054c3bec-4153-408e-ae31-36767aefc1bf/UagdBkZftP.lottie" background="transparent" speed="1" style="width: 28px; height: 28px;" loop autoplay></dotlottie-player>
             </div>
-            <div class="event-location-display" id="akadLocation">
-              Grand Ballroom Hotel Mulia<br>
-              Jl. Asia Afrika No.1, Senayan, Jakarta Pusat
+            <div class="venue-text-container" id="akadLocation">
+              <strong class="venue-name">Grand Ballroom Hotel Mulia</strong>
+              <span class="venue-address">Jl. Asia Afrika No.1, Senayan, Jakarta Pusat</span>
             </div>
           </div>
         </div>
 
-        <a href="#" id="akadMapUrl" target="_blank" class="btn-map" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
-          <dotlottie-player src="https://lottie.host/054c3bec-4153-408e-ae31-36767aefc1bf/UagdBkZftP.lottie" background="transparent" speed="1" style="width: 22px; height: 22px;" loop autoplay></dotlottie-player>
-          <span>Petunjuk Lokasi Maps</span>
+        <a href="#" id="akadMapUrl" target="_blank" class="btn-map">
+          <i data-lucide="map-pin"></i> Petunjuk Lokasi Maps
         </a>
       </div>
 
       <!-- Resepsi Card -->
       <div class="event-card reveal-right">
-        <div class="event-type-badge">RESEPSI PERNIKAHAN</div>
-        <div class="event-info-container">
-          <div class="event-info-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-            <div class="event-date-display" id="resepsiDate">Rabu, 26 Agustus 2026</div>
+        <div class="event-card-top-bar"></div>
+        <div class="event-header-badge">
+          <i data-lucide="sparkles"></i> RESEPSI PERNIKAHAN
+        </div>
+
+        <!-- Editorial Calendar Block -->
+        <div class="event-calendar-block">
+          <div class="event-day-name" id="resepsiDayName">RABU</div>
+          <div class="event-date-number" id="resepsiDateNum">26</div>
+          <div class="event-month-year" id="resepsiMonthYear">AGUSTUS 2026</div>
+        </div>
+
+        <div class="event-divider-line"></div>
+
+        <!-- Time & Venue Details -->
+        <div class="event-detail-group">
+          <div class="event-detail-chip">
+            <i data-lucide="clock"></i>
+            <span id="resepsiTime">Pukul 11.00 - 14.00 WIB</span>
           </div>
-          
-          <div class="event-info-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <div class="event-time-display" id="resepsiTime">Pukul 11.00 - 14.00 WIB</div>
-          </div>
-          
-          <div class="event-info-row align-start">
-            <div style="flex-shrink: 0; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">
-              <dotlottie-player src="https://lottie.host/054c3bec-4153-408e-ae31-36767aefc1bf/UagdBkZftP.lottie" background="transparent" speed="1" style="width: 24px; height: 24px;" loop autoplay></dotlottie-player>
+
+          <div class="event-venue-card">
+            <div class="venue-icon-wrapper">
+              <dotlottie-player src="https://lottie.host/054c3bec-4153-408e-ae31-36767aefc1bf/UagdBkZftP.lottie" background="transparent" speed="1" style="width: 28px; height: 28px;" loop autoplay></dotlottie-player>
             </div>
-            <div class="event-location-display" id="resepsiLocation">
-              Grand Ballroom Hotel Mulia<br>
-              Jl. Asia Afrika No.1, Senayan, Jakarta Pusat
+            <div class="venue-text-container" id="resepsiLocation">
+              <strong class="venue-name">Grand Ballroom Hotel Mulia</strong>
+              <span class="venue-address">Jl. Asia Afrika No.1, Senayan, Jakarta Pusat</span>
             </div>
           </div>
         </div>
 
-        <a href="#" id="resepsiMapUrl" target="_blank" class="btn-map" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
-          <dotlottie-player src="https://lottie.host/054c3bec-4153-408e-ae31-36767aefc1bf/UagdBkZftP.lottie" background="transparent" speed="1" style="width: 22px; height: 22px;" loop autoplay></dotlottie-player>
-          <span>Petunjuk Lokasi Maps</span>
+        <a href="#" id="resepsiMapUrl" target="_blank" class="btn-map">
+          <i data-lucide="map-pin"></i> Petunjuk Lokasi Maps
         </a>
       </div>
     </section>

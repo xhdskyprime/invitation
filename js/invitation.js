@@ -279,6 +279,27 @@ function parseGuestName() {
   }
 }
 
+function parseAndSetCalendarBlock(prefix, dateStr) {
+  if (!dateStr) return;
+  const dayEl = document.getElementById(prefix + "DayName");
+  const numEl = document.getElementById(prefix + "DateNum");
+  const monthYearEl = document.getElementById(prefix + "MonthYear");
+  
+  const parts = dateStr.split(',');
+  if (parts.length >= 2) {
+    if (dayEl) dayEl.textContent = parts[0].trim().toUpperCase();
+    const dateParts = parts[1].trim().split(' ');
+    if (dateParts.length >= 3) {
+      if (numEl) numEl.textContent = dateParts[0];
+      if (monthYearEl) monthYearEl.textContent = `${dateParts[1]} ${dateParts[2]}`.toUpperCase();
+    } else {
+      if (numEl) numEl.textContent = parts[1].trim();
+    }
+  } else {
+    if (dayEl) dayEl.textContent = dateStr.toUpperCase();
+  }
+}
+
 function renderContent() {
   const { general, groom, bride, events, stories, gallery, gifts } = currentData;
 
@@ -336,14 +357,18 @@ function renderContent() {
   }
 
   // Events
-  safeSetText("akadDate", events.akadDate || defaultData.events.akadDate);
+  const akadDateStr = events.akadDate || defaultData.events.akadDate;
+  safeSetText("akadDate", akadDateStr);
+  parseAndSetCalendarBlock("akad", akadDateStr);
   safeSetText("akadTime", events.akadTime || defaultData.events.akadTime);
   if (events.akadLocation) {
     safeSetHtml("akadLocation", events.akadLocation.replace(/\n/g, '<br>'));
   }
   safeSetAttr("akadMapUrl", "href", events.akadMapUrl || "#");
 
-  safeSetText("resepsiDate", events.resepsiDate || defaultData.events.resepsiDate);
+  const resepsiDateStr = events.resepsiDate || defaultData.events.resepsiDate;
+  safeSetText("resepsiDate", resepsiDateStr);
+  parseAndSetCalendarBlock("resepsi", resepsiDateStr);
   safeSetText("resepsiTime", events.resepsiTime || defaultData.events.resepsiTime);
   if (events.resepsiLocation) {
     safeSetHtml("resepsiLocation", events.resepsiLocation.replace(/\n/g, '<br>'));
