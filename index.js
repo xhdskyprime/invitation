@@ -96,7 +96,7 @@ export default {
             count: parseInt(body.count) || 1,
             text: body.text,
             audio: body.audio || null,
-            date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
+            date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta' })
           };
 
           wishes.unshift(newWish);

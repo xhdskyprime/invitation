@@ -720,6 +720,13 @@ async function renderWishes() {
   wishes.forEach(item => {
     const initial = (item.name || "T").trim().charAt(0).toUpperCase();
 
+    let displayDate = item.date || '';
+    if (item.id && typeof item.id === 'number' && item.id > 1600000000000) {
+      try {
+        displayDate = new Date(item.id).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta' });
+      } catch(e) {}
+    }
+
     const card = document.createElement("div");
     card.className = "wish-card";
     card.innerHTML = `
@@ -732,11 +739,34 @@ async function renderWishes() {
       <div class="wish-body">${escapeHtml(item.text)}</div>
       ${item.audio ? `
         <div class="wish-audio-wrapper">
-          <audio src="${item.audio}" controls></audio>
+          <button type="button" class="wa-play-btn" onclick="toggleWaAudio(this)" title="Putar Pesan Suara">
+            <i data-lucide="play" class="wa-icon-play"></i>
+            <i data-lucide="pause" class="wa-icon-pause" style="display:none;"></i>
+          </button>
+          <div class="wa-voice-info">
+            <div class="wa-voice-waveform">
+              <span class="wa-voice-bar" style="height:7px;"></span>
+              <span class="wa-voice-bar" style="height:14px;"></span>
+              <span class="wa-voice-bar" style="height:9px;"></span>
+              <span class="wa-voice-bar" style="height:16px;"></span>
+              <span class="wa-voice-bar" style="height:11px;"></span>
+              <span class="wa-voice-bar" style="height:18px;"></span>
+              <span class="wa-voice-bar" style="height:13px;"></span>
+              <span class="wa-voice-bar" style="height:8px;"></span>
+              <span class="wa-voice-bar" style="height:15px;"></span>
+              <span class="wa-voice-bar" style="height:10px;"></span>
+              <span class="wa-voice-bar" style="height:16px;"></span>
+              <span class="wa-voice-bar" style="height:9px;"></span>
+            </div>
+            <div class="wa-voice-meta">
+              <span class="wa-mic-badge"><i data-lucide="mic"></i> Voice Note</span>
+            </div>
+          </div>
+          <audio src="${item.audio}" style="display:none;" onended="resetWaAudio(this)"></audio>
         </div>
       ` : ''}
       <div class="wish-date">
-        <i data-lucide="clock"></i> ${escapeHtml(item.date || '')}
+        <i data-lucide="clock"></i> ${escapeHtml(displayDate)}
       </div>
     `;
     listEl.appendChild(card);
@@ -746,6 +776,54 @@ async function renderWishes() {
     try { lucide.createIcons(); } catch(e) {}
   }
 }
+
+window.toggleWaAudio = function(btn) {
+  const wrapper = btn.closest('.wish-audio-wrapper');
+  if (!wrapper) return;
+  const audio = wrapper.querySelector('audio');
+  const playIcon = wrapper.querySelector('.wa-icon-play');
+  const pauseIcon = wrapper.querySelector('.wa-icon-pause');
+  
+  if (!audio) return;
+  
+  // Pause any other playing voice notes
+  document.querySelectorAll('.wish-audio-wrapper audio').forEach(a => {
+    if (a !== audio && !a.paused) {
+      a.pause();
+      const pWrapper = a.closest('.wish-audio-wrapper');
+      if (pWrapper) {
+        const pPlay = pWrapper.querySelector('.wa-icon-play');
+        const pPause = pWrapper.querySelector('.wa-icon-pause');
+        if (pPlay) pPlay.style.display = 'block';
+        if (pPause) pPause.style.display = 'none';
+        pWrapper.classList.remove('playing');
+      }
+    }
+  });
+
+  if (audio.paused) {
+    audio.play().then(() => {
+      if (playIcon) playIcon.style.display = 'none';
+      if (pauseIcon) pauseIcon.style.display = 'block';
+      wrapper.classList.add('playing');
+    }).catch(err => console.log('WA Audio play error', err));
+  } else {
+    audio.pause();
+    if (playIcon) playIcon.style.display = 'block';
+    if (pauseIcon) pauseIcon.style.display = 'none';
+    wrapper.classList.remove('playing');
+  }
+};
+
+window.resetWaAudio = function(audio) {
+  const wrapper = audio.closest('.wish-audio-wrapper');
+  if (!wrapper) return;
+  const playIcon = wrapper.querySelector('.wa-icon-play');
+  const pauseIcon = wrapper.querySelector('.wa-icon-pause');
+  if (playIcon) playIcon.style.display = 'block';
+  if (pauseIcon) pauseIcon.style.display = 'none';
+  wrapper.classList.remove('playing');
+};
 
 function copyToClipboard(text) {
   navigator.clipboard.writeText(text).then(() => {
