@@ -392,6 +392,7 @@ function renderContent() {
     currentGalleryUrls = [];
 
     if (gallery && gallery.length > 0) {
+      const total = gallery.length;
       gallery.forEach((img, idx) => {
         const isObj = typeof img === 'object' && img !== null;
         const url = isObj ? img.url : img;
@@ -403,10 +404,10 @@ function renderContent() {
         currentGalleryUrls.push(cleanImgUrl);
 
         let layoutClass = "";
-        if (gallery.length === 1 || idx === 0) {
+        if (idx === 0) {
           layoutClass = "featured";
-        } else if (idx % 3 === 1) {
-          layoutClass = "tall";
+        } else if (idx === total - 1 && (total - 1) % 2 !== 0) {
+          layoutClass = "full-width";
         }
 
         const card = document.createElement("div");
