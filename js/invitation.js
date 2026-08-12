@@ -85,6 +85,75 @@ const defaultData = {
 };
 
 let currentData = defaultData;
+let currentGalleryUrls = [];
+let currentLightboxIndex = 0;
+
+function setupGalleryLightbox() {
+  const lightbox = document.getElementById("galleryLightbox");
+  const closeBtn = document.getElementById("lightboxClose");
+  const prevBtn = document.getElementById("lightboxPrev");
+  const nextBtn = document.getElementById("lightboxNext");
+
+  if (!lightbox) return;
+
+  closeBtn?.addEventListener("click", closeLightbox);
+  prevBtn?.addEventListener("click", () => navigateLightbox(-1));
+  nextBtn?.addEventListener("click", () => navigateLightbox(1));
+
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (!lightbox.classList.contains("active")) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowLeft") navigateLightbox(-1);
+    if (e.key === "ArrowRight") navigateLightbox(1);
+  });
+}
+
+function openLightbox(index) {
+  const lightbox = document.getElementById("galleryLightbox");
+  const imgEl = document.getElementById("lightboxImg");
+  const counterEl = document.getElementById("lightboxCounter");
+
+  if (!lightbox || !imgEl || currentGalleryUrls.length === 0) return;
+
+  currentLightboxIndex = index;
+  imgEl.src = currentGalleryUrls[currentLightboxIndex];
+  if (counterEl) {
+    counterEl.textContent = `${currentLightboxIndex + 1} / ${currentGalleryUrls.length}`;
+  }
+  lightbox.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function closeLightbox() {
+  const lightbox = document.getElementById("galleryLightbox");
+  if (lightbox) {
+    lightbox.classList.remove("active");
+  }
+  document.body.style.overflow = "";
+}
+
+function navigateLightbox(direction) {
+  if (currentGalleryUrls.length === 0) return;
+  currentLightboxIndex = (currentLightboxIndex + direction + currentGalleryUrls.length) % currentGalleryUrls.length;
+  
+  const imgEl = document.getElementById("lightboxImg");
+  const counterEl = document.getElementById("lightboxCounter");
+
+  if (imgEl) {
+    imgEl.style.opacity = "0.4";
+    setTimeout(() => {
+      imgEl.src = currentGalleryUrls[currentLightboxIndex];
+      imgEl.style.opacity = "1";
+    }, 150);
+  }
+  if (counterEl) {
+    counterEl.textContent = `${currentLightboxIndex + 1} / ${currentGalleryUrls.length}`;
+  }
+}
 
 // Safe DOM Helper Functions
 function safeSetText(id, text) {
@@ -148,6 +217,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   
   parseGuestName();
+  setupGalleryLightbox();
   renderContent();
   setupAudioPlayer();
   setupCountdown();
@@ -319,8 +389,10 @@ function renderContent() {
   const galleryEl = document.getElementById("galleryContainer");
   if (galleryEl) {
     galleryEl.innerHTML = "";
+    currentGalleryUrls = [];
+
     if (gallery && gallery.length > 0) {
-      gallery.forEach(img => {
+      gallery.forEach((img, idx) => {
         const isObj = typeof img === 'object' && img !== null;
         const url = isObj ? img.url : img;
         const cleanImgUrl = url.replace("inv.wekita.id", "assets");
@@ -328,16 +400,30 @@ function renderContent() {
         const x = isObj ? (img.offsetX || 0) : 0;
         const y = isObj ? (img.offsetY || 0) : 0;
 
-        const div = document.createElement("div");
-        div.className = "gallery-card";
-        div.innerHTML = `
-          <div style="width: 100%; height: 100%; overflow: hidden; position: relative;">
-            <img src="${escapeHtml(cleanImgUrl)}" alt="Gallery Photo" loading="lazy"
-                 style="width: 100%; height: 100%; object-fit: cover; transform: translate(${x}%, ${y}%) scale(${zoom}); transform-origin: center center; position: absolute; cursor: pointer; transition: transform 0.2s;" 
-                 onclick="window.open('${escapeHtml(cleanImgUrl)}', '_blank')">
+        currentGalleryUrls.push(cleanImgUrl);
+
+        let layoutClass = "";
+        if (gallery.length === 1 || idx === 0) {
+          layoutClass = "featured";
+        } else if (idx % 3 === 1) {
+          layoutClass = "tall";
+        }
+
+        const card = document.createElement("div");
+        card.className = `gallery-card ${layoutClass}`;
+        card.innerHTML = `
+          <div class="gallery-card-inner">
+            <img src="${escapeHtml(cleanImgUrl)}" alt="Galeri Momen ${idx + 1}" loading="lazy"
+                 style="transform: translate(${x}%, ${y}%) scale(${zoom}); transform-origin: center center;">
+            <div class="gallery-overlay">
+              <div class="gallery-badge"><i data-lucide="camera"></i> Momen #${idx + 1}</div>
+              <div class="gallery-zoom-icon"><i data-lucide="maximize-2"></i></div>
+            </div>
           </div>
         `;
-        galleryEl.appendChild(div);
+
+        card.addEventListener("click", () => openLightbox(idx));
+        galleryEl.appendChild(card);
       });
     }
   }
