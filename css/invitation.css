@@ -156,7 +156,7 @@ html::-webkit-scrollbar,
   min-height: 180px;
   flex-shrink: 0;
   background-color: var(--bg-cream);
-  background-image: url('https://i.ibb.co.com/HLzkB2z4/149-E3-E4-F-6-AD7-4-F41-8335-27-F48688-EBEF.jpg');
+  background-image: url('../assets/wp-content/uploads/2026/06/hero-bg.webp');
   background-position: top center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -378,7 +378,7 @@ html::-webkit-scrollbar,
   text-align: center;
   padding: 60px 24px 40px;
   background-color: var(--bg-cream);
-  background-image: url('https://i.ibb.co.com/HLzkB2z4/149-E3-E4-F-6-AD7-4-F41-8335-27-F48688-EBEF.jpg');
+  background-image: url('../assets/wp-content/uploads/2026/06/hero-bg.webp');
   background-position: top center;
   background-size: cover;
 }

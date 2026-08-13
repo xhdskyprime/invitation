@@ -41,7 +41,8 @@ export default {
           headers: { 
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Password'
+            'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Password',
+            'Cache-Control': 'public, max-age=60, stale-while-revalidate=300'
           }
         });
       }
@@ -73,7 +74,8 @@ export default {
         return new Response(JSON.stringify(wishes, null, 2), {
           headers: { 
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            'Cache-Control': 'public, max-age=30, stale-while-revalidate=120'
           }
         });
       }
