@@ -262,11 +262,25 @@ function populateFormFields() {
   document.getElementById("inputResepsiMapUrl").value = events.resepsiMapUrl || "";
 }
 
+function sanitizeImageUrl(url) {
+  if (!url) return '';
+  let clean = url.trim();
+  if (clean.includes('inv.wekita.id')) {
+    clean = clean.replace(/https?:\/\/inv\.wekita\.id\/?/, '/assets/');
+  }
+  if (!clean.startsWith('http://') && !clean.startsWith('https://') && !clean.startsWith('data:')) {
+    if (!clean.startsWith('/')) {
+      clean = '/' + clean;
+    }
+  }
+  return clean;
+}
+
 function updateImagePreview(id, url) {
   const el = document.getElementById(id);
   if (!el) return;
-  const cleanUrl = url ? url.replace("inv.wekita.id", "assets") : "";
-  if (cleanUrl && (cleanUrl.startsWith('http') || cleanUrl.startsWith('assets') || cleanUrl.startsWith('inv.') || cleanUrl.endsWith('.jpg') || cleanUrl.endsWith('.png'))) {
+  const cleanUrl = sanitizeImageUrl(url);
+  if (cleanUrl) {
     el.src = cleanUrl;
     el.style.display = 'block';
   } else {
@@ -433,7 +447,7 @@ function renderGalleryList() {
           <label class="form-label">Preview (Klik & Geser untuk Pasin Tengah)</label>
           <div class="img-preview-box" style="margin-top: 5px; border-radius: 8px; padding: 8px 12px;">
             <div id="galleryPreviewContainer-${index}" class="gallery-preview-container" style="width: 70px; height: 70px; border-radius: 8px; overflow: hidden; border: 1px solid var(--admin-border); background: #f1f5f9; cursor: grab; position: relative;">
-              <img id="galleryPreviewThumb-${index}" class="img-preview-thumb-gallery" src="${escapeHtml(url.replace('inv.wekita.id', 'assets'))}" alt="Gallery Preview" 
+              <img id="galleryPreviewThumb-${index}" class="img-preview-thumb-gallery" src="${escapeHtml(sanitizeImageUrl(url))}" alt="Gallery Preview" 
                    style="width: 100%; height: 100%; object-fit: cover; transform: translate(${x}%, ${y}%) scale(${zoom}); transform-origin: center center; position: absolute;">
             </div>
             <div class="img-preview-info">
@@ -464,7 +478,7 @@ window.updateGalleryPath = function(index, value) {
   
   const thumb = document.getElementById(`galleryPreviewThumb-${index}`);
   if (thumb) {
-    thumb.src = value.replace("inv.wekita.id", "assets");
+    thumb.src = sanitizeImageUrl(value);
   }
   saveDataAndSync();
 };

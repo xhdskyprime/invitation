@@ -139,7 +139,10 @@ export default {
       });
     }
 
-    // Fallback: If no static asset or API matches
+    // Fallback: Serve static assets via Cloudflare Assets if available, otherwise 404
+    if (env && env.ASSETS) {
+      return env.ASSETS.fetch(request);
+    }
     return new Response('Not Found', { status: 404 });
   }
 };

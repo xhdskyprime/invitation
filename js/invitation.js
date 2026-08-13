@@ -29,6 +29,20 @@ function getBankInfo(bankInput) {
   return { code: "CUSTOM", name: bankInput, logo: "" };
 }
 
+function sanitizeImageUrl(url) {
+  if (!url) return '';
+  let clean = url.trim();
+  if (clean.includes('inv.wekita.id')) {
+    clean = clean.replace(/https?:\/\/inv\.wekita\.id\/?/, '/assets/');
+  }
+  if (!clean.startsWith('http://') && !clean.startsWith('https://') && !clean.startsWith('data:')) {
+    if (!clean.startsWith('/')) {
+      clean = '/' + clean;
+    }
+  }
+  return clean;
+}
+
 // Default Fallback Data matching assets/spesial-01
 const defaultData = {
   general: {
@@ -310,9 +324,10 @@ function renderContent() {
   safeSetText("heroEventDate", general.eventDateFormatted || defaultData.general.eventDateFormatted);
 
   if (general.heroImageUrl) {
+    const cleanHeroUrl = sanitizeImageUrl(general.heroImageUrl);
     const heroBgElements = document.querySelectorAll('.cover-hero-bg, .hero-section');
     heroBgElements.forEach(el => {
-      el.style.backgroundImage = `url('${general.heroImageUrl}')`;
+      el.style.backgroundImage = `url('${cleanHeroUrl}')`;
     });
   }
   safeSetText("footerCoupleNames", general.coupleNames || defaultData.general.coupleNames);
@@ -327,7 +342,7 @@ function renderContent() {
   safeSetText("groomIgHandle", groom.igHandle || defaultData.groom.igHandle);
   safeSetAttr("groomIg", "href", groom.igUrl || "#");
   if (groom.avatarUrl) {
-    const cleanGroomUrl = groom.avatarUrl.replace("inv.wekita.id", "assets");
+    const cleanGroomUrl = sanitizeImageUrl(groom.avatarUrl);
     safeSetAttr("groomAvatar", "src", cleanGroomUrl);
   }
   const groomAvatarEl = document.getElementById("groomAvatar");
@@ -345,7 +360,7 @@ function renderContent() {
   safeSetText("brideIgHandle", bride.igHandle || defaultData.bride.igHandle);
   safeSetAttr("brideIg", "href", bride.igUrl || "#");
   if (bride.avatarUrl) {
-    const cleanBrideUrl = bride.avatarUrl.replace("inv.wekita.id", "assets");
+    const cleanBrideUrl = sanitizeImageUrl(bride.avatarUrl);
     safeSetAttr("brideAvatar", "src", cleanBrideUrl);
   }
   const brideAvatarEl = document.getElementById("brideAvatar");
@@ -417,7 +432,7 @@ function renderContent() {
       gallery.forEach((img, idx) => {
         const isObj = typeof img === 'object' && img !== null;
         const url = isObj ? img.url : img;
-        const cleanImgUrl = url.replace("inv.wekita.id", "assets");
+        const cleanImgUrl = sanitizeImageUrl(url);
         const zoom = isObj ? (img.zoom || 1.0) : 1.0;
         const x = isObj ? (img.offsetX || 0) : 0;
         const y = isObj ? (img.offsetY || 0) : 0;
