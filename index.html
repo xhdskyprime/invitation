@@ -168,31 +168,42 @@
     </section>
 
     <!-- Countdown Section -->
-    <section class="section">
-      <div class="countdown-logo-wrapper reveal-zoom">
-        <img src="/logo%20lutpi.png" class="countdown-logo" alt="Logo Lutfi" loading="lazy" width="90" height="70">
-      </div>
-      <div class="countdown-container reveal-zoom">
-        <div class="section-subtitle">COUNTDOWN</div>
-        <h2 class="section-title">Menghitung Hari</h2>
+    <section class="section countdown-section">
+      <div class="countdown-card-wrapper reveal-zoom">
+        <div class="countdown-header">
+          <div class="countdown-date-badge">
+            <i data-lucide="calendar-heart"></i> <span id="countdownEventDate">Rabu, 26 Agustus 2026</span>
+          </div>
+          <div class="section-subtitle">COUNTDOWN</div>
+          <h2 class="section-title">Menghitung Hari</h2>
+        </div>
 
         <div class="timer-row">
           <div class="timer-box">
             <div class="timer-number" id="timerDays">00</div>
             <div class="timer-label">Hari</div>
           </div>
+          <div class="timer-divider">:</div>
           <div class="timer-box">
             <div class="timer-number" id="timerHours">00</div>
             <div class="timer-label">Jam</div>
           </div>
+          <div class="timer-divider">:</div>
           <div class="timer-box">
             <div class="timer-number" id="timerMinutes">00</div>
             <div class="timer-label">Menit</div>
           </div>
-          <div class="timer-box">
+          <div class="timer-divider">:</div>
+          <div class="timer-box timer-seconds-box">
             <div class="timer-number" id="timerSeconds">00</div>
             <div class="timer-label">Detik</div>
           </div>
+        </div>
+
+        <div class="calendar-action-wrapper">
+          <a id="btnAddToCalendar" class="btn-add-calendar" href="https://calendar.google.com" target="_blank" rel="noopener">
+            <i data-lucide="calendar-plus"></i> Simpan Tanggal di Kalender
+          </a>
         </div>
       </div>
     </section>

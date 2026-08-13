@@ -322,6 +322,7 @@ function renderContent() {
   safeSetText("coverEventDate", general.eventDateFormatted || defaultData.general.eventDateFormatted);
   safeSetText("heroCoupleNames", general.coupleNames || defaultData.general.coupleNames);
   safeSetText("heroEventDate", general.eventDateFormatted || defaultData.general.eventDateFormatted);
+  safeSetText("countdownEventDate", general.eventDateFormatted || defaultData.general.eventDateFormatted);
 
   if (general.heroImageUrl) {
     const cleanHeroUrl = sanitizeImageUrl(general.heroImageUrl);
@@ -586,6 +587,15 @@ function setupCountdown() {
 
   const targetDateStr = currentData.general ? currentData.general.eventDateISO : "2026-08-26T08:00:00";
   const targetDate = new Date(targetDateStr).getTime();
+
+  const calendarBtn = document.getElementById("btnAddToCalendar");
+  if (calendarBtn && currentData.general) {
+    const couple = currentData.general.coupleNames || "Lutfi & Firdha";
+    const eventIso = currentData.general.eventDateISO || "2026-08-26T08:00:00";
+    const cleanIso = eventIso.replace(/[-:]/g, "").split(".")[0];
+    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Pernikahan ' + couple)}&dates=${cleanIso}/${cleanIso}&details=${encodeURIComponent('Pernikahan ' + couple)}&location=${encodeURIComponent(currentData.events?.akadLocation || 'Jakarta')}`;
+    calendarBtn.href = googleCalUrl;
+  }
 
   function update() {
     const daysEl = document.getElementById("timerDays");

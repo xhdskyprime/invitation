@@ -759,50 +759,163 @@ html::-webkit-scrollbar,
   filter: drop-shadow(0 2px 4px rgba(218, 171, 127, 0.15));
 }
 
-/* Countdown Section */
-.countdown-logo-wrapper {
-  text-align: center;
-  margin-bottom: 24px;
+/* Countdown Section - Premium Glassmorphic Redesign */
+.countdown-section {
+  padding: 40px 20px;
 }
 
-.countdown-logo {
-  max-width: 90px;
-  height: auto;
-  object-fit: contain;
+.countdown-card-wrapper {
+  background: linear-gradient(135deg, rgba(255, 251, 248, 0.95), rgba(246, 240, 233, 0.92));
+  border: 1px solid rgba(218, 171, 127, 0.45);
+  border-radius: var(--radius-lg);
+  padding: 32px 20px 28px;
+  box-shadow: 0 14px 35px rgba(17, 52, 104, 0.09), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+  position: relative;
+  overflow: hidden;
+  max-width: 440px;
+  margin: 0 auto;
+  backdrop-filter: blur(8px);
 }
 
-.countdown-container {
+.countdown-card-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(218, 171, 127, 0.25) 0%, rgba(218, 171, 127, 0) 70%);
+  pointer-events: none;
+}
+
+.countdown-header {
   text-align: center;
-  margin: 10px 0 30px;
+  margin-bottom: 18px;
+}
+
+.countdown-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(17, 52, 104, 0.06);
+  border: 1px solid rgba(218, 171, 127, 0.5);
+  color: var(--primary-navy);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 5px 16px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.countdown-date-badge svg {
+  width: 14px;
+  height: 14px;
+  stroke: var(--accent-gold);
 }
 
 .timer-row {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-top: 16px;
+  align-items: center;
+  gap: 5px;
+  margin: 22px 0 26px;
 }
 
 .timer-box {
-  background: var(--primary-navy);
-  color: #fff;
-  padding: 10px 14px;
-  border-radius: 14px;
-  min-width: 68px;
-  box-shadow: 0 4px 12px rgba(17, 52, 104, 0.2);
+  flex: 1;
+  max-width: 76px;
+  background: linear-gradient(145deg, #18417c, #0b2752);
+  border-top: 2.5px solid var(--accent-gold);
+  border-radius: 16px;
+  padding: 12px 4px 10px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(17, 52, 104, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+}
+
+.timer-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(17, 52, 104, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.timer-seconds-box {
+  animation: pulseSecondsBorder 2s infinite ease-in-out;
+}
+
+@keyframes pulseSecondsBorder {
+  0%, 100% { border-top-color: #DAAB7F; }
+  50% { border-top-color: #FFF; box-shadow: 0 8px 24px rgba(218, 171, 127, 0.35); }
 }
 
 .timer-number {
   font-family: var(--font-heading);
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 25px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .timer-label {
+  font-family: var(--font-sub);
   font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 4px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
-  margin-top: 2px;
+}
+
+.timer-divider {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  opacity: 0.85;
+  animation: blinkDivider 1s infinite alternate;
+  margin-top: -12px;
+}
+
+@keyframes blinkDivider {
+  from { opacity: 0.3; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1.1); }
+}
+
+.calendar-action-wrapper {
+  text-align: center;
+}
+
+.btn-add-calendar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--primary-navy), var(--primary-navy-light));
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 30px;
+  text-decoration: none;
+  border: 1px solid rgba(218, 171, 127, 0.4);
+  box-shadow: 0 4px 14px rgba(17, 52, 104, 0.18);
+  transition: all 0.3s ease;
+}
+
+.btn-add-calendar:hover {
+  background: linear-gradient(135deg, var(--primary-navy-light), var(--primary-navy));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(17, 52, 104, 0.28);
+  color: var(--accent-gold);
+}
+
+.btn-add-calendar svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--accent-gold);
 }
 
 /* ========================================================
