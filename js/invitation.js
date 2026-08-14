@@ -122,6 +122,8 @@ function openLightbox(index) {
   const lightbox = document.getElementById("galleryLightbox");
   const imgEl = document.getElementById("lightboxImg");
   const counterEl = document.getElementById("lightboxCounter");
+  const prevBtn = document.getElementById("lightboxPrev");
+  const nextBtn = document.getElementById("lightboxNext");
 
   if (!lightbox || !imgEl || currentGalleryUrls.length === 0) return;
 
@@ -129,7 +131,30 @@ function openLightbox(index) {
   imgEl.src = currentGalleryUrls[currentLightboxIndex];
   if (counterEl) {
     counterEl.textContent = `${currentLightboxIndex + 1} / ${currentGalleryUrls.length}`;
+    counterEl.style.display = "";
   }
+  if (prevBtn) prevBtn.style.display = "";
+  if (nextBtn) nextBtn.style.display = "";
+
+  lightbox.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function openSingleImageLightbox(url) {
+  const lightbox = document.getElementById("galleryLightbox");
+  const imgEl = document.getElementById("lightboxImg");
+  const counterEl = document.getElementById("lightboxCounter");
+  const prevBtn = document.getElementById("lightboxPrev");
+  const nextBtn = document.getElementById("lightboxNext");
+
+  if (!lightbox || !imgEl || !url) return;
+
+  imgEl.src = url;
+  
+  if (counterEl) counterEl.style.display = "none";
+  if (prevBtn) prevBtn.style.display = "none";
+  if (nextBtn) nextBtn.style.display = "none";
+  
   lightbox.classList.add("active");
   document.body.style.overflow = "hidden";
 }
@@ -447,12 +472,14 @@ function renderContent(data = currentData) {
   if (groom.avatarUrl) {
     const cleanGroomUrl = sanitizeImageUrl(groom.avatarUrl);
     safeSetAttr("groomAvatar", "src", cleanGroomUrl);
-  }
-  const groomAvatarEl = document.getElementById("groomAvatar");
-  if (groomAvatarEl) {
-    const x = groom.offsetX || 0;
-    const y = groom.offsetY || 0;
-    const zoom = groom.zoom || 1.0;
+    const groomAvatarEl = document.getElementById("groomAvatar");
+    if (groomAvatarEl) {
+      groomAvatarEl.style.cursor = "pointer";
+      groomAvatarEl.onclick = () => openSingleImageLightbox(cleanGroomUrl);
+      
+      const x = groom.offsetX || 0;
+      const y = groom.offsetY || 0;
+      const zoom = groom.zoom || 1.0;
     groomAvatarEl.style.width = `calc(100% * ${zoom})`;
     groomAvatarEl.style.height = `calc(100% * ${zoom})`;
     groomAvatarEl.style.maxWidth = "none";
@@ -469,12 +496,14 @@ function renderContent(data = currentData) {
   if (bride.avatarUrl) {
     const cleanBrideUrl = sanitizeImageUrl(bride.avatarUrl);
     safeSetAttr("brideAvatar", "src", cleanBrideUrl);
-  }
-  const brideAvatarEl = document.getElementById("brideAvatar");
-  if (brideAvatarEl) {
-    const x = bride.offsetX || 0;
-    const y = bride.offsetY || 0;
-    const zoom = bride.zoom || 1.0;
+    const brideAvatarEl = document.getElementById("brideAvatar");
+    if (brideAvatarEl) {
+      brideAvatarEl.style.cursor = "pointer";
+      brideAvatarEl.onclick = () => openSingleImageLightbox(cleanBrideUrl);
+      
+      const x = bride.offsetX || 0;
+      const y = bride.offsetY || 0;
+      const zoom = bride.zoom || 1.0;
     brideAvatarEl.style.width = `calc(100% * ${zoom})`;
     brideAvatarEl.style.height = `calc(100% * ${zoom})`;
     brideAvatarEl.style.maxWidth = "none";
