@@ -80,6 +80,15 @@ const defaultData = {
     formal: `Kepada Yth.\nBapak/Ibu/Saudara/i {NAMA_TAMU}\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda untuk menghadiri acara pernikahan kami:\n\n{NAMA_MEMPELAI}\n\nInfo selengkapnya mengenai acara dapat diakses melalui link undangan digital berikut:\n{LINK_UNDANGAN}\n\nMerupakan suatu kebahagiaan bagi kami apabila Anda berkenan hadir dan memberikan doa restu.\n\nTerima kasih.`,
     islami: `Assalamu'alaikum Wr. Wb.\n\nKepada Yth. {NAMA_TAMU}\n\nDengan memohon rahmat dan ridho Allah SWT, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk menghadiri syukuran pernikahan kami:\n\n{NAMA_MEMPELAI}\n\nUntuk info tanggal, waktu, dan lokasi acara selengkapnya dapat dilihat melalui tautan undangan berikut:\n{LINK_UNDANGAN}\n\nJazakumullah Khairan Katsiran atas doa dan kehadirannya.\n\nWassalamu'alaikum Wr. Wb.`,
     santai: `Halo {NAMA_TAMU}!\n\nKabar bahagia untuk kita semua! Kami mengundang kamu untuk hadir dan merayakan momen pernikahan kami:\n\n{NAMA_MEMPELAI}\n\nKlik link di bawah ini untuk info lengkapnya ya:\n{LINK_UNDANGAN}\n\nSampai jumpa di hari bahagia kami! 😊`
+  },
+  theme: {
+    colorPalette: "navy",
+    fontFamily: "great-vibes",
+    animationStyle: "fade-zoom",
+    showQuote: true,
+    showStory: true,
+    showGallery: true,
+    showGifts: true
   }
 };
 
@@ -195,16 +204,23 @@ function setupTabNavigation() {
 
 // Populate Inputs with Current State
 function populateFormFields() {
-  const { general, groom, bride, events } = currentData;
-
-  // General
-  document.getElementById("inputCoupleNames").value = general.coupleNames || "";
-  document.getElementById("inputEventDateFormatted").value = general.eventDateFormatted || "";
-  document.getElementById("inputEventDateISO").value = general.eventDateISO || "";
-  document.getElementById("inputBgMusicUrl").value = general.bgMusicUrl || "";
-  document.getElementById("inputHeroImageUrl").value = general.heroImageUrl || "";
-  document.getElementById("inputQuote").value = general.quote || "";
-  updateImagePreview("heroImgThumb", general.heroImageUrl);
+  const { groom, bride, events } = currentData;
+  const g = currentData.general || {};
+  document.getElementById("inputCoupleNames").value = g.coupleNames || "";
+  document.getElementById("inputEventDateISO").value = g.eventDateISO || "";
+  document.getElementById("inputEventDateFormatted").value = g.eventDateFormatted || "";
+  document.getElementById("inputQuote").value = g.quote || "";
+  document.getElementById("inputBgMusicUrl").value = g.bgMusicUrl || "";
+  
+  const theme = currentData.theme || {};
+  document.getElementById("inputColorPalette").value = theme.colorPalette || "navy";
+  document.getElementById("inputFontFamily").value = theme.fontFamily || "great-vibes";
+  document.getElementById("inputAnimationStyle").value = theme.animationStyle || "fade-zoom";
+  document.getElementById("inputShowQuote").checked = theme.showQuote !== false;
+  document.getElementById("inputShowStory").checked = theme.showStory !== false;
+  document.getElementById("inputShowGallery").checked = theme.showGallery !== false;
+  document.getElementById("inputShowGifts").checked = theme.showGifts !== false;
+  updateImagePreview("heroImgThumb", g.heroImageUrl);
 
   // Groom
   document.getElementById("inputGroomCallName").value = groom.callName || "";
@@ -339,6 +355,15 @@ function setupInputListeners() {
   bindInput("inputBgMusicUrl", "general.bgMusicUrl");
   bindInput("inputHeroImageUrl", "general.heroImageUrl", "heroImgThumb");
   bindInput("inputQuote", "general.quote");
+
+  // Theme
+  bindInput("inputColorPalette", "theme.colorPalette");
+  bindInput("inputFontFamily", "theme.fontFamily");
+  bindInput("inputAnimationStyle", "theme.animationStyle");
+  bindInput("inputShowQuote", "theme.showQuote");
+  bindInput("inputShowStory", "theme.showStory");
+  bindInput("inputShowGallery", "theme.showGallery");
+  bindInput("inputShowGifts", "theme.showGifts");
 
   // Groom
   bindInput("inputGroomCallName", "groom.callName");

@@ -67,6 +67,9 @@
     <nav class="admin-sidebar">
       <div class="nav-section-label">Pengaturan Konten</div>
       
+      <div class="nav-item" data-tab="tab-theme">
+        <i data-lucide="palette"></i> Tema & Desain
+      </div>
       <div class="nav-item active" data-tab="tab-general">
         <i data-lucide="info"></i> Informasi Umum & Cover
       </div>
@@ -97,6 +100,68 @@
 
     <!-- Main Content Area -->
     <main class="admin-content">
+
+      <!-- TAB 0: Tema & Desain -->
+      <section class="tab-content" id="tab-theme">
+        <h2 class="page-title"><i data-lucide="palette" style="color:var(--admin-primary)"></i> Tema & Desain</h2>
+        <p class="page-desc">Kustomisasi palet warna, jenis tulisan (font), dan gaya animasi untuk undangan Anda.</p>
+        
+        <div class="card">
+          <div class="card-title">Pengaturan Visual</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Palet Warna (Tema)</label>
+              <select id="inputColorPalette" class="form-input">
+                <option value="navy">Navy & Gold (Elegan)</option>
+                <option value="sage">Sage Green & Gold (Natural)</option>
+                <option value="blush">Blush Pink & Rose (Romantis)</option>
+                <option value="monochrome">Monochrome (Hitam Putih Klasik)</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Gaya Font Nama Mempelai</label>
+              <select id="inputFontFamily" class="form-input">
+                <option value="great-vibes">Great Vibes (Tegak Bersambung / Default)</option>
+                <option value="dancing-script">Dancing Script (Dinamis)</option>
+                <option value="playfair">Playfair Display (Klasik Cetak)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Gaya Animasi Awal (Saat Dibuka)</label>
+              <select id="inputAnimationStyle" class="form-input">
+                <option value="fade-zoom">Fade & Zoom In (Mewah)</option>
+                <option value="slide-up">Slide Up (Meluncur dari Bawah)</option>
+                <option value="smooth-fade">Smooth Fade (Muncul Perlahan)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-title">Visibilitas Bagian Konten</div>
+          <p class="help-text" style="margin-bottom:16px;">Sembunyikan bagian yang tidak Anda perlukan di halaman undangan.</p>
+          <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="form-group" style="display:flex; align-items:center; gap:12px;">
+              <input type="checkbox" id="inputShowQuote" style="width:20px; height:20px; accent-color:var(--admin-primary);">
+              <label class="form-label" style="margin-bottom:0; cursor:pointer;" for="inputShowQuote">Tampilkan Ayat Suci / Kutipan</label>
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; gap:12px;">
+              <input type="checkbox" id="inputShowStory" style="width:20px; height:20px; accent-color:var(--admin-primary);">
+              <label class="form-label" style="margin-bottom:0; cursor:pointer;" for="inputShowStory">Tampilkan Kisah Cinta (Story)</label>
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; gap:12px;">
+              <input type="checkbox" id="inputShowGallery" style="width:20px; height:20px; accent-color:var(--admin-primary);">
+              <label class="form-label" style="margin-bottom:0; cursor:pointer;" for="inputShowGallery">Tampilkan Galeri Foto</label>
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; gap:12px;">
+              <input type="checkbox" id="inputShowGifts" style="width:20px; height:20px; accent-color:var(--admin-primary);">
+              <label class="form-label" style="margin-bottom:0; cursor:pointer;" for="inputShowGifts">Tampilkan Digital Gift</label>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- TAB 1: Informasi Umum & Cover -->
       <section class="tab-content active" id="tab-general">
