@@ -138,14 +138,43 @@ html::-webkit-scrollbar,
   justify-content: space-between;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
+  transition: opacity 1.2s ease, visibility 1.2s ease;
 }
 
 .cover-overlay.opened {
-  transform: translate(-50%, -100%);
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
 }
+
+.cover-overlay .cover-content, .cover-overlay .cover-hero-bg {
+  transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.cover-overlay.opened .cover-content, .cover-overlay.opened .cover-hero-bg {
+  transform: translateY(-120vh);
+}
+
+/* Entrance Animations for Cover Elements */
+.cover-entrance {
+  opacity: 0;
+  transform: translateY(-30px) scale(0.95);
+  animation: coverEntranceAnim 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes coverEntranceAnim {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+.delay-3 { animation-delay: 0.6s; }
+.delay-4 { animation-delay: 0.8s; }
+.delay-5 { animation-delay: 1.0s; }
+.delay-6 { animation-delay: 1.2s; }
 
 /* Top Hero Section of Cover with Couple Photo & Flowers */
 .cover-hero-bg {
