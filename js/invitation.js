@@ -677,6 +677,15 @@ function setupCoverOverlay() {
       heroVideo.play().catch(err => console.log("Hero video play prevented:", err));
     }
     
+    // Reveal hero content after video doors open (approx 1.8s)
+    setTimeout(() => {
+      const heroContent = document.getElementById("heroContentAnimated");
+      if (heroContent) {
+        heroContent.style.opacity = "1";
+        heroContent.style.transform = "scale(1)";
+      }
+    }, 1800);
+
     setTimeout(() => {
       setupScrollReveal();
     }, 300);
