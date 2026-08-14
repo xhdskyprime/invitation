@@ -44,6 +44,9 @@ function sanitizeImageUrl(url) {
   // Strip WordPress auto-generated thumbnail sizes to load the HD original (e.g. -150x150.jpg -> .jpg)
   clean = clean.replace(/-\d+x\d+(?=\.[a-zA-Z0-9]+$)/, '');
   
+  // Strip ImageBB thumbnail/medium prefixes (e.g. .md.jpg, .th.jpg -> .jpg)
+  clean = clean.replace(/\.(md|th)(?=\.[a-zA-Z0-9]+$)/, '');
+  
   return clean;
 }
 
