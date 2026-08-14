@@ -672,6 +672,11 @@ function setupCoverOverlay() {
 
     overlay.classList.add("opened");
     
+    const heroVideo = document.getElementById("heroOpeningVideo");
+    if (heroVideo) {
+      heroVideo.play().catch(err => console.log("Hero video play prevented:", err));
+    }
+    
     setTimeout(() => {
       setupScrollReveal();
     }, 300);

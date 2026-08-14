@@ -40,7 +40,7 @@
             document.head.appendChild(link);
             
             const style = document.createElement('style');
-            style.innerHTML = '.cover-hero-bg, .hero-section { background-image: url("' + data.general.heroImageUrl + '"); }';
+            style.innerHTML = '.cover-hero-bg { background-image: url("' + data.general.heroImageUrl + '"); }';
             document.head.appendChild(style);
           }
         }
@@ -104,6 +104,9 @@
 
     <!-- Hero Header -->
     <header class="hero-section">
+      <div class="hero-video-wrapper">
+        <video id="heroOpeningVideo" src="/assets/wp-content/uploads/2026/06/VINTAGE-09.mp4" muted playsinline disablePictureInPicture></video>
+      </div>
 
       <div class="hero-content reveal">
         <div class="hero-logo-wrapper">
