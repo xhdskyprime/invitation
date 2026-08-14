@@ -381,7 +381,43 @@ function parseAndSetCalendarBlock(prefix, dateStr) {
 }
 
 function renderContent(data = currentData) {
-  const { general, groom, bride, events, stories, gallery, gifts } = data;
+  const { general, groom, bride, events, stories, gallery, gifts, coverElements } = data;
+
+  // Dynamic Cover Canvas
+  const coverCanvas = document.getElementById("dynamicCoverCanvas");
+  if (coverCanvas) {
+    coverCanvas.innerHTML = "";
+    if (coverElements && coverElements.length > 0) {
+      coverElements.forEach(el => {
+        const div = document.createElement("div");
+        div.style.position = "absolute";
+        div.style.left = el.x + "%";
+        div.style.top = el.y + "%";
+        div.style.zIndex = el.zIndex;
+        div.style.transform = `rotate(${el.rotation || 0}deg)`;
+        
+        if (el.type === "text") {
+          const span = document.createElement("span");
+          span.textContent = el.content;
+          span.style.fontSize = el.fontSize + "px";
+          span.style.fontFamily = el.fontFamily;
+          span.style.color = el.color;
+          span.style.whiteSpace = "nowrap";
+          div.appendChild(span);
+        } else if (el.type === "image") {
+          const img = document.createElement("img");
+          img.src = el.url;
+          div.style.width = el.width + "px";
+          div.style.height = el.height + "px";
+          img.style.width = "100%";
+          img.style.height = "100%";
+          img.style.objectFit = "contain";
+          div.appendChild(img);
+        }
+        coverCanvas.appendChild(div);
+      });
+    }
+  }
 
   // General & Cover
   safeSetText("coverCoupleNames", general.coupleNames);

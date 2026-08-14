@@ -6,6 +6,7 @@
   <title>Admin Dashboard - Undangan Digital</title>
   <link rel="icon" type="image/png" href="logo%20lutpi%20bg.png">
   <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/builder.css">
   <!-- Lucide Icons -->
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
@@ -69,6 +70,9 @@
       
       <div class="nav-item" data-tab="tab-theme">
         <i data-lucide="palette"></i> Tema & Desain
+      </div>
+      <div class="nav-item" data-tab="tab-builder">
+        <i data-lucide="layout"></i> Desain Cover (Canva)
       </div>
       <div class="nav-item active" data-tab="tab-general">
         <i data-lucide="info"></i> Informasi Umum & Cover
@@ -158,6 +162,66 @@
             <div class="form-group" style="display:flex; align-items:center; gap:12px;">
               <input type="checkbox" id="inputShowGifts" style="width:20px; height:20px; accent-color:var(--admin-primary);">
               <label class="form-label" style="margin-bottom:0; cursor:pointer;" for="inputShowGifts">Tampilkan Digital Gift</label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB BUILDER: Canvas Editor -->
+      <section class="tab-content" id="tab-builder">
+        <h2 class="page-title"><i data-lucide="layout" style="color:var(--admin-primary)"></i> Desain Cover (Canva Style)</h2>
+        <p class="page-desc">Geser, ubah ukuran, dan atur desain halaman depan Anda secara bebas.</p>
+        
+        <div class="builder-container">
+          <!-- Toolbar -->
+          <div class="builder-toolbar">
+            <button class="btn-builder" id="btnAddText"><i data-lucide="type"></i> Tambah Teks</button>
+            <button class="btn-builder" id="btnAddImage"><i data-lucide="image"></i> Tambah Gambar/Bunga</button>
+            <button class="btn-builder" id="btnSaveBuilder" style="background:var(--admin-primary); color:white; margin-left:auto;"><i data-lucide="save"></i> Simpan Desain</button>
+          </div>
+
+          <div class="builder-workspace">
+            <!-- Properties Panel (Left) -->
+            <div class="builder-properties" id="builderProperties">
+              <div class="card-title" style="margin-bottom:15px; font-size:1rem;">Properti Elemen</div>
+              <div id="noElementSelected" style="color:#64748b; font-size:14px;">Klik elemen di kanvas untuk mengedit properti.</div>
+              <div id="elementEditor" style="display:none; display:flex; flex-direction:column; gap:12px;">
+                <!-- Dynamically populated based on selection -->
+                <div class="form-group">
+                  <label class="form-label">Teks / Konten</label>
+                  <input type="text" id="propContent" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">URL Gambar</label>
+                  <input type="text" id="propImageUrl" class="form-input">
+                </div>
+                <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                  <div class="form-group">
+                    <label class="form-label">Ukuran Teks</label>
+                    <input type="number" id="propFontSize" class="form-input">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Warna</label>
+                    <input type="color" id="propColor" style="width:100%; height:40px; border:1px solid #e2e8f0; border-radius:6px;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Jenis Font</label>
+                  <select id="propFontFamily" class="form-input">
+                    <option value="var(--font-script)">Script (Bersambung)</option>
+                    <option value="var(--font-title)">Title (Klasik)</option>
+                    <option value="var(--font-body)">Body (Modern)</option>
+                  </select>
+                </div>
+                <button id="btnDeleteElement" style="background:#fee2e2; color:#ef4444; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:600; margin-top:10px;">Hapus Elemen Ini</button>
+              </div>
+            </div>
+
+            <!-- Canvas Area (Center) -->
+            <div class="builder-canvas-wrapper">
+              <div class="builder-canvas" id="builderCanvas">
+                <!-- Elements will be injected here -->
+              </div>
             </div>
           </div>
         </div>
@@ -610,5 +674,6 @@
   </div>
 
   <script src="js/admin.js"></script>
+  <script src="js/builder.js"></script>
 </body>
 </html>

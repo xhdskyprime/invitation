@@ -75,16 +75,13 @@
     <div class="cover-hero-bg">
     </div>
 
-    <!-- Bottom Content Section of Cover -->
-    <div class="cover-content">
-      <!-- 2 Large Background Bird Animations behind cover text -->
-      <div class="cover-bird-bg cover-bird-1">
-        <dotlottie-player src="https://lottie.host/4bb6c74f-e885-47d1-b03a-b2e5e099223d/LtNIYa7G0Y.lottie" background="transparent" speed="1" style="width: 260px; height: 260px;" loop autoplay></dotlottie-player>
-      </div>
-      <div class="cover-bird-bg cover-bird-2">
-        <dotlottie-player src="https://lottie.host/4bb6c74f-e885-47d1-b03a-b2e5e099223d/LtNIYa7G0Y.lottie" background="transparent" speed="1" style="width: 240px; height: 240px;" loop autoplay></dotlottie-player>
-      </div>
+    <!-- Dynamic Canvas Wrapper -->
+    <div id="dynamicCoverCanvas" style="position: absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index: 2; pointer-events: none;">
+      <!-- Dynamic elements from builder will be injected here -->
+    </div>
 
+    <!-- Bottom Content Section of Cover -->
+    <div class="cover-content" style="z-index: 5;">
       <div class="cover-text-wrapper">
         <div class="cover-logo-wrapper">
           <img src="/logo%20lutpi.png" class="cover-logo" alt="Logo Lutfi" width="140" height="110">
@@ -100,9 +97,6 @@
         </button>
       </div>
     </div>
-
-    <!-- Bottom Right Flower Ornament -->
-    <img src="/assets/wp-content/uploads/2026/06/TEMA-01-BUNGA-01-bawah-e1721804781634-1-2.webp" class="cover-flower-bottom" alt="Flower Bottom" width="240" height="220">
   </div>
 
   <!-- Main Invitation Wrapper -->

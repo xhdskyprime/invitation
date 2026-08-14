@@ -89,7 +89,33 @@ const defaultData = {
     showStory: true,
     showGallery: true,
     showGifts: true
-  }
+  },
+  coverElements: [
+    {
+      id: "elem_title",
+      type: "text",
+      content: "The Wedding Of",
+      x: 50, // percentage based for responsive layout
+      y: 15, // percentage based
+      fontSize: 16, // px/vw based, let's keep it simple numbers
+      fontFamily: "var(--font-title)",
+      color: "var(--accent-gold)",
+      zIndex: 10,
+      rotation: 0
+    },
+    {
+      id: "elem_names",
+      type: "text",
+      content: "Lutfi & Firdha",
+      x: 50,
+      y: 25,
+      fontSize: 48,
+      fontFamily: "var(--font-script)",
+      color: "#ffffff",
+      zIndex: 10,
+      rotation: 0
+    }
+  ]
 };
 
 let currentData = JSON.parse(JSON.stringify(defaultData));

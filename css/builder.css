@@ -1,0 +1,121 @@
+/* Builder Container */
+.builder-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.builder-toolbar {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.btn-builder {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #334155;
+  transition: all 0.2s;
+}
+
+.btn-builder:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.builder-workspace {
+  display: flex;
+  gap: 20px;
+  min-height: 600px;
+}
+
+.builder-properties {
+  width: 250px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 15px;
+  flex-shrink: 0;
+}
+
+.builder-canvas-wrapper {
+  flex: 1;
+  background: #e2e8f0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.builder-canvas {
+  width: 375px;
+  height: 812px;
+  background: white;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transform: scale(0.7);
+  transform-origin: center center;
+}
+
+/* Draggable Elements inside Canvas */
+.canvas-el {
+  position: absolute;
+  cursor: grab;
+  user-select: none;
+  border: 2px solid transparent;
+}
+
+.canvas-el.selected {
+  border: 2px dashed #3b82f6;
+}
+
+.canvas-el:active {
+  cursor: grabbing;
+}
+
+.canvas-el img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.canvas-el-text {
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Resize Handle */
+.resize-handle {
+  width: 12px;
+  height: 12px;
+  background: #3b82f6;
+  border: 2px solid white;
+  border-radius: 50%;
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  cursor: se-resize;
+  display: none;
+}
+
+.canvas-el.selected .resize-handle {
+  display: block;
+}
