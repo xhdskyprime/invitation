@@ -250,9 +250,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   parseGuestName();
   setupGalleryLightbox();
   
-  if (currentData.theme) {
-    applyThemeSettings(currentData.theme);
-  }
   renderContent();
   setupAudioPlayer();
   setupCountdown();
@@ -285,10 +282,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       const dataToRender = event.data.payload || {};
       
       // Apply Theme First
-      if (dataToRender.theme) {
-        applyThemeSettings(dataToRender.theme);
-      }
-
       renderContent(dataToRender);
       setupCountdown();
       renderWishes();
@@ -297,70 +290,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 });
-
-function applyThemeSettings(theme) {
-  const root = document.documentElement;
-
-  // 1. Color Palette
-  if (theme.colorPalette === "sage") {
-    root.style.setProperty("--primary-navy", "#4A5D4E");
-    root.style.setProperty("--primary-navy-light", "#5E7362");
-    root.style.setProperty("--primary-navy-dark", "#334237");
-    root.style.setProperty("--accent-gold", "#C1A57B");
-    root.style.setProperty("--text-dark", "#334237");
-  } else if (theme.colorPalette === "blush") {
-    root.style.setProperty("--primary-navy", "#B57B85");
-    root.style.setProperty("--primary-navy-light", "#C98C97");
-    root.style.setProperty("--primary-navy-dark", "#8E5F67");
-    root.style.setProperty("--accent-gold", "#D4AFB9");
-    root.style.setProperty("--text-dark", "#8E5F67");
-  } else if (theme.colorPalette === "monochrome") {
-    root.style.setProperty("--primary-navy", "#333333");
-    root.style.setProperty("--primary-navy-light", "#555555");
-    root.style.setProperty("--primary-navy-dark", "#111111");
-    root.style.setProperty("--accent-gold", "#999999");
-    root.style.setProperty("--text-dark", "#111111");
-  } else {
-    // Default Navy
-    root.style.setProperty("--primary-navy", "#113468");
-    root.style.setProperty("--primary-navy-light", "#21457C");
-    root.style.setProperty("--primary-navy-dark", "#091E3E");
-    root.style.setProperty("--accent-gold", "#DAAB7F");
-    root.style.setProperty("--text-dark", "#113468");
-  }
-
-  // 2. Font Family
-  if (theme.fontFamily === "dancing-script") {
-    root.style.setProperty("--font-script", "'Dancing Script', cursive");
-  } else if (theme.fontFamily === "playfair") {
-    root.style.setProperty("--font-script", "'Playfair Display', serif");
-  } else {
-    root.style.setProperty("--font-script", "'Alex Brush', 'Allura', 'Great Vibes', cursive");
-  }
-
-  // 3. Animation Style (We'll handle this in setupScrollReveal or by changing CSS classes)
-  if (theme.animationStyle) {
-    document.body.setAttribute('data-animation-style', theme.animationStyle);
-  }
-
-  // 4. Visibility Toggles
-  if (theme.showQuote === false) {
-    const q = document.querySelector(".quote-section");
-    if (q) q.style.display = "none";
-  }
-  if (theme.showStory === false) {
-    const s = document.getElementById("storySection");
-    if (s) s.style.display = "none";
-  }
-  if (theme.showGallery === false) {
-    const g = document.getElementById("gallerySection");
-    if (g) g.style.display = "none";
-  }
-  if (theme.showGifts === false) {
-    const gift = document.getElementById("giftSection");
-    if (gift) gift.style.display = "none";
-  }
-}
 
 function parseGuestName() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -1240,6 +1169,9 @@ function setupCoverOverlay() {
   btnOpen.addEventListener("click", (e) => {
     e.preventDefault();
     overlay.classList.add("opened");
+    
+    const wrapper = document.querySelector(".invitation-wrapper");
+    if (wrapper) wrapper.style.display = "block";
     
     // Trigger scroll reveal for hero elements immediately on open
     setTimeout(() => {

@@ -36,7 +36,7 @@ const defaultData = {
     eventDateISO: "",
     eventDateFormatted: "",
     quote: "",
-    bgMusicUrl: "",
+    bgMusicUrl: "background_music.m4a",
     heroImageUrl: ""
   },
   groom: {
@@ -159,6 +159,7 @@ async function loadStoredData() {
       populateFormFields();
       renderDynamicLists();
       renderRsvpTable();
+      renderGuestTable();
       updateStats();
     }
   } catch(e) {
@@ -1231,6 +1232,7 @@ function setupPasswordOverlay() {
           populateFormFields();
           renderDynamicLists();
           renderRsvpTable();
+          renderGuestTable();
           updateStats();
         }
         
