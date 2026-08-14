@@ -77,9 +77,9 @@ const defaultData = {
   guestList: [],
   waTemplates: {
     active: "formal",
-    formal: `Kepada Yth.\nBapak/Ibu/Saudara/i {NAMA_TAMU}\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda untuk menghadiri acara pernikahan kami:\n\n{NAMA_MEMPELAI}\n\nInfo selengkapnya mengenai acara dapat diakses melalui link undangan digital berikut:\n{LINK_UNDANGAN}\n\nMerupakan suatu kebahagiaan bagi kami apabila Anda berkenan hadir dan memberikan doa restu.\n\nTerima kasih.`,
-    islami: `Assalamu'alaikum Wr. Wb.\n\nKepada Yth. {NAMA_TAMU}\n\nDengan memohon rahmat dan ridho Allah SWT, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk menghadiri syukuran pernikahan kami:\n\n{NAMA_MEMPELAI}\n\nUntuk info tanggal, waktu, dan lokasi acara selengkapnya dapat dilihat melalui tautan undangan berikut:\n{LINK_UNDANGAN}\n\nJazakumullah Khairan Katsiran atas doa dan kehadirannya.\n\nWassalamu'alaikum Wr. Wb.`,
-    santai: `Halo {NAMA_TAMU}!\n\nKabar bahagia untuk kita semua! Kami mengundang kamu untuk hadir dan merayakan momen pernikahan kami:\n\n{NAMA_MEMPELAI}\n\nKlik link di bawah ini untuk info lengkapnya ya:\n{LINK_UNDANGAN}\n\nSampai jumpa di hari bahagia kami! 😊`
+    formal: `Bismillahirrahmanirrahim. ✨\nKepada Yth. Bapak/Ibu/Saudara/i {NAMA_TAMU}\n\nTanpa mengurangi rasa hormat, melalui pesan ini perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada hari bahagia pernikahan kami:\n\n💍 Lutfi & Firdha\n\nUntuk detail informasi mengenai hari, waktu, dan lokasi acara, silakan kunjungi tautan undangan digital kami di bawah ini:\n👉 {LINK_UNDANGAN}\n\nMerupakan suatu kehormatan dan kebahagiaan yang luar biasa bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir di hari bersejarah kami.\n\nAtas perhatian dan doa restunya, kami ucapkan terima kasih. 🙏🏻\n\nHormat kami,\nLutfi & Firdha`,
+    islami: `Assalamu'alaikum Wr. Wb. ✨\n\nKepada Yth. Bapak/Ibu/Saudara/i {NAMA_TAMU}\n\nDengan memohon rahmat dan ridho Allah SWT, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk menghadiri syukuran pernikahan kami:\n\n💍 Lutfi & Firdha\n\nUntuk info tanggal, waktu, dan lokasi acara selengkapnya dapat dilihat melalui tautan undangan berikut:\n👉 {LINK_UNDANGAN}\n\nJazakumullah Khairan Katsiran atas doa dan kehadirannya.\n\nWassalamu'alaikum Wr. Wb. 🙏🏻`,
+    santai: `Halo {NAMA_TAMU}! ✨🕊️\n\nMomen yang kami tunggu-tunggu akhirnya tiba! Dengan penuh kebahagiaan, kami ingin mengundang kamu untuk turut serta merayakan hari pernikahan kami:\n\n🤍 Lutfi & Firdha 🤍\n\nSilakan klik tautan undangan digital di bawah ini untuk melihat detail acaranya ya:\n💌 {LINK_UNDANGAN}\n\nKehadiran dan doa restumu akan menjadi kado terindah untuk mengawali langkah baru kami. Sampai jumpa di hari bahagia nanti! 🥰\n\nSalam hangat,\nLutfi & Firdha`
   },
   theme: {
     colorPalette: "navy",
@@ -155,6 +155,11 @@ async function loadStoredData() {
     if (res.ok) {
       const data = await res.json();
       currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), data);
+      
+      // Upgrade WA Templates if they match old defaults
+      if (currentData.waTemplates && currentData.waTemplates.formal && currentData.waTemplates.formal.includes("Kepada Yth.\\nBapak/Ibu/Saudara/i {NAMA_TAMU}\\n\\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda")) {
+         currentData.waTemplates = JSON.parse(JSON.stringify(defaultData.waTemplates));
+      }
       hidePasswordOverlay();
       populateFormFields();
       renderDynamicLists();
