@@ -46,56 +46,44 @@ function sanitizeImageUrl(url) {
 // Default Fallback Data matching assets/spesial-01
 const defaultData = {
   general: {
-    coupleNames: "Lutfi & Firdha",
-    eventDateISO: "2026-08-26T08:00:00",
-    eventDateFormatted: "Rabu, 26 Agustus 2026",
-    quote: '"Dan di antara tanda-tanda (kebesaran-Nya) ialah Dia menciptakan pasangan-pasangan untukmu dari meksasamu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang." (Ar-Rum: 21)',
-    bgMusicUrl: "kusumo_wijoyo.m4a",
-    heroImageUrl: "https://i.ibb.co.com/HLzkB2z4/149-E3-E4-F-6-AD7-4-F41-8335-27-F48688-EBEF.jpg"
+    coupleNames: "",
+    eventDateISO: "",
+    eventDateFormatted: "",
+    quote: "",
+    bgMusicUrl: "",
+    heroImageUrl: ""
   },
   groom: {
-    callName: "Lutfi",
-    fullName: "Lutfi, S.T.",
-    parents: "Putra Pertama dari Bpk. Keluarga & Ibu Keluarga",
-    igHandle: "@lutfi",
-    igUrl: "https://instagram.com",
-    avatarUrl: "assets/wp-content/uploads/2026/06/sm-PRIA-e1725510474400-1-3.jpg",
+    callName: "",
+    fullName: "",
+    parents: "",
+    igHandle: "",
+    igUrl: "",
+    avatarUrl: "",
     zoom: 1.0
   },
   bride: {
-    callName: "Firdha",
-    fullName: "Firdha, S.Ked.",
-    parents: "Putri Kedua dari Bpk. Keluarga & Ibu Keluarga",
-    igHandle: "@firdha",
-    igUrl: "https://instagram.com",
-    avatarUrl: "assets/wp-content/uploads/2026/06/sm-WANITA-e1725510489585-1-3.jpg",
+    callName: "",
+    fullName: "",
+    parents: "",
+    igHandle: "",
+    igUrl: "",
+    avatarUrl: "",
     zoom: 1.0
   },
   events: {
-    akadDate: "Rabu, 26 Agustus 2026",
-    akadTime: "Pukul 08.00 - 10.00 WIB",
-    akadLocation: "Grand Ballroom Hotel Mulia, Senayan, Jakarta Pusat",
-    akadMapUrl: "https://maps.google.com",
-    resepsiDate: "Rabu, 26 Agustus 2026",
-    resepsiTime: "Pukul 11.00 - 14.00 WIB",
-    resepsiLocation: "Grand Ballroom Hotel Mulia, Senayan, Jakarta Pusat",
-    resepsiMapUrl: "https://maps.google.com"
+    akadDate: "",
+    akadTime: "",
+    akadLocation: "",
+    akadMapUrl: "",
+    resepsiDate: "",
+    resepsiTime: "",
+    resepsiLocation: "",
+    resepsiMapUrl: ""
   },
-  stories: [
-    { date: "15 Mei 2021", title: "Awal Pertemuan", desc: "Pertama kali berkenalan saat kegiatan kampus bersama." },
-    { date: "26 Desember 2024", title: "Lamaran & Fitrah", desc: "Momen membahagiakan saat keluarga besar saling bertemu dan mengikat janji suci." },
-    { date: "26 Agustus 2026", title: "Hari Pernikahan", desc: "Hari suci di mana kami mengikrarkan janji suci seumur hidup." }
-  ],
-  gallery: [
-    "assets/wp-content/uploads/2026/06/p-1-1-3.jpg",
-    "assets/wp-content/uploads/2026/06/p-2-1-3.jpg",
-    "assets/wp-content/uploads/2026/06/sm-1-5-e1725510309587-1-3.jpg",
-    "assets/wp-content/uploads/2026/06/sm-1-6-e1725510241295-1-3.jpg"
-  ],
-  gifts: [
-    { bank: "BCA", number: "1234567890", name: "Lutfi" },
-    { bank: "MANDIRI", number: "9876543210", name: "Firdha" }
-  ]
+  stories: [],
+  gallery: [],
+  gifts: []
 };
 
 let currentData = defaultData;
@@ -214,7 +202,7 @@ function formatStoryDesc(descText) {
 }
 
 // Use the pre-existing promise from the inline head script, or initiate fetch as fallback
-const configPromise = window.configPromise || fetch("/api/config")
+const configPromise = window.configPromise || fetch("/api/config?t=" + Date.now())
   .then(res => res.ok ? res.json() : defaultData)
   .catch(e => {
     console.error("Error loading config from server", e);
@@ -318,11 +306,11 @@ function renderContent() {
   const { general, groom, bride, events, stories, gallery, gifts } = currentData;
 
   // General & Cover
-  safeSetText("coverCoupleNames", general.coupleNames || defaultData.general.coupleNames);
-  safeSetText("coverEventDate", general.eventDateFormatted || defaultData.general.eventDateFormatted);
-  safeSetText("heroCoupleNames", general.coupleNames || defaultData.general.coupleNames);
-  safeSetText("heroEventDate", general.eventDateFormatted || defaultData.general.eventDateFormatted);
-  safeSetText("countdownEventDate", general.eventDateFormatted || defaultData.general.eventDateFormatted);
+  safeSetText("coverCoupleNames", general.coupleNames);
+  safeSetText("coverEventDate", general.eventDateFormatted);
+  safeSetText("heroCoupleNames", general.coupleNames);
+  safeSetText("heroEventDate", general.eventDateFormatted);
+  safeSetText("countdownEventDate", general.eventDateFormatted);
 
   if (general.heroImageUrl) {
     const cleanHeroUrl = sanitizeImageUrl(general.heroImageUrl);
@@ -331,16 +319,16 @@ function renderContent() {
       el.style.backgroundImage = `url('${cleanHeroUrl}')`;
     });
   }
-  safeSetText("footerCoupleNames", general.coupleNames || defaultData.general.coupleNames);
+  safeSetText("footerCoupleNames", general.coupleNames);
   if (general.quote) {
     safeSetHtml("quoteText", general.quote.replace(/\n/g, '<br>'));
   }
 
   // Groom
-  safeSetText("groomCallName", groom.callName || defaultData.groom.callName);
-  safeSetText("groomFullName", groom.fullName || defaultData.groom.fullName);
-  safeSetText("groomParents", groom.parents || defaultData.groom.parents);
-  safeSetText("groomIgHandle", groom.igHandle || defaultData.groom.igHandle);
+  safeSetText("groomCallName", groom.callName);
+  safeSetText("groomFullName", groom.fullName);
+  safeSetText("groomParents", groom.parents);
+  safeSetText("groomIgHandle", groom.igHandle);
   safeSetAttr("groomIg", "href", groom.igUrl || "#");
   if (groom.avatarUrl) {
     const cleanGroomUrl = sanitizeImageUrl(groom.avatarUrl);
@@ -355,10 +343,10 @@ function renderContent() {
   }
 
   // Bride
-  safeSetText("brideCallName", bride.callName || defaultData.bride.callName);
-  safeSetText("brideFullName", bride.fullName || defaultData.bride.fullName);
-  safeSetText("brideParents", bride.parents || defaultData.bride.parents);
-  safeSetText("brideIgHandle", bride.igHandle || defaultData.bride.igHandle);
+  safeSetText("brideCallName", bride.callName);
+  safeSetText("brideFullName", bride.fullName);
+  safeSetText("brideParents", bride.parents);
+  safeSetText("brideIgHandle", bride.igHandle);
   safeSetAttr("brideIg", "href", bride.igUrl || "#");
   if (bride.avatarUrl) {
     const cleanBrideUrl = sanitizeImageUrl(bride.avatarUrl);
@@ -373,15 +361,15 @@ function renderContent() {
   }
 
   // Events
-  safeSetText("akadDate", events.akadDate || defaultData.events.akadDate);
-  safeSetText("akadTime", events.akadTime || defaultData.events.akadTime);
+  safeSetText("akadDate", events.akadDate);
+  safeSetText("akadTime", events.akadTime);
   if (events.akadLocation) {
     safeSetHtml("akadLocation", events.akadLocation.replace(/\n/g, '<br>'));
   }
   safeSetAttr("akadMapUrl", "href", events.akadMapUrl || "#");
 
-  safeSetText("resepsiDate", events.resepsiDate || defaultData.events.resepsiDate);
-  safeSetText("resepsiTime", events.resepsiTime || defaultData.events.resepsiTime);
+  safeSetText("resepsiDate", events.resepsiDate);
+  safeSetText("resepsiTime", events.resepsiTime);
   if (events.resepsiLocation) {
     safeSetHtml("resepsiLocation", events.resepsiLocation.replace(/\n/g, '<br>'));
   }
@@ -452,7 +440,7 @@ function renderContent() {
         card.innerHTML = `
           <div class="gallery-card-inner">
             <img src="${escapeHtml(cleanImgUrl)}" alt="Galeri Momen ${idx + 1}" loading="lazy"
-                 style="transform: translate(${x}%, ${y}%) scale(${zoom}); transform-origin: center center;">
+                 style="--pan-x: ${x}%; --pan-y: ${y}%; --pan-zoom: ${zoom};">
             <div class="gallery-overlay">
               <div class="gallery-badge"><i data-lucide="camera"></i> Momen #${idx + 1}</div>
               <div class="gallery-zoom-icon"><i data-lucide="maximize-2"></i></div>

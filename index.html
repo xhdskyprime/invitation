@@ -27,7 +27,7 @@
 
   <!-- Speculative parallel fetch and early inline style injection to reduce LCP -->
   <script>
-    window.configPromise = fetch("/api/config")
+    window.configPromise = fetch("/api/config?t=" + Date.now())
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (data && data.general) {

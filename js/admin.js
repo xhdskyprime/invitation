@@ -32,61 +32,49 @@ function getBankInfo(bankInput) {
 // Admin Dashboard Logic
 const defaultData = {
   general: {
-    coupleNames: "Lutfi & Firdha",
-    eventDateISO: "2026-08-26T08:00:00",
-    eventDateFormatted: "Rabu, 26 Agustus 2026",
-    quote: '"Dan di antara tanda-tanda (kebesaran-Nya) ialah Dia menciptakan pasangan-pasangan untukmu dari meksasamu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang." (Ar-Rum: 21)',
-    bgMusicUrl: "kusumo_wijoyo.m4a",
-    heroImageUrl: "https://i.ibb.co.com/HLzkB2z4/149-E3-E4-F-6-AD7-4-F41-8335-27-F48688-EBEF.jpg"
+    coupleNames: "",
+    eventDateISO: "",
+    eventDateFormatted: "",
+    quote: "",
+    bgMusicUrl: "",
+    heroImageUrl: ""
   },
   groom: {
-    callName: "Lutfi",
-    fullName: "Lutfi, S.T.",
-    parents: "Putra Pertama dari Bpk. Keluarga & Ibu Keluarga",
-    igHandle: "@lutfi",
-    igUrl: "https://instagram.com",
-    avatarUrl: "assets/wp-content/uploads/2026/06/sm-PRIA-e1725510474400-1-3.jpg",
-    zoom: 1.0
+    callName: "",
+    fullName: "",
+    parents: "",
+    igHandle: "",
+    igUrl: "",
+    avatarUrl: "",
+    zoom: 1.0,
+    offsetX: 0,
+    offsetY: 0
   },
   bride: {
-    callName: "Firdha",
-    fullName: "Firdha, S.Ked.",
-    parents: "Putri Kedua dari Bpk. Keluarga & Ibu Keluarga",
-    igHandle: "@firdha",
-    igUrl: "https://instagram.com",
-    avatarUrl: "assets/wp-content/uploads/2026/06/sm-WANITA-e1725510489585-1-3.jpg",
-    zoom: 1.0
+    callName: "",
+    fullName: "",
+    parents: "",
+    igHandle: "",
+    igUrl: "",
+    avatarUrl: "",
+    zoom: 1.0,
+    offsetX: 0,
+    offsetY: 0
   },
   events: {
-    akadDate: "Rabu, 26 Agustus 2026",
-    akadTime: "Pukul 08.00 - 10.00 WIB",
-    akadLocation: "Grand Ballroom Hotel Mulia, Senayan, Jakarta Pusat",
-    akadMapUrl: "https://maps.google.com",
-    resepsiDate: "Rabu, 26 Agustus 2026",
-    resepsiTime: "Pukul 11.00 - 14.00 WIB",
-    resepsiLocation: "Grand Ballroom Hotel Mulia, Senayan, Jakarta Pusat",
-    resepsiMapUrl: "https://maps.google.com"
+    akadDate: "",
+    akadTime: "",
+    akadLocation: "",
+    akadMapUrl: "",
+    resepsiDate: "",
+    resepsiTime: "",
+    resepsiLocation: "",
+    resepsiMapUrl: ""
   },
-  stories: [
-    { date: "15 Mei 2021", title: "Awal Pertemuan", desc: "Pertama kali berkenalan saat kegiatan kampus bersama." },
-    { date: "26 Desember 2024", title: "Lamaran & Fitrah", desc: "Momen membahagiakan saat keluarga besar saling bertemu dan mengikat janji suci." },
-    { date: "26 Agustus 2026", title: "Hari Pernikahan", desc: "Hari suci di mana kami mengikrarkan janji suci seumur hidup." }
-  ],
-  gallery: [
-    "assets/wp-content/uploads/2026/06/p-1-1-3.jpg",
-    "assets/wp-content/uploads/2026/06/p-2-1-3.jpg",
-    "assets/wp-content/uploads/2026/06/sm-1-5-e1725510309587-1-3.jpg",
-    "assets/wp-content/uploads/2026/06/sm-1-6-e1725510241295-1-3.jpg"
-  ],
-  gifts: [
-    { bank: "BCA", number: "1234567890", name: "Lutfi" },
-    { bank: "MANDIRI", number: "9876543210", name: "Firdha" }
-  ],
-  guestList: [
-    { id: 1, name: "Bapak Ahmad & Keluarga", phone: "081234567890" },
-    { id: 2, name: "Ibu Susi & Suami", phone: "089876543210" },
-    { id: 3, name: "Budi Santoso", phone: "" }
-  ],
+  stories: [],
+  gallery: [],
+  gifts: [],
+  guestList: [],
   waTemplates: {
     active: "formal",
     formal: `Kepada Yth.\nBapak/Ibu/Saudara/i {NAMA_TAMU}\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda untuk menghadiri acara pernikahan kami:\n\n{NAMA_MEMPELAI}\n\nInfo selengkapnya mengenai acara dapat diakses melalui link undangan digital berikut:\n{LINK_UNDANGAN}\n\nMerupakan suatu kebahagiaan bagi kami apabila Anda berkenan hadir dan memberikan doa restu.\n\nTerima kasih.`,
