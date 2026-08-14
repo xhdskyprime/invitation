@@ -202,6 +202,24 @@ function safeSetAttr(id, attr, value) {
   if (el) el.setAttribute(attr, value || "#");
 }
 
+function bindImageLoader(imgEl, containerEl) {
+  if (!imgEl || !containerEl) return;
+  containerEl.classList.add("image-skeleton");
+  imgEl.classList.add("lazy-img");
+  
+  const finishLoading = () => {
+    containerEl.classList.remove("image-skeleton");
+    imgEl.classList.add("loaded");
+  };
+
+  if (imgEl.complete) {
+    finishLoading();
+  } else {
+    imgEl.onload = finishLoading;
+    imgEl.onerror = finishLoading; // Still remove skeleton if it fails
+  }
+}
+
 function getStoryIcon(idx, title) {
   const t = (title || "").toLowerCase();
   if (t.includes("awal") || t.includes("pertemuan") || t.includes("kenal")) return "sparkles";
@@ -383,9 +401,16 @@ function renderContent(data = currentData) {
   if (general.heroImageUrl) {
     const cleanHeroUrl = sanitizeImageUrl(general.heroImageUrl);
     const heroBgElements = document.querySelectorAll('.cover-hero-bg, .hero-section');
-    heroBgElements.forEach(el => {
-      el.style.backgroundImage = `url('${cleanHeroUrl}')`;
-    });
+    heroBgElements.forEach(el => el.classList.add("image-skeleton"));
+    
+    const proxyImg = new Image();
+    proxyImg.onload = proxyImg.onerror = () => {
+      heroBgElements.forEach(el => {
+        el.style.backgroundImage = `url('${cleanHeroUrl}')`;
+        el.classList.remove("image-skeleton");
+      });
+    };
+    proxyImg.src = cleanHeroUrl;
   }
   safeSetText("footerCoupleNames", general.coupleNames);
   if (general.quote) {
@@ -403,6 +428,7 @@ function renderContent(data = currentData) {
     safeSetAttr("groomAvatar", "src", cleanGroomUrl);
     const groomAvatarEl = document.getElementById("groomAvatar");
     if (groomAvatarEl) {
+      bindImageLoader(groomAvatarEl, groomAvatarEl.parentElement);
       groomAvatarEl.style.cursor = "pointer";
       groomAvatarEl.onclick = () => openSingleImageLightbox(cleanGroomUrl);
       
@@ -428,6 +454,7 @@ function renderContent(data = currentData) {
     safeSetAttr("brideAvatar", "src", cleanBrideUrl);
     const brideAvatarEl = document.getElementById("brideAvatar");
     if (brideAvatarEl) {
+      bindImageLoader(brideAvatarEl, brideAvatarEl.parentElement);
       brideAvatarEl.style.cursor = "pointer";
       brideAvatarEl.onclick = () => openSingleImageLightbox(cleanBrideUrl);
       
@@ -529,6 +556,11 @@ function renderContent(data = currentData) {
             </div>
           </div>
         `;
+        
+        // Setup image loader
+        const imgEl = card.querySelector("img");
+        const innerContainer = card.querySelector(".gallery-card-inner");
+        bindImageLoader(imgEl, innerContainer);
 
         card.addEventListener("click", () => openLightbox(idx));
         galleryEl.appendChild(card);
