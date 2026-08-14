@@ -239,14 +239,6 @@ function populateFormFields() {
   document.getElementById("inputQuote").value = g.quote || "";
   document.getElementById("inputBgMusicUrl").value = g.bgMusicUrl || "";
   
-  const theme = currentData.theme || {};
-  document.getElementById("inputColorPalette").value = theme.colorPalette || "navy";
-  document.getElementById("inputFontFamily").value = theme.fontFamily || "great-vibes";
-  document.getElementById("inputAnimationStyle").value = theme.animationStyle || "fade-zoom";
-  document.getElementById("inputShowQuote").checked = theme.showQuote !== false;
-  document.getElementById("inputShowStory").checked = theme.showStory !== false;
-  document.getElementById("inputShowGallery").checked = theme.showGallery !== false;
-  document.getElementById("inputShowGifts").checked = theme.showGifts !== false;
   updateImagePreview("heroImgThumb", g.heroImageUrl);
 
   // Groom
@@ -383,14 +375,6 @@ function setupInputListeners() {
   bindInput("inputHeroImageUrl", "general.heroImageUrl", "heroImgThumb");
   bindInput("inputQuote", "general.quote");
 
-  // Theme
-  bindInput("inputColorPalette", "theme.colorPalette");
-  bindInput("inputFontFamily", "theme.fontFamily");
-  bindInput("inputAnimationStyle", "theme.animationStyle");
-  bindInput("inputShowQuote", "theme.showQuote");
-  bindInput("inputShowStory", "theme.showStory");
-  bindInput("inputShowGallery", "theme.showGallery");
-  bindInput("inputShowGifts", "theme.showGifts");
 
   // Groom
   bindInput("inputGroomCallName", "groom.callName");
