@@ -1225,3 +1225,32 @@ function setupVoiceRecorder() {
     }
   });
 }
+
+// Cover Overlay - Opening Trigger
+function setupCoverOverlay() {
+  const btnOpen = document.getElementById("btnOpenInvitation");
+  const overlay = document.getElementById("coverOverlay");
+  const bgMusic = document.getElementById("bgMusic");
+  const audioToggle = document.getElementById("audioToggle");
+
+  if (!btnOpen || !overlay) {
+    return;
+  }
+
+  btnOpen.addEventListener("click", (e) => {
+    e.preventDefault();
+    overlay.classList.add("opened");
+    
+    // Trigger scroll reveal for hero elements immediately on open
+    setTimeout(() => {
+      setupScrollReveal();
+    }, 300);
+
+    if (bgMusic) {
+      bgMusic.play().then(() => {
+        if (audioToggle) audioToggle.classList.add("spinning");
+        isPlaying = true;
+      }).catch(err => console.log("Audio play allowed on click:", err));
+    }
+  });
+}
