@@ -1281,6 +1281,9 @@ html::-webkit-scrollbar,
 }
 
 /* Skeleton Loading Animation */
+.image-skeleton {
+  background-color: #e5ded7 !important;
+}
 .image-skeleton::after {
   content: '';
   position: absolute;
