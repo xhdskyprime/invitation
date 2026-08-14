@@ -40,7 +40,7 @@
             document.head.appendChild(link);
             
             const style = document.createElement('style');
-            style.innerHTML = '.cover-hero-bg { background-image: url("' + data.general.heroImageUrl + '"); }';
+            style.innerHTML = '.cover-hero-bg, .hero-section { background-image: url("' + data.general.heroImageUrl + '"); }';
             document.head.appendChild(style);
           }
         }
@@ -104,8 +104,13 @@
 
     <!-- Hero Header -->
     <header class="hero-section">
-      <div class="hero-video-wrapper">
-        <video id="heroOpeningVideo" preload="auto" src="/assets/wp-content/uploads/2026/06/VINTAGE-09.mp4" muted playsinline disablePictureInPicture></video>
+      <div class="wayang-doors" id="wayangDoors">
+        <div class="wayang-door wayang-left">
+          <img src="/assets/images/wayang-kiri.webp" alt="Wayang Kiri">
+        </div>
+        <div class="wayang-door wayang-right">
+          <img src="/assets/images/wayang-kanan.webp" alt="Wayang Kanan">
+        </div>
       </div>
 
       <div class="hero-content" id="heroContentAnimated" style="opacity: 0; transform: scale(1.1); transition: opacity 1.5s ease, transform 1.5s ease;">

@@ -672,9 +672,9 @@ function setupCoverOverlay() {
 
     overlay.classList.add("opened");
     
-    const heroVideo = document.getElementById("heroOpeningVideo");
-    if (heroVideo) {
-      heroVideo.play().catch(err => console.log("Hero video play prevented:", err));
+    const wayangDoors = document.getElementById("wayangDoors");
+    if (wayangDoors) {
+      wayangDoors.classList.add("open");
     }
     
     // Reveal hero content after video doors open (approx 1.8s)
