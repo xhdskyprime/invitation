@@ -808,7 +808,7 @@ async function renderWishes() {
               <span class="wa-mic-badge"><i data-lucide="mic"></i> Voice Note</span>
             </div>
           </div>
-          <audio src="${item.audio}" style="display:none;" onended="resetWaAudio(this)"></audio>
+          <audio src="${item.audio}" preload="auto" playsinline webkit-playsinline style="display:none;" onended="resetWaAudio(this)"></audio>
         </div>
       ` : ''}
       <div class="wish-date">
@@ -832,6 +832,15 @@ window.toggleWaAudio = function(btn) {
   
   if (!audio) return;
   
+  // Pause bgMusic if currently playing
+  const bgMusic = document.getElementById("bgMusic");
+  const audioToggle = document.getElementById("audioToggle");
+  if (bgMusic && !bgMusic.paused) {
+    bgMusic.pause();
+    if (audioToggle) audioToggle.classList.remove("spinning");
+    isPlaying = false;
+  }
+
   // Pause any other playing voice notes
   document.querySelectorAll('.wish-audio-wrapper audio').forEach(a => {
     if (a !== audio && !a.paused) {
@@ -848,11 +857,23 @@ window.toggleWaAudio = function(btn) {
   });
 
   if (audio.paused) {
-    audio.play().then(() => {
-      if (playIcon) playIcon.style.display = 'none';
-      if (pauseIcon) pauseIcon.style.display = 'block';
-      wrapper.classList.add('playing');
-    }).catch(err => console.log('WA Audio play error', err));
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isIOS && audio.src && audio.src.startsWith('data:audio/webm')) {
+      alert("Format ucapan suara ini (WebM) tidak didukung untuk diputar di iPhone. Voice note yang direkam dari iPhone atau Chrome versi baru akan mendukung pemutaran di semua HP.");
+      return;
+    }
+
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        if (playIcon) playIcon.style.display = 'none';
+        if (pauseIcon) pauseIcon.style.display = 'block';
+        wrapper.classList.add('playing');
+      }).catch(err => {
+        console.error('WA Audio play error:', err);
+        showToast("Gagal memutar suara.");
+      });
+    }
   } else {
     audio.pause();
     if (playIcon) playIcon.style.display = 'block';
@@ -907,17 +928,25 @@ let recordingInterval = null;
 let recordingSeconds = 0;
 
 function getSupportedMimeType() {
-  const types = [
-    'audio/webm;codecs=opus',
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const types = isIOS ? [
     'audio/mp4',
-    'audio/webm',
     'audio/aac',
+    'audio/webm;codecs=opus',
+    'audio/webm'
+  ] : [
+    'audio/mp4',
+    'audio/aac',
+    'audio/webm;codecs=opus',
+    'audio/webm',
     'audio/ogg'
   ];
   for (const type of types) {
-    if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(type)) {
-      return type;
-    }
+    try {
+      if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(type)) {
+        return type;
+      }
+    } catch (e) {}
   }
   return ''; // Browser default
 }
@@ -953,11 +982,24 @@ function setupVoiceRecorder() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mimeType = getSupportedMimeType();
-      const options = mimeType ? { mimeType } : {};
-      mediaRecorder = new MediaRecorder(stream, options);
+      
+      // Fallback mechanism for MediaRecorder options on iOS Safari
+      try {
+        const options = mimeType ? { mimeType } : {};
+        mediaRecorder = new MediaRecorder(stream, options);
+      } catch (optionsErr) {
+        console.warn("MediaRecorder with options failed, trying default MediaRecorder:", optionsErr);
+        try {
+          mediaRecorder = new MediaRecorder(stream);
+        } catch (defaultErr) {
+          console.error("MediaRecorder instantiation completely failed:", defaultErr);
+          alert("Browser Anda tidak mendukung perekaman suara.");
+          return;
+        }
+      }
       
       mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
+        if (e.data && e.data.size > 0) {
           audioChunks.push(e.data);
         }
       };
@@ -965,13 +1007,23 @@ function setupVoiceRecorder() {
       mediaRecorder.onstop = () => {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         const fallbackMime = isIOS ? 'audio/mp4' : 'audio/webm';
-        const mimeTypeUsed = mediaRecorder.mimeType || fallbackMime;
+        const mimeTypeUsed = mediaRecorder.mimeType || mimeType || fallbackMime;
         const audioBlob = new Blob(audioChunks, { type: mimeTypeUsed });
+
+        if (audioBlob.size === 0) {
+          alert("Hasil rekaman suara kosong. Silakan coba rekam lagi.");
+          statusContainer.style.display = "none";
+          recordBtn.style.display = "inline-flex";
+          previewContainer.style.display = "none";
+          return;
+        }
+
         const reader = new FileReader();
         reader.readAsDataURL(audioBlob);
         reader.onloadend = () => {
           base64Audio = reader.result;
           audioPlayer.src = base64Audio;
+          audioPlayer.load();
           previewContainer.style.display = "flex";
           statusContainer.style.display = "none";
           recordBtn.style.display = "none";
@@ -981,7 +1033,8 @@ function setupVoiceRecorder() {
         stream.getTracks().forEach(track => track.stop());
       };
 
-      mediaRecorder.start();
+      // Pass timeslice (500ms) so iOS Safari triggers ondataavailable periodically
+      mediaRecorder.start(500);
 
       // UI update
       recordBtn.style.display = "none";
