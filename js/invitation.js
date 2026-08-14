@@ -414,6 +414,7 @@ function renderContent(data = currentData) {
     groomAvatarEl.style.maxWidth = "none";
     groomAvatarEl.style.maxHeight = "none";
     groomAvatarEl.style.transform = `translate(${x / zoom}%, ${y / zoom}%)`;
+    }
   }
 
   // Bride
@@ -438,6 +439,7 @@ function renderContent(data = currentData) {
     brideAvatarEl.style.maxWidth = "none";
     brideAvatarEl.style.maxHeight = "none";
     brideAvatarEl.style.transform = `translate(${x / zoom}%, ${y / zoom}%)`;
+    }
   }
 
   // Events
