@@ -40,6 +40,10 @@ function sanitizeImageUrl(url) {
       clean = '/' + clean;
     }
   }
+  
+  // Strip WordPress auto-generated thumbnail sizes to load the HD original (e.g. -150x150.jpg -> .jpg)
+  clean = clean.replace(/-\d+x\d+(?=\.[a-zA-Z0-9]+$)/, '');
+  
   return clean;
 }
 
@@ -339,7 +343,11 @@ function renderContent() {
     const x = groom.offsetX || 0;
     const y = groom.offsetY || 0;
     const zoom = groom.zoom || 1.0;
-    groomAvatarEl.style.transform = `translate(${x}%, ${y}%) scale(${zoom})`;
+    groomAvatarEl.style.width = `calc(100% * ${zoom})`;
+    groomAvatarEl.style.height = `calc(100% * ${zoom})`;
+    groomAvatarEl.style.maxWidth = "none";
+    groomAvatarEl.style.maxHeight = "none";
+    groomAvatarEl.style.transform = `translate(${x / zoom}%, ${y / zoom}%)`;
   }
 
   // Bride
@@ -357,7 +365,11 @@ function renderContent() {
     const x = bride.offsetX || 0;
     const y = bride.offsetY || 0;
     const zoom = bride.zoom || 1.0;
-    brideAvatarEl.style.transform = `translate(${x}%, ${y}%) scale(${zoom})`;
+    brideAvatarEl.style.width = `calc(100% * ${zoom})`;
+    brideAvatarEl.style.height = `calc(100% * ${zoom})`;
+    brideAvatarEl.style.maxWidth = "none";
+    brideAvatarEl.style.maxHeight = "none";
+    brideAvatarEl.style.transform = `translate(${x / zoom}%, ${y / zoom}%)`;
   }
 
   // Events

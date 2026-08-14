@@ -218,7 +218,14 @@ function populateFormFields() {
   const groomThumb = document.getElementById("groomImgThumb");
   const groomZoomText = document.getElementById("groomZoomVal");
   if (groomThumb) {
-    groomThumb.style.transform = `translate(${groom.offsetX || 0}%, ${groom.offsetY || 0}%) scale(${groom.zoom || 1.0})`;
+    groomThumb.style.width = `calc(100% * ${groom.zoom || 1.0})`;
+    groomThumb.style.height = `calc(100% * ${groom.zoom || 1.0})`;
+    groomThumb.style.maxWidth = "none";
+    groomThumb.style.maxHeight = "none";
+    const x = groom.offsetX || 0;
+    const y = groom.offsetY || 0;
+    const z = groom.zoom || 1.0;
+    groomThumb.style.transform = `translate(${x / z}%, ${y / z}%)`;
   }
   if (groomZoomText) groomZoomText.textContent = `${(groom.zoom || 1.0).toFixed(2)}x`;
 
@@ -234,7 +241,14 @@ function populateFormFields() {
   const brideThumb = document.getElementById("brideImgThumb");
   const brideZoomText = document.getElementById("brideZoomVal");
   if (brideThumb) {
-    brideThumb.style.transform = `translate(${bride.offsetX || 0}%, ${bride.offsetY || 0}%) scale(${bride.zoom || 1.0})`;
+    brideThumb.style.width = `calc(100% * ${bride.zoom || 1.0})`;
+    brideThumb.style.height = `calc(100% * ${bride.zoom || 1.0})`;
+    brideThumb.style.maxWidth = "none";
+    brideThumb.style.maxHeight = "none";
+    const x = bride.offsetX || 0;
+    const y = bride.offsetY || 0;
+    const z = bride.zoom || 1.0;
+    brideThumb.style.transform = `translate(${x / z}%, ${y / z}%)`;
   }
   if (brideZoomText) brideZoomText.textContent = `${(bride.zoom || 1.0).toFixed(2)}x`;
 
@@ -261,6 +275,10 @@ function sanitizeImageUrl(url) {
       clean = '/' + clean;
     }
   }
+  
+  // Strip WordPress auto-generated thumbnail sizes to load the HD original (e.g. -150x150.jpg -> .jpg)
+  clean = clean.replace(/-\d+x\d+(?=\.[a-zA-Z0-9]+$)/, '');
+  
   return clean;
 }
 
@@ -296,7 +314,13 @@ function setupInputListeners() {
           const labelEl = document.getElementById(labelId);
           const x = currentData[prefix].offsetX || 0;
           const y = currentData[prefix].offsetY || 0;
-          if (thumbEl) thumbEl.style.transform = `translate(${x}%, ${y}%) scale(${val})`;
+          if (thumbEl) {
+          thumbEl.style.width = `calc(100% * ${val})`;
+          thumbEl.style.height = `calc(100% * ${val})`;
+          thumbEl.style.maxWidth = "none";
+          thumbEl.style.maxHeight = "none";
+          thumbEl.style.transform = `translate(${x / val}%, ${y / val}%)`;
+        }
           if (labelEl) labelEl.textContent = `${val.toFixed(2)}x`;
         }
         currentData[keys[0]][keys[1]] = val;
@@ -436,7 +460,7 @@ function renderGalleryList() {
           <div class="img-preview-box" style="margin-top: 5px; border-radius: 8px; padding: 8px 12px;">
             <div id="galleryPreviewContainer-${index}" class="gallery-preview-container" style="width: 70px; height: 70px; border-radius: 8px; overflow: hidden; border: 1px solid var(--admin-border); background: #f1f5f9; cursor: grab; position: relative;">
               <img id="galleryPreviewThumb-${index}" class="img-preview-thumb-gallery" src="${escapeHtml(sanitizeImageUrl(url))}" alt="Gallery Preview" 
-                   style="width: 100%; height: 100%; object-fit: cover; transform: translate(${x}%, ${y}%) scale(${zoom}); transform-origin: center center; position: absolute;">
+                   style="width: calc(100% * ${zoom}); height: calc(100% * ${zoom}); max-width: none; max-height: none; object-fit: cover; transform: translate(${x / zoom}%, ${y / zoom}%); transform-origin: center center; position: absolute;">
             </div>
             <div class="img-preview-info">
               Drag di dalam kotak preview<br>
@@ -484,7 +508,11 @@ window.updateGalleryZoom = function(index, value) {
   const thumb = document.getElementById(`galleryPreviewThumb-${index}`);
   const label = document.getElementById(`galleryZoomVal-${index}`);
   if (thumb) {
-    thumb.style.transform = `translate(${img.offsetX || 0}%, ${img.offsetY || 0}%) scale(${zoomVal})`;
+    thumb.style.width = `calc(100% * ${zoomVal})`;
+    thumb.style.height = `calc(100% * ${zoomVal})`;
+    thumb.style.maxWidth = "none";
+    thumb.style.maxHeight = "none";
+    thumb.style.transform = `translate(${(img.offsetX || 0) / zoomVal}%, ${(img.offsetY || 0) / zoomVal}%)`;
   }
   if (label) {
     label.textContent = `${zoomVal.toFixed(2)}x`;
@@ -991,7 +1019,11 @@ function setupAvatarPan(containerId, imgId, zoomId, textId, pathPrefix) {
     let y = (dataObj.offsetY || 0) + pctY;
     let zoom = dataObj.zoom || 1.0;
 
-    img.style.transform = `translate(${x}%, ${y}%) scale(${zoom})`;
+    img.style.width = `calc(100% * ${zoom})`;
+    img.style.height = `calc(100% * ${zoom})`;
+    img.style.maxWidth = "none";
+    img.style.maxHeight = "none";
+    img.style.transform = `translate(${x / zoom}%, ${y / zoom}%)`;
 
     startX = clientX;
     startY = clientY;
@@ -1070,7 +1102,11 @@ function makeGalleryPanable(index) {
     let y = (galleryItem.offsetY || 0) + pctY;
     let zoom = galleryItem.zoom || 1.0;
 
-    img.style.transform = `translate(${x}%, ${y}%) scale(${zoom})`;
+    img.style.width = `calc(100% * ${zoom})`;
+    img.style.height = `calc(100% * ${zoom})`;
+    img.style.maxWidth = "none";
+    img.style.maxHeight = "none";
+    img.style.transform = `translate(${x / zoom}%, ${y / zoom}%)`;
 
     startX = clientX;
     startY = clientY;
