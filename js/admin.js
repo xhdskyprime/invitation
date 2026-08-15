@@ -158,10 +158,14 @@ async function loadStoredData() {
       currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), data);
       
       // Upgrade WA Templates if they match old defaults
+      // Upgrade WA Templates if they match old defaults
       if (currentData.waTemplates && currentData.waTemplates.formal && currentData.waTemplates.formal.includes("Kepada Yth.\\nBapak/Ibu/Saudara/i {NAMA_TAMU}\\n\\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda")) {
          currentData.waTemplates = JSON.parse(JSON.stringify(defaultData.waTemplates));
       }
-      hidePasswordOverlay();
+      
+      // DO NOT automatically hide password overlay here! Security fix!
+      // The overlay will only hide after they enter the correct PIN in trySubmit().
+      
       populateFormFields();
       renderDynamicLists();
       renderRsvpTable();
@@ -189,25 +193,42 @@ async function saveDataAndSync() {
 
   // Debounce API call to prevent saving on every single keystroke (Race Conditions)
   if (syncTimeout) clearTimeout(syncTimeout);
-  syncTimeout = setTimeout(async () => {
-    try {
-      const password = localStorage.getItem("admin_password") || "";
-      const res = await fetch("/api/config", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "X-Admin-Password": password
-        },
-        body: JSON.stringify(currentData)
-      });
-      if (res.status === 401) {
-        alert("Sesi berakhir atau password salah. Silakan muat ulang halaman.");
-        showPasswordOverlay();
-      }
-    } catch(err) {
-      console.error("Failed to sync config to server", err);
+  syncTimeout = setTimeout(forceSaveToServer, 800);
+}
+
+async function forceSaveToServer() {
+  const saveBtnText = document.getElementById("saveBtnText");
+  const saveBtn = document.getElementById("btnManualSave");
+  
+  if (saveBtnText) saveBtnText.textContent = "Menyimpan...";
+  if (saveBtn) saveBtn.style.opacity = "0.7";
+
+  try {
+    const password = localStorage.getItem("admin_password") || "";
+    const res = await fetch("/api/config", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "X-Admin-Password": password
+      },
+      body: JSON.stringify(currentData)
+    });
+    
+    if (res.status === 401) {
+      alert("Sesi berakhir atau PIN salah. Silakan muat ulang halaman.");
+      showPasswordOverlay();
+    } else if (res.ok) {
+      if (saveBtnText) saveBtnText.textContent = "Tersimpan ✅";
+      setTimeout(() => {
+        if (saveBtnText) saveBtnText.textContent = "Simpan Perubahan";
+      }, 2000);
     }
-  }, 800);
+  } catch(err) {
+    console.error("Failed to sync config to server", err);
+    if (saveBtnText) saveBtnText.textContent = "Gagal Menyimpan ❌";
+  } finally {
+    if (saveBtn) saveBtn.style.opacity = "1";
+  }
 }
 
 function updateStats() {
@@ -661,6 +682,13 @@ if (btnAddGift) {
 
 // Header Actions (Export, Import, Reset)
 function setupHeaderActions() {
+  const btnManualSave = document.getElementById("btnManualSave");
+  if (btnManualSave) {
+    btnManualSave.addEventListener("click", () => {
+      forceSaveToServer();
+    });
+  }
+
   const btnExport = document.getElementById("btnExportJson");
   if (btnExport) {
     btnExport.addEventListener("click", () => {
@@ -1223,40 +1251,38 @@ function setupPasswordOverlay() {
 
   const trySubmit = async () => {
     const password = input.value.trim();
-    if (!password) return;
-
+    if (!password) {
+      errorMsg.style.display = "block";
+      errorMsg.textContent = "PIN tidak boleh kosong";
+      return;
+    }
+    
+    // Verify PIN against backend API securely
+    submitBtn.textContent = "Memeriksa...";
     try {
-      const authRes = await fetch("/api/admin/verify", {
+      const res = await fetch("/api/admin/verify", {
         headers: { "X-Admin-Password": password }
       });
-      if (authRes.ok) {
+      if (res.ok) {
         localStorage.setItem("admin_password", password);
         errorMsg.style.display = "none";
-        overlay.style.display = "none";
-        
-        // Fetch config
-        const res = await fetch("/api/config");
-        if (res.ok) {
-          const data = await res.json();
-          currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), data);
-          populateFormFields();
-          renderDynamicLists();
-          renderRsvpTable();
-          renderGuestTable();
-          updateStats();
-        }
+        hidePasswordOverlay();
         
         // Refresh iframe preview to apply config
         const iframe = document.getElementById("previewIframe");
         if (iframe) iframe.src = iframe.src;
       } else {
         errorMsg.style.display = "block";
+        errorMsg.textContent = "PIN salah!";
         input.value = "";
         input.focus();
       }
     } catch(e) {
       console.error(e);
-      alert("Gagal menghubungi server. Silakan coba lagi.");
+      errorMsg.style.display = "block";
+      errorMsg.textContent = "Gagal memverifikasi PIN";
+    } finally {
+      submitBtn.textContent = "Buka Akses";
     }
   };
 
