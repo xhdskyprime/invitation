@@ -234,26 +234,31 @@ function setupTabNavigation() {
   });
 }
 
+function safeSetVal(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val;
+}
+
 // Populate Inputs with Current State
 function populateFormFields() {
   const { groom, bride, events } = currentData;
   const g = currentData.general || {};
-  document.getElementById("inputCoupleNames").value = g.coupleNames || "";
-  document.getElementById("inputEventDateISO").value = g.eventDateISO || "";
-  document.getElementById("inputEventDateFormatted").value = g.eventDateFormatted || "";
-  document.getElementById("inputQuote").value = g.quote || "";
-  document.getElementById("inputBgMusicUrl").value = g.bgMusicUrl || "";
+  safeSetVal("inputCoupleNames", g.coupleNames || "");
+  safeSetVal("inputEventDateISO", g.eventDateISO || "");
+  safeSetVal("inputEventDateFormatted", g.eventDateFormatted || "");
+  safeSetVal("inputQuote", g.quote || "");
+  safeSetVal("inputBgMusicUrl", g.bgMusicUrl || "");
   
   updateImagePreview("heroImgThumb", g.heroImageUrl);
 
   // Groom
-  document.getElementById("inputGroomCallName").value = groom.callName || "";
-  document.getElementById("inputGroomFullName").value = groom.fullName || "";
-  document.getElementById("inputGroomParents").value = groom.parents || "";
-  document.getElementById("inputGroomIgHandle").value = groom.igHandle || "";
-  document.getElementById("inputGroomIgUrl").value = groom.igUrl || "";
-  document.getElementById("inputGroomAvatarUrl").value = groom.avatarUrl || "";
-  document.getElementById("inputGroomZoom").value = groom.zoom || 1.0;
+  safeSetVal("inputGroomCallName", groom.callName || "");
+  safeSetVal("inputGroomFullName", groom.fullName || "");
+  safeSetVal("inputGroomParents", groom.parents || "");
+  safeSetVal("inputGroomIgHandle", groom.igHandle || "");
+  safeSetVal("inputGroomIgUrl", groom.igUrl || "");
+  safeSetVal("inputGroomAvatarUrl", groom.avatarUrl || "");
+  safeSetVal("inputGroomZoom", groom.zoom || 1.0);
   updateImagePreview("groomImgThumb", groom.avatarUrl);
   const groomThumb = document.getElementById("groomImgThumb");
   const groomZoomText = document.getElementById("groomZoomVal");
@@ -270,13 +275,13 @@ function populateFormFields() {
   if (groomZoomText) groomZoomText.textContent = `${(groom.zoom || 1.0).toFixed(2)}x`;
 
   // Bride
-  document.getElementById("inputBrideCallName").value = bride.callName || "";
-  document.getElementById("inputBrideFullName").value = bride.fullName || "";
-  document.getElementById("inputBrideParents").value = bride.parents || "";
-  document.getElementById("inputBrideIgHandle").value = bride.igHandle || "";
-  document.getElementById("inputBrideIgUrl").value = bride.igUrl || "";
-  document.getElementById("inputBrideAvatarUrl").value = bride.avatarUrl || "";
-  document.getElementById("inputBrideZoom").value = bride.zoom || 1.0;
+  safeSetVal("inputBrideCallName", bride.callName || "");
+  safeSetVal("inputBrideFullName", bride.fullName || "");
+  safeSetVal("inputBrideParents", bride.parents || "");
+  safeSetVal("inputBrideIgHandle", bride.igHandle || "");
+  safeSetVal("inputBrideIgUrl", bride.igUrl || "");
+  safeSetVal("inputBrideAvatarUrl", bride.avatarUrl || "");
+  safeSetVal("inputBrideZoom", bride.zoom || 1.0);
   updateImagePreview("brideImgThumb", bride.avatarUrl);
   const brideThumb = document.getElementById("brideImgThumb");
   const brideZoomText = document.getElementById("brideZoomVal");
@@ -293,15 +298,15 @@ function populateFormFields() {
   if (brideZoomText) brideZoomText.textContent = `${(bride.zoom || 1.0).toFixed(2)}x`;
 
   // Events
-  document.getElementById("inputAkadDate").value = events.akadDate || "";
-  document.getElementById("inputAkadTime").value = events.akadTime || "";
-  document.getElementById("inputAkadLocation").value = events.akadLocation || "";
-  document.getElementById("inputAkadMapUrl").value = events.akadMapUrl || "";
+  safeSetVal("inputAkadDate", events.akadDate || "");
+  safeSetVal("inputAkadTime", events.akadTime || "");
+  safeSetVal("inputAkadLocation", events.akadLocation || "");
+  safeSetVal("inputAkadMapUrl", events.akadMapUrl || "");
 
-  document.getElementById("inputResepsiDate").value = events.resepsiDate || "";
-  document.getElementById("inputResepsiTime").value = events.resepsiTime || "";
-  document.getElementById("inputResepsiLocation").value = events.resepsiLocation || "";
-  document.getElementById("inputResepsiMapUrl").value = events.resepsiMapUrl || "";
+  safeSetVal("inputResepsiDate", events.resepsiDate || "");
+  safeSetVal("inputResepsiTime", events.resepsiTime || "");
+  safeSetVal("inputResepsiLocation", events.resepsiLocation || "");
+  safeSetVal("inputResepsiMapUrl", events.resepsiMapUrl || "");
 }
 
 function sanitizeImageUrl(url) {
