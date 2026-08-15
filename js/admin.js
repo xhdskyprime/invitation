@@ -174,6 +174,7 @@ async function loadStoredData() {
   }
 }
 
+let syncTimeout = null;
 async function saveDataAndSync() {
   // Post message to iframe for instant live preview update
   const iframe = document.getElementById("previewIframe");
@@ -186,23 +187,27 @@ async function saveDataAndSync() {
 
   updateStats();
 
-  try {
-    const password = localStorage.getItem("admin_password") || "";
-    const res = await fetch("/api/config", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "X-Admin-Password": password
-      },
-      body: JSON.stringify(currentData)
-    });
-    if (res.status === 401) {
-      alert("Sesi berakhir atau password salah. Silakan muat ulang halaman.");
-      showPasswordOverlay();
+  // Debounce API call to prevent saving on every single keystroke (Race Conditions)
+  if (syncTimeout) clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(async () => {
+    try {
+      const password = localStorage.getItem("admin_password") || "";
+      const res = await fetch("/api/config", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "X-Admin-Password": password
+        },
+        body: JSON.stringify(currentData)
+      });
+      if (res.status === 401) {
+        alert("Sesi berakhir atau password salah. Silakan muat ulang halaman.");
+        showPasswordOverlay();
+      }
+    } catch(err) {
+      console.error("Failed to sync config to server", err);
     }
-  } catch(err) {
-    console.error("Failed to sync config to server", err);
-  }
+  }, 800);
 }
 
 function updateStats() {
