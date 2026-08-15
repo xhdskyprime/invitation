@@ -14,7 +14,7 @@ const INDONESIA_BANKS = [
   { code: "OVO", name: "OVO", logo: "https://upload.wikimedia.org/wikipedia/commons/eb/e8/OVO_Logo.svg" },
   { code: "DANA", name: "DANA", logo: "https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_DANA.svg" },
   { code: "SHOPEEPAY", name: "ShopeePay", logo: "https://upload.wikimedia.org/wikipedia/commons/f/fe/ShopeePay_logo.svg" },
-  { code: "BJB", name: "Bank BJB", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_bank_bjb.svg" },
+  { code: "BJB", name: "Bank BJB", logo: "https://upload.wikimedia.org/wikipedia/id/thumb/4/41/Bank_BJB_logo.svg/500px-Bank_BJB_logo.svg.png" },
   { code: "LAINNYA", name: "Bank / E-Wallet Lain", logo: "" }
 ];
 
