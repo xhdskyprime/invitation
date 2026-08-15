@@ -158,7 +158,6 @@ async function loadStoredData() {
       currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), data);
       
       // Upgrade WA Templates if they match old defaults
-      // Upgrade WA Templates if they match old defaults
       if (currentData.waTemplates && currentData.waTemplates.formal && currentData.waTemplates.formal.includes("Kepada Yth.\\nBapak/Ibu/Saudara/i {NAMA_TAMU}\\n\\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda")) {
          currentData.waTemplates = JSON.parse(JSON.stringify(defaultData.waTemplates));
       }
@@ -167,6 +166,7 @@ async function loadStoredData() {
       // The overlay will only hide after they enter the correct PIN in trySubmit().
       
       populateFormFields();
+      refreshWaTemplateUI();
       renderDynamicLists();
       renderRsvpTable();
       renderGuestTable();
@@ -743,6 +743,17 @@ function setupHeaderActions() {
 }
 
 // --- WHATSAPP BROADCAST & GUEST MANAGER LOGIC ---
+function updateWaTemplateUI() {
+  const inputTpl = document.getElementById("inputWaTemplate");
+  if (!inputTpl) return;
+  const activeTpl = currentData.waTemplates.active || "formal";
+  inputTpl.value = currentData.waTemplates[activeTpl] || defaultData.waTemplates.formal;
+  
+  document.querySelectorAll(".template-pill").forEach(p => p.classList.remove("active"));
+  const activePill = document.getElementById(`btnTpl${activeTpl.charAt(0).toUpperCase() + activeTpl.slice(1)}`);
+  if (activePill) activePill.classList.add("active");
+}
+
 function setupWaGeneratorLogic() {
   if (!currentData.waTemplates) {
     currentData.waTemplates = JSON.parse(JSON.stringify(defaultData.waTemplates));
@@ -751,18 +762,7 @@ function setupWaGeneratorLogic() {
     currentData.guestList = JSON.parse(JSON.stringify(defaultData.guestList));
   }
 
-  const inputTpl = document.getElementById("inputWaTemplate");
-  if (inputTpl) {
-    const activeTpl = currentData.waTemplates.active || "formal";
-    inputTpl.value = currentData.waTemplates[activeTpl] || defaultData.waTemplates.formal;
-
-    inputTpl.addEventListener("input", () => {
-      const activeKey = currentData.waTemplates.active || "formal";
-      currentData.waTemplates[activeKey] = inputTpl.value;
-      saveDataAndSync();
-      renderGuestTable();
-    });
-  }
+  updateWaTemplateUI();
 
   // Single Guest Add
   const btnSingle = document.getElementById("btnAddSingleGuest");
@@ -870,6 +870,31 @@ window.switchWaTemplate = function(type) {
   saveDataAndSync();
   renderGuestTable();
 };
+
+function refreshWaTemplateUI() {
+  const inputTpl = document.getElementById("inputWaTemplate");
+  if (inputTpl) {
+    const activeTpl = currentData.waTemplates.active || "formal";
+    inputTpl.value = currentData.waTemplates[activeTpl] || defaultData.waTemplates.formal;
+    
+    document.querySelectorAll(".template-pill").forEach(p => p.classList.remove("active"));
+    const activePill = document.getElementById(`btnTpl${activeTpl.charAt(0).toUpperCase() + activeTpl.slice(1)}`);
+    if (activePill) activePill.classList.add("active");
+  }
+}
+
+// Initial setup for the textarea listener (only bound once)
+document.addEventListener("DOMContentLoaded", () => {
+  const inputTpl = document.getElementById("inputWaTemplate");
+  if (inputTpl) {
+    inputTpl.addEventListener("input", () => {
+      const activeKey = currentData.waTemplates.active || "formal";
+      currentData.waTemplates[activeKey] = inputTpl.value;
+      forceSaveToServer();
+      renderGuestTable();
+    });
+  }
+});
 
 window.insertTag = function(tag) {
   const inputTpl = document.getElementById("inputWaTemplate");
