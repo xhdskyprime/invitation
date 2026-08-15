@@ -789,8 +789,8 @@ html, body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.85); /* dark slate semi-transparent */
-  backdrop-filter: blur(12px);
+  background-color: var(--admin-bg);
+  background-image: var(--admin-bg-gradient);
   z-index: 9999;
   display: flex;
   align-items: center;
