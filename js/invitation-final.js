@@ -343,9 +343,27 @@ function parseGuestName() {
         welcomeText.textContent = guestName;
         welcomeBox.style.display = "block";
       }
+      
+      // Ensure RSVP form is visible for valid guests
+      const rsvpForm = document.getElementById("rsvpForm");
+      const lockedMsg = document.getElementById("rsvpLockedMsg");
+      if (rsvpForm) rsvpForm.style.display = "block";
+      if (lockedMsg) lockedMsg.style.display = "none";
+      
     } else {
       console.warn("Invalid guest name attempt blocked.");
+      // Hide RSVP form and show Locked message
+      const rsvpForm = document.getElementById("rsvpForm");
+      const lockedMsg = document.getElementById("rsvpLockedMsg");
+      if (rsvpForm) rsvpForm.style.display = "none";
+      if (lockedMsg) lockedMsg.style.display = "block";
     }
+  } else {
+    // If no ?to= parameter at all, also lock the RSVP form
+    const rsvpForm = document.getElementById("rsvpForm");
+    const lockedMsg = document.getElementById("rsvpLockedMsg");
+    if (rsvpForm) rsvpForm.style.display = "none";
+    if (lockedMsg) lockedMsg.style.display = "block";
   }
 }
 
