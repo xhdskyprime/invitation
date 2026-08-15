@@ -901,10 +901,10 @@ function renderGuestTable() {
     compiledMsg = compiledMsg.replace(/{LOKASI}/g, (currentData.events && currentData.events.akadLocation) || "Lokasi Acara");
     compiledMsg = compiledMsg.replace(/{LINK_UNDANGAN}/g, guestLink);
 
-    // WhatsApp Deep Link
+    // WhatsApp Deep Link (Using whatsapp:// to fix iOS emoji stripping)
     const waUrl = formattedPhone 
-      ? `https://wa.me/${formattedPhone}?text=${encodeURIComponent(compiledMsg)}`
-      : `https://wa.me/?text=${encodeURIComponent(compiledMsg)}`;
+      ? `whatsapp://send?phone=${formattedPhone}&text=${encodeURIComponent(compiledMsg)}`
+      : `whatsapp://send?text=${encodeURIComponent(compiledMsg)}`;
 
     const item = document.createElement("div");
     item.className = "guest-list-item";
