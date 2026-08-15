@@ -3,7 +3,7 @@ import defaultWishes from './data/wishes.json';
 
 function checkAuth(request, env) {
   const providedPassword = request.headers.get('X-Admin-Password');
-  const correctPassword = env.ADMIN_PASSWORD || 'lutfifirdha2026';
+  const correctPassword = env.ADMIN_PASSWORD || '262626';
   return providedPassword === correctPassword;
 }
 
