@@ -315,21 +315,36 @@ document.addEventListener("DOMContentLoaded", async () => {
 function parseGuestName() {
   const urlParams = new URLSearchParams(window.location.search);
   const guest = urlParams.get("to");
+  
   if (guest) {
-    const guestName = decodeURIComponent(guest);
-    safeSetText("guestNameDisplay", guestName);
+    const rawGuestName = decodeURIComponent(guest);
     
-    // Auto-fill and hide name input in RSVP Form
-    const nameInput = document.getElementById("rsvpNameInput");
-    const nameGroup = document.getElementById("rsvpNameGroup");
-    const welcomeBox = document.getElementById("rsvpGuestWelcome");
-    const welcomeText = document.getElementById("rsvpGuestNameText");
+    // Strict Validation: Only accept names that exist in the Guest List
+    let isValidGuest = false;
+    if (currentData.guestList && currentData.guestList.length > 0) {
+      isValidGuest = currentData.guestList.some(
+        g => g.name.trim().toLowerCase() === rawGuestName.trim().toLowerCase()
+      );
+    }
     
-    if (nameInput && nameGroup && welcomeBox && welcomeText) {
-      nameInput.value = guestName;
-      nameGroup.style.display = "none";
-      welcomeText.textContent = guestName;
-      welcomeBox.style.display = "block";
+    if (isValidGuest) {
+      const guestName = rawGuestName;
+      safeSetText("guestNameDisplay", guestName);
+      
+      // Auto-fill and hide name input in RSVP Form
+      const nameInput = document.getElementById("rsvpNameInput");
+      const nameGroup = document.getElementById("rsvpNameGroup");
+      const welcomeBox = document.getElementById("rsvpGuestWelcome");
+      const welcomeText = document.getElementById("rsvpGuestNameText");
+      
+      if (nameInput && nameGroup && welcomeBox && welcomeText) {
+        nameInput.value = guestName;
+        nameGroup.style.display = "none";
+        welcomeText.textContent = guestName;
+        welcomeBox.style.display = "block";
+      }
+    } else {
+      console.warn("Invalid guest name attempt blocked.");
     }
   }
 }
