@@ -903,8 +903,8 @@ function renderGuestTable() {
 
     // WhatsApp Deep Link
     const waUrl = formattedPhone 
-      ? `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(compiledMsg)}`
-      : `https://api.whatsapp.com/send?text=${encodeURIComponent(compiledMsg)}`;
+      ? `https://wa.me/${formattedPhone}?text=${encodeURIComponent(compiledMsg)}`
+      : `https://wa.me/?text=${encodeURIComponent(compiledMsg)}`;
 
     const item = document.createElement("div");
     item.className = "guest-list-item";
