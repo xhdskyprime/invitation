@@ -872,14 +872,14 @@ function getInvitationBaseUrl() {
 }
 
 function renderGuestTable() {
-  const tbody = document.getElementById("guestTableBody");
-  if (!tbody) return;
-  tbody.innerHTML = "";
+  const container = document.getElementById("guestListContainer");
+  if (!container) return;
+  container.innerHTML = "";
 
   const guests = currentData.guestList || [];
 
   if (guests.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--admin-text-muted); padding: 20px;">Belum ada tamu undangan. Silakan tambah tamu di atas.</td></tr>`;
+    container.innerHTML = `<div style="text-align:center; color: var(--admin-text-muted); padding: 40px 20px;">Belum ada tamu undangan. Silakan tambah tamu di atas.</div>`;
     updateStats();
     return;
   }
@@ -906,25 +906,32 @@ function renderGuestTable() {
       ? `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(compiledMsg)}`
       : `https://api.whatsapp.com/send?text=${encodeURIComponent(compiledMsg)}`;
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${index + 1}</td>
-      <td><strong>${escapeHtml(guest.name)}</strong></td>
-      <td>${guest.phone ? escapeHtml(guest.phone) : '<span style="color:var(--admin-text-muted); font-size:0.75rem;">(Tanpa HP)</span>'}</td>
-      <td><a href="${guestLink}" target="_blank" style="color:var(--admin-accent); font-size:0.78rem; text-decoration:none;">${escapeHtml(guestLink.substring(0, 45))}...</a></td>
-      <td style="text-align: right;">
-        <a href="${waUrl}" target="_blank" class="btn-action-sm btn-wa-send" title="Kirim Pesan WhatsApp">
-          <i data-lucide="send" style="width:13px;"></i> Kirim WA
+    const item = document.createElement("div");
+    item.className = "guest-list-item";
+    item.innerHTML = `
+      <div class="guest-info">
+        <div class="guest-name">
+          <span class="guest-number">${index + 1}.</span> 
+          <strong>${escapeHtml(guest.name)}</strong>
+        </div>
+        <div class="guest-details">
+          <span class="guest-phone"><i data-lucide="phone" style="width:12px;"></i> ${guest.phone ? escapeHtml(guest.phone) : '(Tanpa HP)'}</span>
+          <a href="${guestLink}" target="_blank" class="guest-link"><i data-lucide="link" style="width:12px;"></i> ${escapeHtml(guestLink.substring(0, 35))}...</a>
+        </div>
+      </div>
+      <div class="guest-actions">
+        <a href="${waUrl}" target="_blank" class="btn-action-sm btn-wa-send" title="Kirim WA">
+          <i data-lucide="send" style="width:14px;"></i> Kirim
         </a>
-        <button class="btn-action-sm btn-copy-link" onclick="copyGuestLink('${escapeHtml(guestLink)}')" title="Salin Link">
-          <i data-lucide="copy" style="width:13px;"></i> Salin Link
+        <button class="btn-action-sm btn-copy-link" onclick="copyGuestLink('${escapeHtml(guestLink)}')" title="Salin">
+          <i data-lucide="copy" style="width:14px;"></i> Salin
         </button>
         <button class="btn-action-sm btn-delete-guest" onclick="deleteGuest(${index})" title="Hapus">
-          <i data-lucide="trash-2" style="width:13px;"></i>
+          <i data-lucide="trash-2" style="width:14px;"></i>
         </button>
-      </td>
+      </div>
     `;
-    tbody.appendChild(tr);
+    container.appendChild(item);
   });
 
   updateStats();
