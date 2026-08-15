@@ -674,12 +674,14 @@ function setupCoverOverlay() {
     
     const wayangDoors = document.getElementById("wayangDoors");
     if (wayangDoors) {
-      // Force a reflow so the browser registers the initial state before transition
-      void wayangDoors.offsetWidth;
-      // Alternatively, use requestAnimationFrame for safety
-      requestAnimationFrame(() => {
+      console.log("Opening wayang doors...");
+      setTimeout(() => {
         wayangDoors.classList.add("open");
-      });
+        const left = wayangDoors.querySelector(".wayang-left");
+        const right = wayangDoors.querySelector(".wayang-right");
+        if (left) left.style.transform = "translateX(-100%)";
+        if (right) right.style.transform = "translateX(100%)";
+      }, 100);
     }
     
     // Reveal hero content after video doors open (approx 1.8s)
