@@ -42,7 +42,7 @@ export default {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Password',
-            'Cache-Control': 'public, max-age=60, stale-while-revalidate=300'
+            'Cache-Control': 'no-store, max-age=0'
           }
         });
       }
@@ -75,7 +75,7 @@ export default {
           headers: { 
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Cache-Control': 'public, max-age=30, stale-while-revalidate=120'
+            'Cache-Control': 'no-store, max-age=0'
           }
         });
       }
