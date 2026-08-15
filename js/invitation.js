@@ -674,7 +674,12 @@ function setupCoverOverlay() {
     
     const wayangDoors = document.getElementById("wayangDoors");
     if (wayangDoors) {
-      wayangDoors.classList.add("open");
+      // Force a reflow so the browser registers the initial state before transition
+      void wayangDoors.offsetWidth;
+      // Alternatively, use requestAnimationFrame for safety
+      requestAnimationFrame(() => {
+        wayangDoors.classList.add("open");
+      });
     }
     
     // Reveal hero content after video doors open (approx 1.8s)
