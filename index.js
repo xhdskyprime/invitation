@@ -141,6 +141,18 @@ export default {
       });
     }
 
+    // Clean URLs
+    if (url.pathname === '/admin' || url.pathname === '/admin/') {
+      const newUrl = new URL(request.url);
+      newUrl.pathname = '/admin.html';
+      return env.ASSETS.fetch(new Request(newUrl, request));
+    }
+    if (url.pathname === '/tamu' || url.pathname === '/tamu/') {
+      const newUrl = new URL(request.url);
+      newUrl.pathname = '/tamu.html';
+      return env.ASSETS.fetch(new Request(newUrl, request));
+    }
+
     // Fallback: Serve static assets via Cloudflare Assets if available, otherwise 404
     if (env && env.ASSETS) {
       return env.ASSETS.fetch(request);
