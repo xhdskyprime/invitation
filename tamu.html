@@ -46,8 +46,21 @@
       font-weight: 700;
       font-size: 1.1rem;
       color: var(--admin-text);
-      margin-right: 36px; /* Balance the back button */
     }
+    .btn-logout-icon {
+      color: var(--admin-danger, #ef4444);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #fef2f2;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-logout-icon:active { background: #fee2e2; }
 
     /* Container */
     .app-container {
@@ -170,9 +183,14 @@
       <i data-lucide="arrow-left" style="width:18px;"></i>
     </a>
     <div class="app-header-title" id="headerTitle" style="margin-right: 0;">Buku Tamu</div>
-    <button id="btnManualSave" style="background: var(--admin-primary); color: white; border: none; padding: 6px 12px; font-weight: bold; font-size: 0.8rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 4px;">
-      <i data-lucide="save" style="width:14px; height:14px;"></i> <span id="saveBtnText">Simpan</span>
-    </button>
+    <div style="display: flex; gap: 6px; align-items: center;">
+      <button id="btnManualSave" style="background: var(--admin-primary); color: white; border: none; padding: 6px 12px; font-weight: bold; font-size: 0.8rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 4px;">
+        <i data-lucide="save" style="width:14px; height:14px;"></i> <span id="saveBtnText">Simpan</span>
+      </button>
+      <button id="btnLogoutAdmin" class="btn-logout-icon" title="Logout">
+        <i data-lucide="log-out" style="width:16px; height:16px;"></i>
+      </button>
+    </div>
   </header>
 
   <div class="app-container">

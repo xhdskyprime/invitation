@@ -317,55 +317,35 @@ function parseGuestName() {
   const urlParams = new URLSearchParams(window.location.search);
   const guest = urlParams.get("to");
   
+  const nameInput = document.getElementById("rsvpNameInput");
+  const nameGroup = document.getElementById("rsvpNameGroup");
+  const welcomeBox = document.getElementById("rsvpGuestWelcome");
+  const welcomeText = document.getElementById("rsvpGuestNameText");
+  const rsvpForm = document.getElementById("rsvpForm");
+  const lockedMsg = document.getElementById("rsvpLockedMsg");
+
   if (guest) {
-    const rawGuestName = decodeURIComponent(guest);
-    
-    // Strict Validation: Only accept names that exist in the Guest List
-    let isValidGuest = false;
-    if (currentData.guestList && currentData.guestList.length > 0) {
-      isValidGuest = currentData.guestList.some(
-        g => g.name.trim().toLowerCase() === rawGuestName.trim().toLowerCase()
-      );
-    }
-    
-    if (isValidGuest) {
-      const guestName = rawGuestName;
-      safeSetText("guestNameDisplay", guestName);
+    const rawGuestName = decodeURIComponent(guest).trim();
+    if (rawGuestName) {
+      safeSetText("guestNameDisplay", rawGuestName);
       
       // Auto-fill and hide name input in RSVP Form
-      const nameInput = document.getElementById("rsvpNameInput");
-      const nameGroup = document.getElementById("rsvpNameGroup");
-      const welcomeBox = document.getElementById("rsvpGuestWelcome");
-      const welcomeText = document.getElementById("rsvpGuestNameText");
-      
       if (nameInput && nameGroup && welcomeBox && welcomeText) {
-        nameInput.value = guestName;
+        nameInput.value = rawGuestName;
         nameGroup.style.display = "none";
-        welcomeText.textContent = guestName;
+        welcomeText.textContent = rawGuestName;
         welcomeBox.style.display = "block";
       }
-      
-      // Ensure RSVP form is visible for valid guests
-      const rsvpForm = document.getElementById("rsvpForm");
-      const lockedMsg = document.getElementById("rsvpLockedMsg");
-      if (rsvpForm) rsvpForm.style.display = "block";
-      if (lockedMsg) lockedMsg.style.display = "none";
-      
-    } else {
-      console.warn("Invalid guest name attempt blocked.");
-      // Hide RSVP form and show Locked message
-      const rsvpForm = document.getElementById("rsvpForm");
-      const lockedMsg = document.getElementById("rsvpLockedMsg");
-      if (rsvpForm) rsvpForm.style.display = "none";
-      if (lockedMsg) lockedMsg.style.display = "block";
     }
   } else {
-    // If no ?to= parameter at all, also lock the RSVP form
-    const rsvpForm = document.getElementById("rsvpForm");
-    const lockedMsg = document.getElementById("rsvpLockedMsg");
-    if (rsvpForm) rsvpForm.style.display = "none";
-    if (lockedMsg) lockedMsg.style.display = "block";
+    safeSetText("guestNameDisplay", "Tamu Undangan");
+    if (nameGroup) nameGroup.style.display = "block";
+    if (welcomeBox) welcomeBox.style.display = "none";
   }
+
+  // Ensure RSVP form is accessible to invitees
+  if (rsvpForm) rsvpForm.style.display = "block";
+  if (lockedMsg) lockedMsg.style.display = "none";
 }
 
 function parseAndSetCalendarBlock(prefix, dateStr) {
@@ -943,7 +923,10 @@ async function renderWishes() {
         </div>
       </div>
       <div class="wish-body">${escapeHtml(item.text)}</div>
-      ${item.audio ? `
+      ${(() => {
+        const safeAudio = sanitizeAudioSrc(item.audio);
+        if (!safeAudio) return '';
+        return `
         <div class="wish-audio-wrapper">
           <button type="button" class="wa-play-btn" onclick="toggleWaAudio(this)" title="Putar Pesan Suara">
             <i data-lucide="play" class="wa-icon-play"></i>
@@ -968,9 +951,10 @@ async function renderWishes() {
               <span class="wa-mic-badge"><i data-lucide="mic"></i> Voice Note</span>
             </div>
           </div>
-          <audio src="${item.audio}" preload="auto" playsinline webkit-playsinline style="display:none;" onended="resetWaAudio(this)"></audio>
+          <audio src="${safeAudio}" preload="auto" playsinline webkit-playsinline style="display:none;" onended="resetWaAudio(this)"></audio>
         </div>
-      ` : ''}
+        `;
+      })()}
       <div class="wish-date">
         <i data-lucide="clock"></i> ${escapeHtml(displayDate)}
       </div>
@@ -1078,6 +1062,20 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function sanitizeAudioSrc(src) {
+  if (!src || typeof src !== 'string') return '';
+  const clean = src.trim();
+  if (
+    clean.startsWith('data:audio/') || 
+    clean.startsWith('https://') || 
+    clean.startsWith('/assets/') ||
+    clean.startsWith('./')
+  ) {
+    return escapeHtml(clean);
+  }
+  return '';
 }
 
 // Voice Recorder Controller

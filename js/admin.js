@@ -151,8 +151,10 @@ async function loadStoredData() {
       return;
     }
     
-    // Config read is public
-    const res = await fetch("/api/config");
+    // Config read with admin credentials to get full guestList
+    const res = await fetch("/api/config", {
+      headers: { "X-Admin-Password": password }
+    });
     if (res.ok) {
       const data = await res.json();
       currentData = Object.assign({}, JSON.parse(JSON.stringify(defaultData)), data);
@@ -740,6 +742,19 @@ function setupHeaderActions() {
       }
     });
   }
+
+  const btnLogout = document.getElementById("btnLogoutAdmin");
+  if (btnLogout) {
+    btnLogout.addEventListener("click", async () => {
+      if (confirm("Apakah Anda yakin ingin keluar dari Admin Panel?")) {
+        try {
+          await fetch("/api/admin/logout", { method: "POST" });
+        } catch(e) {}
+        localStorage.removeItem("admin_password");
+        window.location.reload();
+      }
+    });
+  }
 }
 
 // --- WHATSAPP BROADCAST & GUEST MANAGER LOGIC ---
@@ -1035,15 +1050,16 @@ async function renderRsvpTable() {
   }
 
   wishes.forEach((w, index) => {
+    const safeAudio = sanitizeAudioSrc(w.audio);
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${index + 1}</td>
       <td><strong>${escapeHtml(w.name)}</strong></td>
       <td>
         <div>${escapeHtml(w.text)}</div>
-        ${w.audio ? `
+        ${safeAudio ? `
           <div style="margin-top: 6px;">
-            <audio src="${w.audio}" controls style="max-width: 260px; height: 32px;"></audio>
+            <audio src="${safeAudio}" controls style="max-width: 260px; height: 32px;"></audio>
           </div>
         ` : ''}
       </td>
@@ -1099,6 +1115,20 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function sanitizeAudioSrc(src) {
+  if (!src || typeof src !== 'string') return '';
+  const clean = src.trim();
+  if (
+    clean.startsWith('data:audio/') || 
+    clean.startsWith('https://') || 
+    clean.startsWith('/assets/') ||
+    clean.startsWith('./')
+  ) {
+    return escapeHtml(clean);
+  }
+  return '';
 }
 
 // Interactive Image Pan/Drag Helper
@@ -1282,13 +1312,16 @@ function setupPasswordOverlay() {
       return;
     }
     
-    // Verify PIN against backend API securely
+    // Verify PIN against backend API and establish session
     submitBtn.textContent = "Memeriksa...";
     try {
-      const res = await fetch("/api/admin/verify", {
-        headers: { "X-Admin-Password": password }
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
       });
-      if (res.ok) {
+      const data = await res.json();
+      if (res.ok && data.success) {
         localStorage.setItem("admin_password", password);
         errorMsg.style.display = "none";
         hidePasswordOverlay();
@@ -1301,7 +1334,7 @@ function setupPasswordOverlay() {
         if (iframe) iframe.src = iframe.src;
       } else {
         errorMsg.style.display = "block";
-        errorMsg.textContent = "PIN salah!";
+        errorMsg.textContent = data.error || "PIN salah!";
         input.value = "";
         input.focus();
       }
