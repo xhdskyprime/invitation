@@ -1293,6 +1293,9 @@ function setupPasswordOverlay() {
         errorMsg.style.display = "none";
         hidePasswordOverlay();
         
+        // SECURITY/DATA LOSS FIX: We must load the real data now that we have the PIN!
+        await loadStoredData();
+        
         // Refresh iframe preview to apply config
         const iframe = document.getElementById("previewIframe");
         if (iframe) iframe.src = iframe.src;
