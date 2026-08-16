@@ -1045,7 +1045,7 @@ async function renderRsvpTable() {
   if (wishesCountEl) wishesCountEl.textContent = wishes.length;
 
   if (wishes.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--admin-text-muted);">Belum ada ucapan dari tamu.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--admin-text-muted);">Belum ada ucapan dari tamu.</td></tr>';
     return;
   }
 
@@ -1064,10 +1064,37 @@ async function renderRsvpTable() {
         ` : ''}
       </td>
       <td style="color: var(--admin-text-muted); font-size: 0.75rem;">${escapeHtml(w.date)}</td>
+      <td style="text-align: center;">
+        <button class="btn-action-sm btn-delete-guest" onclick="deleteWish('${w.id}')" title="Hapus ucapan ini" style="color: var(--admin-danger);">
+          <i data-lucide="trash-2" style="width:14px;"></i>
+        </button>
+      </td>
     `;
     tbody.appendChild(tr);
   });
+
+  if (window.lucide) lucide.createIcons();
 }
+
+window.deleteWish = async function(id) {
+  if (!confirm("Hapus ucapan ini?")) return;
+  try {
+    const password = localStorage.getItem("admin_password") || "";
+    const res = await fetch(`/api/wishes?id=${encodeURIComponent(id)}`, {
+      method: "DELETE",
+      headers: { "X-Admin-Password": password }
+    });
+    if (res.ok) {
+      showToast("Ucapan berhasil dihapus.");
+      await renderRsvpTable();
+    } else {
+      alert("Gagal menghapus ucapan.");
+    }
+  } catch(e) {
+    console.error("Failed to delete wish", e);
+    alert("Terjadi kesalahan saat menghapus ucapan.");
+  }
+};
 
 const btnClearWishes = document.getElementById("btnClearWishes");
 if (btnClearWishes) {

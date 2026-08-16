@@ -560,6 +560,25 @@ export default {
         const isAuthed = await checkAuth(request, env);
         if (!isAuthed) return unauthorizedResponse();
 
+        const wishId = url.searchParams.get('id');
+        if (wishId) {
+          let wishes = [];
+          const stored = await env.INVITATION_DB.get('wishes');
+          if (stored) {
+            wishes = JSON.parse(stored);
+          } else {
+            wishes = [...defaultWishes];
+          }
+          wishes = wishes.filter(w => String(w.id) !== String(wishId));
+          await env.INVITATION_DB.put('wishes', JSON.stringify(wishes, null, 2));
+          return new Response(JSON.stringify({ success: true, count: wishes.length }), {
+            headers: { 
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
+          });
+        }
+
         await env.INVITATION_DB.put('wishes', JSON.stringify([], null, 2));
         return new Response(JSON.stringify({ success: true }), {
           headers: { 
