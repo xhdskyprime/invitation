@@ -3,71 +3,225 @@
     "coupleNames": "Lutfi & Firdha",
     "eventDateISO": "2026-08-26T08:00:00",
     "eventDateFormatted": "Rabu, 26 Agustus 2026",
-    "quote": "\"Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.\" (QS. Ar-Rum [30]: 21)",
+    "quote": "\"Dan di antara tanda-tanda (kebesaran-Nya) ialah Dia menciptakan pasangan-pasangan untukmu dari meksasamu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.\" (Ar-Rum: 21)",
     "bgMusicUrl": "/assets/audio/wedding_music.m4a",
-    "heroImageUrl": "/assets/wp-content/uploads/2026/06/hero-bg.webp"
+    "heroImageUrl": "https://i.imgur.com/6hjS9uQ.jpeg"
   },
   "groom": {
     "callName": "Lutfi",
-    "fullName": "Lutfi, S.T.",
-    "parents": "Putra Pertama dari Bpk. Keluarga & Ibu Keluarga",
-    "igHandle": "@lutfi",
-    "igUrl": "https://instagram.com",
-    "avatarUrl": "/assets/wp-content/uploads/2026/06/sm-PRIA-e1725510474400-1-3.webp",
-    "zoom": 1.0
+    "fullName": "Muhamad Lutfi, S.Kom",
+    "parents": "Putra Pertama dari Bpk. Parno & Ibu Maisaroh",
+    "igHandle": "@lutfi_legacy",
+    "igUrl": "https://www.instagram.com/lutfi_legacy",
+    "avatarUrl": "https://i.imgur.com/lY7KSLk.jpeg",
+    "zoom": 1.2,
+    "offsetX": -15.308123249299712,
+    "offsetY": -4.6218487394958
   },
   "bride": {
     "callName": "Firdha",
-    "fullName": "Firdha, S.Ked.",
-    "parents": "Putri Kedua dari Bpk. Keluarga & Ibu Keluarga",
-    "igHandle": "@firdha",
-    "igUrl": "https://instagram.com",
-    "avatarUrl": "/assets/wp-content/uploads/2026/06/sm-WANITA-e1725510489585-1-3.webp",
-    "zoom": 1.0
+    "fullName": "Firdha Amalia, AM.d . Far",
+    "parents": "Putri Pertama dari Bpk. Momon & Ibu Dede Nina",
+    "igHandle": "@firdhafa",
+    "igUrl": "https://www.instagram.com/firdhafa",
+    "avatarUrl": "https://i.imgur.com/gjcSNvH.jpeg",
+    "offsetX": -21.162464985994387,
+    "offsetY": -22.296918767506995,
+    "zoom": 1.35
   },
   "events": {
     "akadDate": "Rabu, 26 Agustus 2026",
-    "akadTime": "Pukul 08.00 - 10.00 WIB",
-    "akadLocation": "Grand Ballroom Hotel Mulia, Senayan, Jakarta Pusat",
-    "akadMapUrl": "https://maps.google.com",
+    "akadTime": "Pukul 08.00 - 9.00 WIB",
+    "akadLocation": "Rumah Mempelai Wanita, RT 010/RW 003, Desa Cihaur, Kecamatan Manonjaya, Kabupaten Tasikmalaya, Jawa Barat.",
+    "akadMapUrl": "https://maps.app.goo.gl/xb1TUWkmRDPeG5rJA?g_st=ic",
     "resepsiDate": "Rabu, 26 Agustus 2026",
-    "resepsiTime": "Pukul 11.00 - 14.00 WIB",
-    "resepsiLocation": "Grand Ballroom Hotel Mulia, Senayan, Jakarta Pusat",
-    "resepsiMapUrl": "https://maps.google.com"
+    "resepsiTime": "Pukul 9.00 - Selesai",
+    "resepsiLocation": "Rumah Mempelai Wanita, RT 010/RW 003, Desa Cihaur, Kecamatan Manonjaya, Kabupaten Tasikmalaya, Jawa Barat.",
+    "resepsiMapUrl": "https://maps.app.goo.gl/xb1TUWkmRDPeG5rJA?g_st=ic"
   },
   "stories": [
     {
-      "date": "Tahun 2022",
+      "date": "",
+      "title": "Asmaraloka",
+      "desc": "'Semesta tempat cinta kami bertumbuh.'"
+    },
+    {
+      "date": "",
       "title": "Awal Pertemuan",
-      "desc": "Di sebuah rumah sakit, Lutfi (Staf IT) dan Firdha (Petugas Farmasi) pertama kali bertemu. Berawal dari sapaan sederhana \"Tolong diperbaiki ya mas...\", perkenalan kecil itu tumbuh menjadi rasa nyaman dan momen manis yang selalu dinantikan."
+      "desc": "Tahun 2022 menjadi awal kisah kami. Berawal dari rekan kerja di sebuah rumah sakit dan sebuah kalimat sederhana, 'Tolong diperbaiki ya, Mas...', kami mulai saling mengenal. Siapa sangka, pertemuan itu menjadi awal perjalanan kami."
     },
     {
-      "date": "2022 - 2026",
-      "title": "Menemukan Rumah",
-      "desc": "Empat tahun berjalan berdampingan, kami belajar bahwa cinta adalah tentang bertumbuh bersama dan saling menguatkan. Melalui tawa, doa, dan proses kedewasaan, kami menemukan sosok yang ingin diperjuangkan setiap hari."
+      "date": "",
+      "title": "Bertumbuh Bersama",
+      "desc": "Hari demi hari, rasa nyaman berubah menjadi cinta. Empat tahun kami belajar saling memahami, menguatkan, dan bertumbuh bersama. Kami percaya, setiap langkah ini adalah bagian dari rencana terbaik Allah SWT."
     },
     {
-      "date": "26 Agustus 2026",
+      "date": "",
       "title": "Menuju Janji Suci",
-      "desc": "Dengan niat tulus dan rasa syukur kepada Allah SWT, kami melangkah menuju ikatan pernikahan. Semoga menjadi awal dari perjalanan panjang yang dipenuhi keberkahan, kasih sayang, dan kebahagiaan hingga akhir hayat."
+      "desc": "Dengan restu kedua keluarga, kami memantapkan hati untuk melangkah ke jenjang yang lebih serius. Kini, dengan penuh syukur kepada Allah SWT, kami akan mengikat janji suci dalam pernikahan dan memulai perjalanan baru sebagai pasangan seumur hidup."
     }
   ],
   "gallery": [
-    "/assets/wp-content/uploads/2026/06/p-1-1-3.webp",
-    "/assets/wp-content/uploads/2026/06/p-2-1-3.webp",
-    "/assets/wp-content/uploads/2026/06/sm-1-5-e1725510309587-1-3.webp",
-    "/assets/wp-content/uploads/2026/06/sm-1-6-e1725510241295-1-3.webp"
+    {
+      "url": "https://i.imgur.com/6hjS9uQ.jpeg",
+      "zoom": 1,
+      "offsetX": 0,
+      "offsetY": 0
+    },
+    {
+      "url": "https://i.imgur.com/up1hVPi.jpeg",
+      "zoom": 1,
+      "offsetX": 0,
+      "offsetY": 0
+    },
+    {
+      "url": "https://i.imgur.com/9gUWdao.jpeg",
+      "zoom": 1,
+      "offsetX": 0,
+      "offsetY": 0
+    },
+    {
+      "url": "https://i.imgur.com/T1jV0gs.jpeg",
+      "zoom": 1,
+      "offsetX": 0,
+      "offsetY": 0
+    },
+    {
+      "url": "https://i.imgur.com/HJzBTA5.jpeg",
+      "zoom": 1,
+      "offsetX": 0,
+      "offsetY": 0
+    },
+    {
+      "url": "https://i.imgur.com/3hFU8xr.jpeg",
+      "zoom": 1,
+      "offsetX": 0,
+      "offsetY": 0
+    }
   ],
   "gifts": [
     {
-      "bank": "BCA",
-      "number": "1234567890",
-      "name": "Lutfi"
+      "bank": "BJB",
+      "number": "0158596377100",
+      "name": "Muhamad Lutfi"
     },
     {
-      "bank": "MANDIRI",
-      "number": "9876543210",
-      "name": "Firdha"
+      "bank": "BCA",
+      "number": "1082461021",
+      "name": "Firdha Amalia"
     }
-  ]
+  ],
+  "guestList": [
+    {
+      "id": 1786930000003,
+      "name": "Fina",
+      "phone": ""
+    },
+    {
+      "id": 1786930000002,
+      "name": "Tamami",
+      "phone": ""
+    },
+    {
+      "id": 1786930000001,
+      "name": "Deo Darmawan",
+      "phone": ""
+    },
+    {
+      "id": 1786913772389,
+      "name": "Kaka Rere",
+      "phone": "082225440471"
+    },
+    {
+      "id": 1786913842194,
+      "name": "Ega & mah neneng",
+      "phone": "082320840989"
+    },
+    {
+      "id": 1786913955605,
+      "name": "Aka & keluarga",
+      "phone": "085724374196"
+    },
+    {
+      "id": 1786914011952,
+      "name": "Evry & Suamik",
+      "phone": "082215670783"
+    },
+    {
+      "id": 1786914055202,
+      "name": "Waid & Suami",
+      "phone": "082116947218"
+    },
+    {
+      "id": 1786914154408,
+      "name": "Sinta awil & Partner",
+      "phone": "082217984651"
+    },
+    {
+      "id": 1786914194714,
+      "name": "Uneng & suami",
+      "phone": "085823081064"
+    },
+    {
+      "id": 1786914233918,
+      "name": "Mbil & Partner",
+      "phone": "085823021681"
+    },
+    {
+      "id": 1786914278975,
+      "name": "Teh ati",
+      "phone": "085591181915"
+    },
+    {
+      "id": 1786914321555,
+      "name": "Fira",
+      "phone": "08986251251"
+    },
+    {
+      "id": 1786914416799,
+      "name": "Mba hera",
+      "phone": "085786458646"
+    },
+    {
+      "id": 1786914493301,
+      "name": "Ayu & suami",
+      "phone": "085724243018"
+    },
+    {
+      "id": 1786914554018,
+      "name": "Resma & partner",
+      "phone": "082215843042"
+    },
+    {
+      "id": 1786914655989,
+      "name": "Bang afiz",
+      "phone": "081285393146"
+    },
+    {
+      "id": 1786925705608,
+      "name": "Ivakov & Istri",
+      "phone": "6285781440112"
+    },
+    {
+      "id": 1786926041244,
+      "name": "Yuga Maulana Akbar",
+      "phone": "6282310758955"
+    }
+  ],
+  "waTemplates": {
+    "active": "formal",
+    "formal": "Bismillahirrahmanirrahim. \nKepada Yth. Bapak/Ibu/Saudara/i \n*{NAMA_TAMU}*\n\nTanpa mengurangi rasa hormat, melalui pesan ini perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada hari bahagia pernikahan kami:\n\n💍 *Lutfi & Firdha*\n\nUntuk detail informasi mengenai hari, waktu, dan lokasi acara, silakan kunjungi tautan undangan digital kami di bawah ini:\n👉 {LINK_UNDANGAN}\n\nMerupakan suatu kehormatan dan kebahagiaan yang luar biasa bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir di hari bersejarah kami.\n\nAtas perhatian dan doa restunya, kami ucapkan terima kasih. 🙏🏻\n\nHormat kami,\nLutfi & Firdha",
+    "islami": "Assalamu'alaikum Wr. Wb. ✨\n\nKepada Yth. Bapak/Ibu/Saudara/i {NAMA_TAMU}\n\nDengan memohon rahmat dan ridho Allah SWT, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk menghadiri syukuran pernikahan kami:\n\n💍 Lutfi & Firdha\n\nUntuk info tanggal, waktu, dan lokasi acara selengkapnya dapat dilihat melalui tautan undangan berikut:\n👉 {LINK_UNDANGAN}\n\nJazakumullah Khairan Katsiran atas doa dan kehadirannya.\n\nWassalamu'alaikum Wr. Wb. 🙏🏻",
+    "santai": "Halo {NAMA_TAMU}! ✨🕊️\n\nMomen yang kami tunggu-tunggu akhirnya tiba! Dengan penuh kebahagiaan, kami ingin mengundang kamu untuk turut serta merayakan hari pernikahan kami:\n\n🤍 Lutfi & Firdha 🤍\n\nSilakan klik tautan undangan digital di bawah ini untuk melihat detail acaranya ya:\n💌 {LINK_UNDANGAN}\n\nKehadiran dan doa restumu akan menjadi kado terindah untuk mengawali langkah baru kami. Sampai jumpa di hari bahagia nanti! 🥰\n\nSalam hangat,\nLutfi & Firdha"
+  },
+  "theme": {
+    "colorPalette": "navy",
+    "fontFamily": "great-vibes",
+    "animationStyle": "smooth-fade",
+    "showQuote": true,
+    "showStory": true,
+    "showGallery": true,
+    "showGifts": true
+  },
+  "coverElements": []
 }

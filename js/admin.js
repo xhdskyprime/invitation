@@ -779,7 +779,7 @@ function setupWaGeneratorLogic() {
 
   updateWaTemplateUI();
 
-  // Single Guest Add
+  // Single Guest Add (Placed at the top / No. 1)
   const btnSingle = document.getElementById("btnAddSingleGuest");
   if (btnSingle) {
     btnSingle.addEventListener("click", () => {
@@ -793,22 +793,24 @@ function setupWaGeneratorLogic() {
         return;
       }
 
-      currentData.guestList.push({
+      currentData.guestList.unshift({
         id: Date.now(),
         name: name,
         phone: phone
       });
+
+      guestCurrentPage = 1;
 
       if (nameInput) nameInput.value = "";
       if (phoneInput) phoneInput.value = "";
 
       saveDataAndSync();
       renderGuestTable();
-      showToast(`Tamu "${name}" berhasil ditambahkan!`);
+      showToast(`Tamu "${name}" berhasil ditambahkan ke No. 1!`);
     });
   }
 
-  // Batch Multi Guest Add
+  // Batch Multi Guest Add (Placed at the top / No. 1 in order)
   const btnBatch = document.getElementById("btnAddBatchGuests");
   if (btnBatch) {
     btnBatch.addEventListener("click", () => {
@@ -821,7 +823,7 @@ function setupWaGeneratorLogic() {
       }
 
       const lines = rawText.split("\n");
-      let countAdded = 0;
+      const newGuests = [];
 
       lines.forEach((line) => {
         const trimmed = line.trim();
@@ -837,19 +839,22 @@ function setupWaGeneratorLogic() {
         }
 
         if (name) {
-          currentData.guestList.push({
+          newGuests.push({
             id: Date.now() + Math.random(),
             name: name,
             phone: phone
           });
-          countAdded++;
         }
       });
 
-      batchInput.value = "";
-      saveDataAndSync();
-      renderGuestTable();
-      showToast(`${countAdded} tamu berhasil diimpor!`);
+      if (newGuests.length > 0) {
+        currentData.guestList = [...newGuests, ...currentData.guestList];
+        guestCurrentPage = 1;
+        batchInput.value = "";
+        saveDataAndSync();
+        renderGuestTable();
+        showToast(`${newGuests.length} tamu berhasil ditambahkan ke daftar teratas!`);
+      }
     });
   }
 
@@ -945,24 +950,107 @@ function getInvitationBaseUrl() {
   return `${basePath}/index.html`;
 }
 
+let guestSearchQuery = "";
+let guestCurrentPage = 1;
+let guestPageSize = 10;
+
 function renderGuestTable() {
   const container = document.getElementById("guestListContainer");
   if (!container) return;
   container.innerHTML = "";
 
-  const guests = currentData.guestList || [];
+  const allGuests = currentData.guestList || [];
 
-  if (guests.length === 0) {
+  if (allGuests.length === 0) {
     container.innerHTML = `<div style="text-align:center; color: var(--admin-text-muted); padding: 40px 20px;">Belum ada tamu undangan. Silakan tambah tamu di atas.</div>`;
     updateStats();
     return;
   }
 
+  // 1. Search Toolbar Element
+  const toolbar = document.createElement("div");
+  toolbar.className = "guest-toolbar";
+  toolbar.innerHTML = `
+    <div class="guest-search-wrap">
+      <i data-lucide="search" class="guest-search-icon"></i>
+      <input type="text" id="inputGuestSearch" class="guest-search-input" placeholder="Cari nama tamu atau no. HP..." value="${escapeHtml(guestSearchQuery)}">
+    </div>
+    <div class="guest-page-size-wrap">
+      <span>Tampilkan:</span>
+      <select id="selectGuestPageSize" class="guest-page-size">
+        <option value="10" ${guestPageSize === 10 ? 'selected' : ''}>10</option>
+        <option value="25" ${guestPageSize === 25 ? 'selected' : ''}>25</option>
+        <option value="50" ${guestPageSize === 50 ? 'selected' : ''}>50</option>
+        <option value="1000" ${guestPageSize === 1000 ? 'selected' : ''}>Semua</option>
+      </select>
+    </div>
+  `;
+  container.appendChild(toolbar);
+
+  // Attach toolbar listeners
+  const searchInput = toolbar.querySelector("#inputGuestSearch");
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      guestSearchQuery = e.target.value;
+      guestCurrentPage = 1;
+      renderGuestTable();
+      const newSearch = document.getElementById("inputGuestSearch");
+      if (newSearch) {
+        newSearch.focus();
+        newSearch.setSelectionRange(newSearch.value.length, newSearch.value.length);
+      }
+    });
+  }
+
+  const pageSizeSelect = toolbar.querySelector("#selectGuestPageSize");
+  if (pageSizeSelect) {
+    pageSizeSelect.addEventListener("change", (e) => {
+      guestPageSize = parseInt(e.target.value, 10) || 10;
+      guestCurrentPage = 1;
+      renderGuestTable();
+    });
+  }
+
+  // 2. Filter Guests
+  const q = guestSearchQuery.trim().toLowerCase();
+  const filteredGuests = allGuests.map((guest, originalIdx) => ({ guest, originalIdx }))
+    .filter(({ guest }) => {
+      if (!q) return true;
+      const nameMatch = (guest.name || "").toLowerCase().includes(q);
+      const phoneMatch = (guest.phone || "").replace(/[^0-9]/g, "").includes(q.replace(/[^0-9]/g, ""));
+      return nameMatch || phoneMatch;
+    });
+
+  if (filteredGuests.length === 0) {
+    const emptyMsg = document.createElement("div");
+    emptyMsg.style.cssText = "text-align:center; color: var(--admin-text-muted); padding: 30px 20px;";
+    emptyMsg.textContent = `Tidak ditemukan tamu dengan kata kunci "${guestSearchQuery}".`;
+    container.appendChild(emptyMsg);
+    updateStats();
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+
+  // 3. Pagination Math
+  const totalItems = filteredGuests.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / guestPageSize));
+  if (guestCurrentPage > totalPages) guestCurrentPage = totalPages;
+  if (guestCurrentPage < 1) guestCurrentPage = 1;
+
+  const startIndex = (guestCurrentPage - 1) * guestPageSize;
+  const endIndex = Math.min(startIndex + guestPageSize, totalItems);
+  const pagedGuests = filteredGuests.slice(startIndex, endIndex);
+
+  // 4. Render Guest Items
   const baseUrl = getInvitationBaseUrl();
   const activeTplKey = (currentData.waTemplates && currentData.waTemplates.active) || "formal";
   const rawTplText = (currentData.waTemplates && currentData.waTemplates[activeTplKey]) || defaultData.waTemplates.formal;
 
-  guests.forEach((guest, index) => {
+  const listWrap = document.createElement("div");
+  listWrap.className = "guest-items-list";
+
+  pagedGuests.forEach(({ guest, originalIdx }, pageIdx) => {
+    const itemNumber = startIndex + pageIdx + 1;
     const encodedName = encodeURIComponent(guest.name);
     const guestLink = `${baseUrl}?to=${encodedName}`;
     const formattedPhone = formatWaPhone(guest.phone);
@@ -975,7 +1063,6 @@ function renderGuestTable() {
     compiledMsg = compiledMsg.replace(/{LOKASI}/g, (currentData.events && currentData.events.akadLocation) || "Lokasi Acara");
     compiledMsg = compiledMsg.replace(/{LINK_UNDANGAN}/g, guestLink);
 
-    // WhatsApp Deep Link (Using whatsapp:// to fix iOS emoji stripping)
     const waUrl = formattedPhone 
       ? `whatsapp://send?phone=${formattedPhone}&text=${encodeURIComponent(compiledMsg)}`
       : `whatsapp://send?text=${encodeURIComponent(compiledMsg)}`;
@@ -985,7 +1072,7 @@ function renderGuestTable() {
     item.innerHTML = `
       <div class="guest-info">
         <div class="guest-name">
-          <span class="guest-number">${index + 1}.</span> 
+          <span class="guest-number">#${itemNumber}</span> 
           <strong>${escapeHtml(guest.name)}</strong>
         </div>
         <div class="guest-details">
@@ -997,20 +1084,57 @@ function renderGuestTable() {
         <a href="${waUrl}" target="_blank" class="btn-action-sm btn-wa-send" title="Kirim WA">
           <i data-lucide="send" style="width:14px;"></i> Kirim
         </a>
-        <button class="btn-action-sm btn-copy-link" onclick="copyGuestLink('${escapeHtml(guestLink)}')" title="Salin">
+        <button class="btn-action-sm btn-copy-link" onclick="copyGuestLink('${escapeHtml(guestLink)}')" title="Salin Link">
           <i data-lucide="copy" style="width:14px;"></i> Salin
         </button>
-        <button class="btn-action-sm btn-delete-guest" onclick="deleteGuest(${index})" title="Hapus">
+        <button class="btn-action-sm btn-delete-guest" onclick="deleteGuest(${originalIdx})" title="Hapus Tamu">
           <i data-lucide="trash-2" style="width:14px;"></i>
         </button>
       </div>
     `;
-    container.appendChild(item);
+    listWrap.appendChild(item);
   });
+  container.appendChild(listWrap);
+
+  // 5. Pagination Bar
+  if (totalPages > 1 || totalItems > 10) {
+    const pagBar = document.createElement("div");
+    pagBar.className = "pagination-bar";
+
+    let pageBtnsHtml = '';
+    for (let p = 1; p <= totalPages; p++) {
+      if (totalPages <= 7 || p === 1 || p === totalPages || (p >= guestCurrentPage - 1 && p <= guestCurrentPage + 1)) {
+        pageBtnsHtml += `<button class="page-btn ${p === guestCurrentPage ? 'active' : ''}" onclick="goToGuestPage(${p})">${p}</button>`;
+      } else if (p === guestCurrentPage - 2 || p === guestCurrentPage + 2) {
+        pageBtnsHtml += `<span style="padding: 0 4px; color: var(--admin-text-muted);">...</span>`;
+      }
+    }
+
+    pagBar.innerHTML = `
+      <div class="pagination-info">
+        Menampilkan <strong>${startIndex + 1} - ${endIndex}</strong> dari <strong>${totalItems}</strong> tamu
+      </div>
+      <div class="pagination-controls">
+        <button class="page-btn" onclick="goToGuestPage(${guestCurrentPage - 1})" ${guestCurrentPage <= 1 ? 'disabled' : ''} title="Halaman Sebelumnya">
+          <i data-lucide="chevron-left" style="width:14px; height:14px;"></i>
+        </button>
+        ${pageBtnsHtml}
+        <button class="page-btn" onclick="goToGuestPage(${guestCurrentPage + 1})" ${guestCurrentPage >= totalPages ? 'disabled' : ''} title="Halaman Selanjutnya">
+          <i data-lucide="chevron-right" style="width:14px; height:14px;"></i>
+        </button>
+      </div>
+    `;
+    container.appendChild(pagBar);
+  }
 
   updateStats();
   if (window.lucide) lucide.createIcons();
 }
+
+window.goToGuestPage = function(page) {
+  guestCurrentPage = page;
+  renderGuestTable();
+};
 
 window.copyGuestLink = function(link) {
   navigator.clipboard.writeText(link).then(() => {
