@@ -194,6 +194,49 @@ async function runTests() {
     assert(data.audio === null, 'VULN-05: Oversized audio string (>600KB) stripped to null');
   }
 
+  // TEST 10: Atomic Guest API - Add Single Guest
+  {
+    const req = new Request('https://invitation.legacysoft.biz.id/api/admin/guests', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Admin-Password': '262626'
+      },
+      body: JSON.stringify({
+        action: 'add',
+        guest: { id: 999, name: 'Tamu Baru Test', phone: '0811111111' }
+      })
+    });
+    const res = await worker.fetch(req, mockEnv);
+    const data = await res.json();
+    assert(res.status === 200 && data.success === true, 'POST /api/admin/guests add succeeds');
+    assert(data.guestList[0].name === 'Tamu Baru Test', 'New guest atomically unshifted to index 0 (No. 1)');
+  }
+
+  // TEST 11: Atomic Guest API - Delete Guest by ID
+  {
+    const req = new Request('https://invitation.legacysoft.biz.id/api/admin/guests', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Admin-Password': '262626'
+      },
+      body: JSON.stringify({
+        action: 'delete',
+        id: 999
+      })
+    });
+    const res = await worker.fetch(req, mockEnv);
+    const data = await res.json();
+    assert(res.status === 200 && !data.guestList.some(g => g.id === 999), 'POST /api/admin/guests delete removes guest atomically');
+  }
+
+  // TEST 12: Auto-Snapshot Creation
+  {
+    const snapshot = mockKv.get('config_backup_latest');
+    assert(snapshot !== null && snapshot !== undefined, 'Auto-snapshot config_backup_latest created in KV');
+  }
+
   console.log(`\n--- TEST SUMMARY: ${passedTests} / ${totalTests} TESTS PASSED ---`);
 }
 

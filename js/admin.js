@@ -180,6 +180,16 @@ async function loadStoredData() {
   }
 }
 
+let isSavingToServer = false;
+
+window.addEventListener("beforeunload", (e) => {
+  if (isSavingToServer) {
+    e.preventDefault();
+    e.returnValue = "Perubahan sedang disimpan ke server. Tetap tinggalkan halaman?";
+    return e.returnValue;
+  }
+});
+
 let syncTimeout = null;
 async function saveDataAndSync() {
   // Post message to iframe for instant live preview update
@@ -193,7 +203,7 @@ async function saveDataAndSync() {
 
   updateStats();
 
-  // Debounce API call to prevent saving on every single keystroke (Race Conditions)
+  // Debounce API call for general settings/theme text
   if (syncTimeout) clearTimeout(syncTimeout);
   syncTimeout = setTimeout(forceSaveToServer, 800);
 }
@@ -204,6 +214,7 @@ async function forceSaveToServer() {
   
   if (saveBtnText) saveBtnText.textContent = "Menyimpan...";
   if (saveBtn) saveBtn.style.opacity = "0.7";
+  isSavingToServer = true;
 
   try {
     const password = localStorage.getItem("admin_password") || "";
@@ -224,13 +235,52 @@ async function forceSaveToServer() {
       setTimeout(() => {
         if (saveBtnText) saveBtnText.textContent = "Simpan Perubahan";
       }, 2000);
+      return true;
     }
   } catch(err) {
     console.error("Failed to sync config to server", err);
     if (saveBtnText) saveBtnText.textContent = "Gagal Menyimpan ❌";
+    showToast("Gagal menyimpan ke server. Periksa koneksi internet!");
   } finally {
+    isSavingToServer = false;
     if (saveBtn) saveBtn.style.opacity = "1";
   }
+  return false;
+}
+
+async function atomicGuestApi(payload) {
+  isSavingToServer = true;
+  const password = localStorage.getItem("admin_password") || "";
+  try {
+    const res = await fetch("/api/admin/guests", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Admin-Password": password
+      },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.guestList && Array.isArray(data.guestList)) {
+        currentData.guestList = data.guestList;
+        localStorage.setItem("local_guestList_backup", JSON.stringify(currentData.guestList));
+        updateStats();
+        return true;
+      }
+    } else if (res.status === 401) {
+      alert("Sesi berakhir atau PIN salah. Silakan masukkan PIN kembali.");
+      showPasswordOverlay();
+      return false;
+    }
+  } catch(e) {
+    console.error("Atomic guest API network error:", e);
+    localStorage.setItem("local_guestList_backup", JSON.stringify(currentData.guestList));
+    showToast("Koneksi bermasalah. Data dicadangkan di memori perangkat.");
+  } finally {
+    isSavingToServer = false;
+  }
+  return false;
 }
 
 function updateStats() {
@@ -779,7 +829,7 @@ function setupWaGeneratorLogic() {
 
   updateWaTemplateUI();
 
-  // Single Guest Add (Placed at the top / No. 1 with instant server save)
+  // Single Guest Add (Atomic API - Zero Data Loss)
   const btnSingle = document.getElementById("btnAddSingleGuest");
   if (btnSingle) {
     btnSingle.addEventListener("click", async () => {
@@ -796,30 +846,31 @@ function setupWaGeneratorLogic() {
       btnSingle.disabled = true;
       btnSingle.textContent = "Menyimpan...";
 
-      currentData.guestList.unshift({
+      const newGuest = {
         id: Date.now(),
         name: name,
         phone: phone
-      });
+      };
 
+      currentData.guestList.unshift(newGuest);
       guestCurrentPage = 1;
 
       if (nameInput) nameInput.value = "";
       if (phoneInput) phoneInput.value = "";
 
       renderGuestTable();
-      const saved = await forceSaveToServer();
+      const saved = await atomicGuestApi({ action: 'add', guest: newGuest });
       btnSingle.disabled = false;
       btnSingle.innerHTML = `<i data-lucide="user-plus"></i> Tambah ke Daftar`;
       if (window.lucide) lucide.createIcons();
 
       if (saved) {
-        showToast(`Tamu "${name}" tersimpan di No. 1!`);
+        showToast(`Tamu "${name}" tersimpan permanen di No. 1!`);
       }
     });
   }
 
-  // Batch Multi Guest Add (Placed at the top / No. 1 with instant server save)
+  // Batch Multi Guest Add (Atomic API - Zero Data Loss)
   const btnBatch = document.getElementById("btnAddBatchGuests");
   if (btnBatch) {
     btnBatch.addEventListener("click", async () => {
@@ -865,13 +916,13 @@ function setupWaGeneratorLogic() {
         batchInput.value = "";
         
         renderGuestTable();
-        const saved = await forceSaveToServer();
+        const saved = await atomicGuestApi({ action: 'batch_add', guests: newGuests });
         btnBatch.disabled = false;
         btnBatch.innerHTML = `<i data-lucide="users"></i> Impor Semua`;
         if (window.lucide) lucide.createIcons();
 
         if (saved) {
-          showToast(`${newGuests.length} tamu berhasil disimpan ke database!`);
+          showToast(`${newGuests.length} tamu berhasil disimpan permanen ke database!`);
         }
       }
     });
@@ -1150,12 +1201,15 @@ window.copyGuestLink = function(link) {
 
 window.deleteGuest = async function(index) {
   if (!confirm("Hapus tamu ini dari daftar?")) return;
+  const guestToDelete = currentData.guestList[index];
   currentData.guestList.splice(index, 1);
   renderGuestTable();
-  const saved = await forceSaveToServer();
-  if (saved) {
-    showToast("Tamu berhasil dihapus.");
+  if (guestToDelete && guestToDelete.id) {
+    await atomicGuestApi({ action: 'delete', id: guestToDelete.id });
+  } else {
+    await forceSaveToServer();
   }
+  showToast("Tamu berhasil dihapus.");
 };
 
 // Render Admin RSVP Table

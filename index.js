@@ -442,6 +442,24 @@ export default {
 
         try {
           const body = await request.json();
+          
+          // Safeguard: Preserve existing guestList if incoming payload omitted or empty guestList
+          const stored = await env.INVITATION_DB.get('config');
+          if (stored) {
+            const storedConfig = JSON.parse(stored);
+            if (storedConfig.guestList && Array.isArray(storedConfig.guestList) && storedConfig.guestList.length > 0) {
+              if (!body.guestList || !Array.isArray(body.guestList) || body.guestList.length === 0) {
+                body.guestList = storedConfig.guestList;
+              }
+            }
+            // Auto-snapshot before overwrite
+            await env.INVITATION_DB.put('config_backup_latest', JSON.stringify({
+              timestamp: Date.now(),
+              date: new Date().toISOString(),
+              config: storedConfig
+            }, null, 2));
+          }
+
           await env.INVITATION_DB.put('config', JSON.stringify(body, null, 2));
           return new Response(JSON.stringify({ success: true }), {
             headers: { 
@@ -451,6 +469,78 @@ export default {
           });
         } catch (err) {
           return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+      }
+    }
+
+    // ==========================================
+    // API: /api/admin/guests (Atomic Guest Operations - Zero Data Loss)
+    // ==========================================
+    if (url.pathname === '/api/admin/guests') {
+      const isAuthed = await checkAuth(request, env);
+      if (!isAuthed) return unauthorizedResponse();
+
+      const stored = await env.INVITATION_DB.get('config');
+      const config = stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(defaultConfig));
+      if (!config.guestList) config.guestList = [];
+
+      if (request.method === 'GET') {
+        return new Response(JSON.stringify(config.guestList, null, 2), {
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        });
+      }
+
+      if (request.method === 'POST') {
+        try {
+          const body = await request.json();
+          const action = body.action || 'sync';
+
+          // Snapshot before modifying
+          await env.INVITATION_DB.put('config_backup_latest', JSON.stringify({
+            timestamp: Date.now(),
+            date: new Date().toISOString(),
+            config: config
+          }, null, 2));
+
+          if (action === 'add' && body.guest && body.guest.name) {
+            const newGuest = {
+              id: body.guest.id || Date.now(),
+              name: String(body.guest.name).trim(),
+              phone: body.guest.phone ? String(body.guest.phone).trim() : ''
+            };
+            config.guestList.unshift(newGuest);
+          } else if (action === 'batch_add' && Array.isArray(body.guests)) {
+            const validGuests = body.guests
+              .filter(g => g && g.name)
+              .map(g => ({
+                id: g.id || (Date.now() + Math.random()),
+                name: String(g.name).trim(),
+                phone: g.phone ? String(g.phone).trim() : ''
+              }));
+            config.guestList = [...validGuests, ...config.guestList];
+          } else if (action === 'delete' && body.id !== undefined) {
+            config.guestList = config.guestList.filter(g => String(g.id) !== String(body.id));
+          } else if (action === 'sync' && Array.isArray(body.guestList)) {
+            config.guestList = body.guestList;
+          }
+
+          await env.INVITATION_DB.put('config', JSON.stringify(config, null, 2));
+
+          return new Response(JSON.stringify({ success: true, guestList: config.guestList }), {
+            headers: { 
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
+          });
+        } catch (err) {
+          return new Response(JSON.stringify({ error: 'Failed to process guest operation' }), {
             status: 400,
             headers: { 'Content-Type': 'application/json' }
           });

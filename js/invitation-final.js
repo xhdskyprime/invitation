@@ -827,6 +827,12 @@ function setupRSVPForm() {
       return;
     }
 
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = "0.7";
+    }
+
     try {
       const res = await fetch("/api/wishes", {
         method: "POST",
@@ -856,10 +862,18 @@ function setupRSVPForm() {
 
         showToast("Ucapan & doa restu Anda berhasil terkirim!");
         await renderWishes();
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        showToast(errData.error || "Gagal mengirim ucapan. Silakan coba lagi.");
       }
     } catch(err) {
       console.error("Failed to submit wish", err);
-      showToast("Gagal mengirim ucapan. Silakan coba lagi.");
+      showToast("Gagal mengirim ucapan. Silakan periksa koneksi internet.");
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+      }
     }
   });
 }
