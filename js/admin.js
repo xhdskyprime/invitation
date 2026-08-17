@@ -858,19 +858,6 @@ function setupWaGeneratorLogic() {
     });
   }
 
-  // Clear all guests
-  const btnClearAll = document.getElementById("btnClearAllGuests");
-  if (btnClearAll) {
-    btnClearAll.addEventListener("click", () => {
-      if (confirm("Hapus semua daftar tamu?")) {
-        currentData.guestList = [];
-        saveDataAndSync();
-        renderGuestTable();
-        showToast("Daftar tamu dikosongkan.");
-      }
-    });
-  }
-
   renderGuestTable();
 }
 
