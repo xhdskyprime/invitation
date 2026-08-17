@@ -779,10 +779,10 @@ function setupWaGeneratorLogic() {
 
   updateWaTemplateUI();
 
-  // Single Guest Add (Placed at the top / No. 1)
+  // Single Guest Add (Placed at the top / No. 1 with instant server save)
   const btnSingle = document.getElementById("btnAddSingleGuest");
   if (btnSingle) {
-    btnSingle.addEventListener("click", () => {
+    btnSingle.addEventListener("click", async () => {
       const nameInput = document.getElementById("inputGuestName");
       const phoneInput = document.getElementById("inputGuestPhone");
       const name = nameInput ? nameInput.value.trim() : "";
@@ -792,6 +792,9 @@ function setupWaGeneratorLogic() {
         alert("Silakan masukkan nama tamu!");
         return;
       }
+
+      btnSingle.disabled = true;
+      btnSingle.textContent = "Menyimpan...";
 
       currentData.guestList.unshift({
         id: Date.now(),
@@ -804,16 +807,22 @@ function setupWaGeneratorLogic() {
       if (nameInput) nameInput.value = "";
       if (phoneInput) phoneInput.value = "";
 
-      saveDataAndSync();
       renderGuestTable();
-      showToast(`Tamu "${name}" berhasil ditambahkan ke No. 1!`);
+      const saved = await forceSaveToServer();
+      btnSingle.disabled = false;
+      btnSingle.innerHTML = `<i data-lucide="user-plus"></i> Tambah ke Daftar`;
+      if (window.lucide) lucide.createIcons();
+
+      if (saved) {
+        showToast(`Tamu "${name}" tersimpan di No. 1!`);
+      }
     });
   }
 
-  // Batch Multi Guest Add (Placed at the top / No. 1 in order)
+  // Batch Multi Guest Add (Placed at the top / No. 1 with instant server save)
   const btnBatch = document.getElementById("btnAddBatchGuests");
   if (btnBatch) {
-    btnBatch.addEventListener("click", () => {
+    btnBatch.addEventListener("click", async () => {
       const batchInput = document.getElementById("inputBatchGuests");
       if (!batchInput) return;
       const rawText = batchInput.value.trim();
@@ -848,12 +857,22 @@ function setupWaGeneratorLogic() {
       });
 
       if (newGuests.length > 0) {
+        btnBatch.disabled = true;
+        btnBatch.textContent = "Menyimpan...";
+
         currentData.guestList = [...newGuests, ...currentData.guestList];
         guestCurrentPage = 1;
         batchInput.value = "";
-        saveDataAndSync();
+        
         renderGuestTable();
-        showToast(`${newGuests.length} tamu berhasil ditambahkan ke daftar teratas!`);
+        const saved = await forceSaveToServer();
+        btnBatch.disabled = false;
+        btnBatch.innerHTML = `<i data-lucide="users"></i> Impor Semua`;
+        if (window.lucide) lucide.createIcons();
+
+        if (saved) {
+          showToast(`${newGuests.length} tamu berhasil disimpan ke database!`);
+        }
       }
     });
   }
@@ -1129,11 +1148,14 @@ window.copyGuestLink = function(link) {
   });
 };
 
-window.deleteGuest = function(index) {
+window.deleteGuest = async function(index) {
+  if (!confirm("Hapus tamu ini dari daftar?")) return;
   currentData.guestList.splice(index, 1);
-  saveDataAndSync();
   renderGuestTable();
-  showToast("Tamu dihapus dari daftar.");
+  const saved = await forceSaveToServer();
+  if (saved) {
+    showToast("Tamu berhasil dihapus.");
+  }
 };
 
 // Render Admin RSVP Table
