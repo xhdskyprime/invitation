@@ -1283,8 +1283,8 @@ function renderGuestTable() {
         <a href="${waUrl}" target="_blank" class="btn-action-sm btn-wa-send" title="Kirim WA">
           <i data-lucide="send" style="width:14px;"></i> Kirim
         </a>
-        <button class="btn-action-sm btn-copy-link" onclick="copyGuestLink('${escapeHtml(guestLink)}')" title="Salin Link">
-          <i data-lucide="copy" style="width:14px;"></i> Salin
+        <button class="btn-action-sm btn-copy-link" onclick="copyGuestMessage(${originalIdx})" title="Salin Pesan Undangan Lengkap">
+          <i data-lucide="copy" style="width:14px;"></i> Salin Pesan
         </button>
         <button class="btn-action-sm btn-edit-guest" onclick="editGuest(${originalIdx})" title="Ubah Nama / No. HP">
           <i data-lucide="pencil" style="width:14px;"></i>
@@ -1338,10 +1338,58 @@ window.goToGuestPage = function(page) {
   renderGuestTable();
 };
 
+window.copyGuestMessage = function(index) {
+  const guest = currentData.guestList[index];
+  if (!guest) return;
+
+  const baseUrl = getInvitationBaseUrl();
+  const activeTplKey = (currentData.waTemplates && currentData.waTemplates.active) || "formal";
+  const rawTplText = (currentData.waTemplates && currentData.waTemplates[activeTplKey]) || defaultData.waTemplates.formal;
+  const guestLink = `${baseUrl}?to=${encodeURIComponent(guest.name)}`;
+
+  let msg = rawTplText;
+  msg = msg.replace(/{NAMA_TAMU}/g, guest.name);
+  msg = msg.replace(/{NAMA_MEMPELAI}/g, currentData.general.coupleNames || "Lutfi & Firdha");
+  msg = msg.replace(/{TANGGAL}/g, currentData.general.eventDateFormatted || "26 Agustus 2026");
+  msg = msg.replace(/{LOKASI}/g, (currentData.events && currentData.events.akadLocation) || "Lokasi Acara");
+  msg = msg.replace(/{LINK_UNDANGAN}/g, guestLink);
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(msg).then(() => {
+      showToast(`Pesan undangan untuk "${guest.name}" berhasil disalin!`);
+    }).catch(() => {
+      fallbackCopyText(msg);
+    });
+  } else {
+    fallbackCopyText(msg);
+  }
+};
+
+function fallbackCopyText(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.position = "fixed";
+  textArea.style.left = "-9999px";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    document.execCommand('copy');
+    showToast("Pesan undangan berhasil disalin!");
+  } catch (err) {
+    prompt("Salin manual teks pesan di bawah ini:", text);
+  }
+  document.body.removeChild(textArea);
+}
+
 window.copyGuestLink = function(link) {
-  navigator.clipboard.writeText(link).then(() => {
-    showToast("Link undangan berhasil disalin!");
-  });
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(link).then(() => {
+      showToast("Link undangan berhasil disalin!");
+    });
+  } else {
+    fallbackCopyText(link);
+  }
 };
 
 window.editGuest = async function(index) {
