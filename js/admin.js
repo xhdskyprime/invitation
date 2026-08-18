@@ -928,7 +928,148 @@ function setupWaGeneratorLogic() {
     });
   }
 
+  // Contact Picker: Single Contact (from Phone Book)
+  const btnPickSingle = document.getElementById("btnPickContactSingle");
+  if (btnPickSingle) {
+    btnPickSingle.addEventListener("click", async () => {
+      if ("contacts" in navigator && "ContactsManager" in window) {
+        try {
+          const contacts = await navigator.contacts.select(["name", "tel"], { multiple: false });
+          if (contacts && contacts.length > 0) {
+            const c = contacts[0];
+            const name = (c.name && c.name[0]) || "";
+            const rawTel = (c.tel && c.tel[0]) || "";
+            const cleanPhone = rawTel.replace(/[^0-9+]/g, "");
+
+            const nameInput = document.getElementById("inputGuestName");
+            const phoneInput = document.getElementById("inputGuestPhone");
+            if (nameInput) nameInput.value = name;
+            if (phoneInput) phoneInput.value = cleanPhone;
+            showToast(`Kontak "${name}" berhasil dimuat!`);
+          }
+        } catch (err) {
+          console.log("Contact pick cancelled:", err);
+        }
+      } else {
+        alert("Fitur Contact Picker didukung pada browser Google Chrome di HP Android via HTTPS. Untuk iPhone/Laptop, Anda bisa menggunakan tombol '📁 Impor File Kontak (.vcf / vCard)'.");
+      }
+    });
+  }
+
+  // Contact Picker: Batch Multi-Contacts (from Phone Book)
+  const btnPickBatch = document.getElementById("btnPickContactBatch");
+  if (btnPickBatch) {
+    btnPickBatch.addEventListener("click", async () => {
+      if ("contacts" in navigator && "ContactsManager" in window) {
+        try {
+          const contacts = await navigator.contacts.select(["name", "tel"], { multiple: true });
+          if (contacts && contacts.length > 0) {
+            const newGuests = contacts.map(c => {
+              const name = (c.name && c.name[0]) || "Tamu";
+              const rawTel = (c.tel && c.tel[0]) || "";
+              return {
+                id: Date.now() + Math.random(),
+                name: name.trim(),
+                phone: rawTel.replace(/[^0-9+]/g, "").trim()
+              };
+            }).filter(g => g.name);
+
+            if (newGuests.length > 0) {
+              btnPickBatch.disabled = true;
+              btnPickBatch.textContent = "Menyimpan...";
+
+              currentData.guestList = [...newGuests, ...currentData.guestList];
+              guestCurrentPage = 1;
+              renderGuestTable();
+
+              const saved = await atomicGuestApi({ action: "batch_add", guests: newGuests });
+              btnPickBatch.disabled = false;
+              btnPickBatch.innerHTML = `<i data-lucide="users" style="width:16px; height:16px;"></i> 📱 Pilih Banyak Kontak dari HP`;
+              if (window.lucide) lucide.createIcons();
+
+              if (saved) {
+                showToast(`${newGuests.length} kontak berhasil diimpor dari HP!`);
+              }
+            }
+          }
+        } catch (err) {
+          console.log("Batch contact pick cancelled:", err);
+        }
+      } else {
+        alert("Fitur Pilih Kontak HP didukung pada Google Chrome di HP Android. Untuk iPhone/Laptop, Anda bisa mengekspor kontak ke file .vcf dan klik '📁 Impor File Kontak (.vcf)'.");
+      }
+    });
+  }
+
+  // vCard (.vcf) File Importer
+  const inputVcf = document.getElementById("inputVcfFile");
+  if (inputVcf) {
+    inputVcf.addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(event) {
+        const vcfText = event.target.result;
+        const parsed = parseVCardText(vcfText);
+        if (parsed.length === 0) {
+          alert("Tidak ada kontak yang terbaca dari file vCard (.vcf) ini.");
+          return;
+        }
+
+        if (confirm(`Ditemukan ${parsed.length} kontak dari file "${file.name}". Impor semua ke Buku Tamu?`)) {
+          currentData.guestList = [...parsed, ...currentData.guestList];
+          guestCurrentPage = 1;
+          renderGuestTable();
+
+          const saved = await atomicGuestApi({ action: "batch_add", guests: parsed });
+          if (saved) {
+            showToast(`${parsed.length} kontak berhasil diimpor dari file!`);
+          }
+        }
+        inputVcf.value = "";
+      };
+      reader.readAsText(file);
+    });
+  }
+
   renderGuestTable();
+}
+
+function parseVCardText(vcfText) {
+  const contacts = [];
+  const cards = vcfText.split(/END:VCARD/i);
+  for (const card of cards) {
+    if (!card.trim()) continue;
+    let name = '';
+    let phone = '';
+
+    const fnMatch = card.match(/^FN(?:;[^:]*)?:([^\r\n]+)/im);
+    if (fnMatch && fnMatch[1]) {
+      name = fnMatch[1].trim();
+    } else {
+      const nMatch = card.match(/^N(?:;[^:]*)?:([^;\r\n]*)(?:;([^;\r\n]*))?/im);
+      if (nMatch) {
+        const family = (nMatch[1] || '').trim();
+        const given = (nMatch[2] || '').trim();
+        name = (given ? `${given} ${family}` : family).trim();
+      }
+    }
+
+    const telMatch = card.match(/^TEL(?:;[^:]*)?:([^\r\n]+)/im);
+    if (telMatch && telMatch[1]) {
+      phone = telMatch[1].trim().replace(/[^0-9+]/g, '');
+    }
+
+    if (name && name.toUpperCase() !== 'VCARD') {
+      contacts.push({
+        id: Date.now() + Math.random(),
+        name: name,
+        phone: phone
+      });
+    }
+  }
+  return contacts;
 }
 
 window.switchWaTemplate = function(type) {

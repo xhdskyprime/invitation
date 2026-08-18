@@ -200,7 +200,13 @@
       
       <!-- Add Guest Card -->
       <div class="app-card">
-        <div class="card-title">Tambah Tamu Undangan</div>
+        <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Tambah Tamu Undangan</span>
+        </div>
+
+        <button type="button" class="btn-header" id="btnPickContactSingle" style="font-size: 0.82rem; padding: 9px 12px; margin-bottom: 14px; width: 100%; justify-content: center; background: rgba(34, 197, 94, 0.12); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="contact" style="width:16px; height:16px;"></i> 📱 Ambil dari Kontak HP
+        </button>
         
         <div class="form-group full-width">
           <label class="form-label">Nama Tamu</label>
@@ -209,7 +215,7 @@
 
         <div class="form-group full-width" style="margin-top: 12px;">
           <label class="form-label">No. WhatsApp (Opsional)</label>
-          <input type="number" id="inputGuestPhone" class="form-input" placeholder="081234567890">
+          <input type="text" id="inputGuestPhone" class="form-input" placeholder="081234567890">
         </div>
 
         <button class="btn-header btn-primary btn-block" id="btnAddSingleGuest" style="margin-top: 16px;">
@@ -217,12 +223,24 @@
         </button>
 
         <details style="margin-top: 20px; padding-top: 16px; border-top: 1px dashed var(--admin-border);">
-          <summary style="font-weight: 600; cursor: pointer; color: var(--admin-accent); font-size: 0.9rem;">+ Impor Banyak Tamu (Batch)</summary>
-          <div style="margin-top: 12px;">
-            <textarea id="inputBatchGuests" class="form-textarea" rows="4" placeholder="Bpk. Ahmad | 081234567890&#10;Ibu Susi"></textarea>
-            <button class="btn-header btn-block" id="btnAddBatchGuests" style="background: rgba(56, 189, 248, 0.15); color: var(--admin-accent); border-color: rgba(56, 189, 248, 0.3); margin-top: 12px;">
-              Impor Semua
+          <summary style="font-weight: 600; cursor: pointer; color: var(--admin-accent); font-size: 0.9rem;">+ Impor Banyak Tamu (Kontak / File / Teks)</summary>
+          <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <button type="button" class="btn-header" id="btnPickContactBatch" style="font-size: 0.82rem; padding: 9px 12px; width: 100%; justify-content: center; background: rgba(34, 197, 94, 0.12); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="users" style="width:16px; height:16px;"></i> 📱 Pilih Banyak Kontak dari HP
             </button>
+
+            <label class="btn-header" style="font-size: 0.82rem; padding: 9px 12px; width: 100%; justify-content: center; background: rgba(99, 102, 241, 0.12); color: #6366f1; border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-sizing: border-box; text-align: center;">
+              <i data-lucide="file-up" style="width:16px; height:16px;"></i> 📁 Impor File Kontak (.vcf / vCard)
+              <input type="file" id="inputVcfFile" accept=".vcf,text/vcard" style="display: none;">
+            </label>
+
+            <div style="margin-top: 6px;">
+              <label class="form-label" style="font-size: 0.78rem; color: var(--admin-text-muted);">Atau ketik/paste daftar manual (Nama | No. WA):</label>
+              <textarea id="inputBatchGuests" class="form-textarea" rows="3" placeholder="Bpk. Ahmad | 081234567890&#10;Ibu Susi"></textarea>
+              <button class="btn-header btn-block" id="btnAddBatchGuests" style="background: rgba(56, 189, 248, 0.15); color: var(--admin-accent); border-color: rgba(56, 189, 248, 0.3); margin-top: 8px;">
+                Impor Daftar Teks
+              </button>
+            </div>
           </div>
         </details>
       </div>

@@ -491,7 +491,12 @@
 
         <!-- Single & Batch Guest Adder Card -->
         <div class="card">
-          <div class="card-title">Tambah Tamu Undangan</div>
+          <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Tambah Tamu Undangan</span>
+            <button type="button" class="btn-header" id="btnPickContactSingle" style="font-size: 0.8rem; padding: 6px 14px; background: rgba(34, 197, 94, 0.12); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="contact" style="width:14px; height:14px;"></i> 📱 Ambil dari Kontak HP
+            </button>
+          </div>
           
           <!-- Single Add Form -->
           <div class="form-grid">
@@ -514,14 +519,26 @@
           <!-- Batch Multi-Guest Accordion / Box -->
           <div style="border-top: 1px solid var(--admin-border); padding-top: 16px; margin-top: 10px;">
             <div class="form-group full-width">
-              <label class="form-label">
-                <span>Impor Banyak Tamu (Batch Multi-Guest)</span>
-                <span class="help-text">Satu nama per baris (Opsional: sertakan nomor HP dipisah karakter |)</span>
+              <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Impor Banyak Tamu (Batch / File Kontak)</span>
+                <span class="help-text">Satu nama per baris (Opsional: format Nama | No. HP)</span>
               </label>
+              
+              <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+                <button type="button" class="btn-header" id="btnPickContactBatch" style="font-size: 0.8rem; padding: 8px 14px; background: rgba(34, 197, 94, 0.12); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="users" style="width:14px; height:14px;"></i> 📱 Pilih Banyak Kontak dari HP
+                </button>
+
+                <label class="btn-header" style="font-size: 0.8rem; padding: 8px 14px; background: rgba(99, 102, 241, 0.12); color: #6366f1; border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-sizing: border-box;">
+                  <i data-lucide="file-up" style="width:14px; height:14px;"></i> 📁 Impor File Kontak (.vcf / vCard)
+                  <input type="file" id="inputVcfFile" accept=".vcf,text/vcard" style="display: none;">
+                </label>
+              </div>
+
               <textarea id="inputBatchGuests" class="form-textarea" rows="4" placeholder="Contoh format:&#10;Bpk. Ahmad & Keluarga | 081234567890&#10;Ibu Susi & Suami | 089876543210&#10;Budi Santoso"></textarea>
             </div>
             <button class="btn-header" id="btnAddBatchGuests" style="background: rgba(56, 189, 248, 0.15); color: var(--admin-accent); border-color: rgba(56, 189, 248, 0.3); width: 100%; justify-content: center;">
-              <i data-lucide="users"></i> Impor Daftar Tamu Masal
+              <i data-lucide="users"></i> Impor Daftar Tamu Teks
             </button>
           </div>
         </div>
