@@ -928,7 +928,7 @@ function setupWaGeneratorLogic() {
     });
   }
 
-  // Contact Picker: Single Contact (from Phone Book)
+  // Contact Picker: Single Contact (Preserves custom name if typed)
   const btnPickSingle = document.getElementById("btnPickContactSingle");
   if (btnPickSingle) {
     btnPickSingle.addEventListener("click", async () => {
@@ -943,9 +943,15 @@ function setupWaGeneratorLogic() {
 
             const nameInput = document.getElementById("inputGuestName");
             const phoneInput = document.getElementById("inputGuestPhone");
-            if (nameInput) nameInput.value = name;
             if (phoneInput) phoneInput.value = cleanPhone;
-            showToast(`Kontak "${name}" berhasil dimuat!`);
+
+            // If user has NOT typed a custom name yet, fill with contact name
+            if (nameInput && !nameInput.value.trim()) {
+              nameInput.value = name;
+              showToast(`Nama & nomor "${name}" berhasil dimuat!`);
+            } else {
+              showToast(`Nomor WA berhasil dimuat dari kontak "${name}"!`);
+            }
           }
         } catch (err) {
           console.log("Contact pick cancelled:", err);
@@ -975,20 +981,15 @@ function setupWaGeneratorLogic() {
             }).filter(g => g.name);
 
             if (newGuests.length > 0) {
-              btnPickBatch.disabled = true;
-              btnPickBatch.textContent = "Menyimpan...";
-
-              currentData.guestList = [...newGuests, ...currentData.guestList];
-              guestCurrentPage = 1;
-              renderGuestTable();
-
-              const saved = await atomicGuestApi({ action: "batch_add", guests: newGuests });
-              btnPickBatch.disabled = false;
-              btnPickBatch.innerHTML = `<i data-lucide="users" style="width:16px; height:16px;"></i> 📱 Pilih Banyak Kontak dari HP`;
-              if (window.lucide) lucide.createIcons();
-
-              if (saved) {
-                showToast(`${newGuests.length} kontak berhasil diimpor dari HP!`);
+              const batchInput = document.getElementById("inputBatchGuests");
+              const formattedLines = newGuests.map(c => c.phone ? `${c.name} | ${c.phone}` : c.name).join('\n');
+              
+              if (batchInput) {
+                batchInput.value = (batchInput.value.trim() ? (batchInput.value.trim() + '\n' + formattedLines) : formattedLines);
+                const detailsEl = batchInput.closest('details');
+                if (detailsEl) detailsEl.open = true;
+                batchInput.focus();
+                showToast(`${newGuests.length} kontak dimasukkan ke kotak teks. Anda bisa sesuaikan nama sebelum klik "Impor Semua".`);
               }
             }
           }
@@ -1001,7 +1002,7 @@ function setupWaGeneratorLogic() {
     });
   }
 
-  // vCard (.vcf) File Importer
+  // vCard (.vcf) File Importer (Inserts into textarea so user can customize names first)
   const inputVcf = document.getElementById("inputVcfFile");
   if (inputVcf) {
     inputVcf.addEventListener("change", (e) => {
@@ -1009,7 +1010,7 @@ function setupWaGeneratorLogic() {
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = async function(event) {
+      reader.onload = function(event) {
         const vcfText = event.target.result;
         const parsed = parseVCardText(vcfText);
         if (parsed.length === 0) {
@@ -1017,15 +1018,15 @@ function setupWaGeneratorLogic() {
           return;
         }
 
-        if (confirm(`Ditemukan ${parsed.length} kontak dari file "${file.name}". Impor semua ke Buku Tamu?`)) {
-          currentData.guestList = [...parsed, ...currentData.guestList];
-          guestCurrentPage = 1;
-          renderGuestTable();
-
-          const saved = await atomicGuestApi({ action: "batch_add", guests: parsed });
-          if (saved) {
-            showToast(`${parsed.length} kontak berhasil diimpor dari file!`);
-          }
+        const batchInput = document.getElementById("inputBatchGuests");
+        const formattedLines = parsed.map(c => c.phone ? `${c.name} | ${c.phone}` : c.name).join('\n');
+        
+        if (batchInput) {
+          batchInput.value = (batchInput.value.trim() ? (batchInput.value.trim() + '\n' + formattedLines) : formattedLines);
+          const detailsEl = batchInput.closest('details');
+          if (detailsEl) detailsEl.open = true;
+          batchInput.focus();
+          showToast(`${parsed.length} kontak berhasil dimasukkan ke kotak teks! Silakan sesuaikan nama lalu klik "Impor Semua".`);
         }
         inputVcf.value = "";
       };
@@ -1285,6 +1286,9 @@ function renderGuestTable() {
         <button class="btn-action-sm btn-copy-link" onclick="copyGuestLink('${escapeHtml(guestLink)}')" title="Salin Link">
           <i data-lucide="copy" style="width:14px;"></i> Salin
         </button>
+        <button class="btn-action-sm btn-edit-guest" onclick="editGuest(${originalIdx})" title="Ubah Nama / No. HP">
+          <i data-lucide="pencil" style="width:14px;"></i>
+        </button>
         <button class="btn-action-sm btn-delete-guest" onclick="deleteGuest(${originalIdx})" title="Hapus Tamu">
           <i data-lucide="trash-2" style="width:14px;"></i>
         </button>
@@ -1338,6 +1342,32 @@ window.copyGuestLink = function(link) {
   navigator.clipboard.writeText(link).then(() => {
     showToast("Link undangan berhasil disalin!");
   });
+};
+
+window.editGuest = async function(index) {
+  const guest = currentData.guestList[index];
+  if (!guest) return;
+
+  const newName = prompt("Ubah Nama Tamu:", guest.name);
+  if (newName === null) return;
+  const trimmedName = newName.trim();
+  if (!trimmedName) {
+    alert("Nama tamu tidak boleh kosong.");
+    return;
+  }
+
+  const newPhone = prompt("Ubah Nomor WhatsApp (opsional):", guest.phone || "");
+  if (newPhone === null) return;
+  const trimmedPhone = newPhone.trim();
+
+  guest.name = trimmedName;
+  guest.phone = trimmedPhone;
+  renderGuestTable();
+
+  const saved = await atomicGuestApi({ action: "sync", guestList: currentData.guestList });
+  if (saved) {
+    showToast(`Data tamu "${trimmedName}" berhasil diperbarui!`);
+  }
 };
 
 window.deleteGuest = async function(index) {
